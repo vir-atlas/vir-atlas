@@ -6,6 +6,7 @@ wavelength = [450, 500, 550, 570, 600, 650]
 '''TODO: scale_brightness is crude and needs to be modified. Colors are much closer to white than they should be.'''
 '''TODO: I believe it is unecessary to find the steradian for our purposes as our data is already taken in a cone.'''
 
+
 class Color:
 
     '''Calculate and return the solid angle of the data from the altitude the data was taken at'''
@@ -72,8 +73,8 @@ class Color:
 
     def rgb_to_hex(self, RGB):
         RGB = self.scale_brightness(RGB)
-        print "#{:02x}{:02x}{:02x}".format(int(RGB[0]),int(RGB[1]),int(RGB[2]))
-        return "#{:02x}{:02x}{:02x}".format(int(RGB[0]),int(RGB[1]),int(RGB[2]))
+        print("#{:02x}{:02x}{:02x}".format(int(RGB[0]), int(RGB[1]), int(RGB[2])))
+        return "#{:02x}{:02x}{:02x}".format(int(RGB[0]), int(RGB[1]), int(RGB[2]))
 
     '''complete translation from data to RGB color'''
     def data_to_hex(self, alt, data):

@@ -2,23 +2,26 @@
             -give map points correct color (black for testing)
             -build exception case for international dateline"""
 import gpsPoint
+import StellaPoint as SP
+from color import Color
 
 canvas_size = 500
 black = "000000"
 
-class map_point:
+class MapPoint:
     """map_point holds necessary info to put point on map.
     color = color to display
     x,y = pixel to display on"""
-    def __init__(self, color, x, y):
-        super(map_point, self).__init__()
+    def __init__(self, stella_point, color, x, y):
+        super(MapPoint, self).__init__()
+        self.stella_point = stella_point
         self.color = color
         self.x = x
         self.y = y
 
     """print data to terminal. for debugging"""
     def print_point(self):
-        print(self.color, self.x, self.y)
+        print(self.stella_point.timestamp, self.color, self.x, self.y)
 
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
 def find_min_lat(gps_points):
@@ -78,10 +81,38 @@ def set_xy(gps_points):
 
         y = (abs(max_lat - gps_points[count].latitude)) * scale
         x = (gps_points[count].longitude - min_lon) * scale
-        map_points.append(map_point(black, x, y))
+
+        stella_points = SP.make_stella_points("Data Files/data.csv")
+        color = set_color(stella_points[count])
+
+        map_points.append(MapPoint(stella_points[count], color, x, y))
         map_points[count].print_point()
 
     return map_points
+
+
+"""set_color pulls altitude and irradiance values (of type str) from a stella_point object, casts them to floats,
+    calls Color.data_to_hex() to gather the RGB value (of type str) and return it to calling method."""
+def set_color(stella_point):
+
+    # There's likely a better way to initialize the irradiance list. Do we want this to be general so it will work with
+    # either the visual OR infrared bands?
+    irradiance = list()
+    irradiance += [stella_point.vs_power_450, stella_point.vs_power_500, stella_point.vs_power_550,
+                  stella_point.vs_power_570, stella_point.vs_power_600, stella_point.vs_power_650]
+
+    irradiance = [float(i) for i in irradiance]
+    altitude = float(stella_point.altitude_m_uncal)
+
+    # right now this is a hack to workaround stella_point objects with NO values in the vs_power range.
+    color = Color()
+    max_i = max(irradiance)
+    rgb = str
+    if max_i > 0:
+        rgb = color.data_to_hex(altitude, irradiance)
+
+    return rgb
+
 
 """test function"""
 def print_mins(gps_points):
@@ -89,6 +120,11 @@ def print_mins(gps_points):
     min_lon = find_min_lon(gps_points)
     print(min_lat, min_lon)
 
+
 # test for Sophia's computer
 # gps_points = gpsPoint.read_drone_csv("/home/nova/cse326/Data Files_Feb-26th-2021-05-57PM-Flight-Airdata.csv")
+# set_xy(gps_points)
+
+# test for Ty's computer
+# gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
 # set_xy(gps_points)

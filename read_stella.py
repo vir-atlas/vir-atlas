@@ -12,7 +12,7 @@ def make_stella_points(file):
 
     # check if the length of each list in points is correct
     for line in file:
-        points.append(line.rstrip().split(', '))
+        points.append(line.rstrip().split(','))
 
     for point in list(points):
         if len(point) != 57:
@@ -42,7 +42,7 @@ def make_stella_points(file):
 def main():
     try:
         # the way we read this file will probably change
-        stella_output = open('data.txt', 'r')
+        stella_output = open('Data Files/data.csv', 'r')
     except FileNotFoundError as no_file:
         print("Error in reading stella input file", no_file)
     else:

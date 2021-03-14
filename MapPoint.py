@@ -14,14 +14,14 @@ class MapPoint:
     x,y = pixel to display on"""
     def __init__(self, stella_point, color, x, y):
         super(MapPoint, self).__init__()
-        self.stella_point = stella_point
+        self.stella_point = stella_point        # added new stella_point attribute
         self.color = color
         self.x = x
         self.y = y
 
     """print data to terminal. for debugging"""
     def print_point(self):
-        print(self.stella_point.timestamp, self.color, self.x, self.y)
+        print(self.stella_point.timestamp, self.color, self.x, self.y)  # stella_point.timestamp may not print
 
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
 def find_min_lat(gps_points):
@@ -82,11 +82,14 @@ def set_xy(gps_points):
         y = (abs(max_lat - gps_points[count].latitude)) * scale
         x = (gps_points[count].longitude - min_lon) * scale
 
-        stella_points = SP.make_stella_points("Data Files/data.csv")
-        color = set_color(stella_points[count])
+        stella_points = SP.make_stella_points("Data Files/data.csv")    # create StellaPoint List, may not be the right place
 
-        map_points.append(MapPoint(stella_points[count], color, x, y))
-        map_points[count].print_point()
+        if count >= len(stella_points):     # stop adding points after exhausting stella_point List
+            break
+
+        color = set_color(stella_points[count])                         # create RGB color (type str)
+        map_points.append(MapPoint(stella_points[count], color, x, y))  # create new MapPoint object with stella_point
+        map_points[count].print_point()                                 # and associated color
 
     return map_points
 

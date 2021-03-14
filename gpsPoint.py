@@ -5,9 +5,10 @@
 # functions outside the class process the csv vile into gps_points
 from datetime import datetime
 from statistics import median
+import pandas as pd
 
 
-class GpsPoint:
+class GpsPoint(object):
     """gps_point holds necessary time and GPS data from the drone to compute the gps for the map"""
     def __init__(self, time, latitude, longitude):
         super(GpsPoint, self).__init__()
@@ -39,50 +40,45 @@ def read_drone_csv(drone_data):
 
         words = line.split(',')
 
+        # converting timestamp from csv file into a datetime object so that
+        # we can compare it against others
         time = datetime.strptime(words[1], "%Y-%m-%d %H:%M:%S")
 
         gps_points.append(GpsPoint(time, words[2], words[3]))
-        gps_points[count].print_gps()
+
+        # debug print statement
+        # gps_points[count].print_gps()
 
     stream.close()
     return gps_points
 
 
-# Waiting discussion with Sophia to determine if this function is needed.
-# Currently non-operational
-def average_points(gps_points):
-    length = 0
-    point_list = list()
-    latitude = []
-    longitude = []
+# this function finds the median value of all points in a GpsPoint List with matching timestamps and returns
+# a new GpsPoint List that has been stripped of "duplicate" timestamp samples
+def median_points(gps_points):
 
-    while length <= len(gps_points):
-        rep_point = gps_points[length]
-        #iterate through list and collect similar points into a temporary list
-        for point in gps_points:
-            if point.time == rep_point.time:
-                latitude.append(point.latitude)
-                longitude.append(point.longitude)
-                length += 1
-            else:
-                break
+    # convert gps_points List into the data DataFrame so we can apply the median aggregation operation and remove
+    # extra sample data
+    variables = ["time", "latitude", "longitude"]
+    data = pd.DataFrame([[getattr(i, j) for j in variables] for i in gps_points], columns=variables)
+    df = data.groupby('time', as_index=False).agg({'latitude': median, 'longitude': median})
 
-        time = rep_point.time
-        med_lat = median(latitude)
-        med_lon = median(longitude)
-        point_list.append(GpsPoint(time, med_lat, med_lon))
+    # convert the dataframe back into a GpsPoint List
+    count = 0
+    final_points = []
+    while count < len(df.index):
+        final_points.append(GpsPoint(df.values[count][0], df.values[count][1], df.values[count][2]))
+        count += 1
+
+    return final_points
 
 
-        #avg lat & long values for same timestamp
-
-    return point_list
-
-
+# datetime(GpsPoint([count][0]
 # test read on Sophia's system
 # read_drone_csv("/home/nova/cse326/Data Files_Feb-26th-2021-05-57PM-Flight-Airdata.csv")
 
 # test read on Ty's system
-# points = read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-# points = average_points(points)
-# for p in points:
-#     print(p.time, ", ", p.latitude, ", ", p.longitude)
+points = read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
+points = median_points(points)
+for p in points:
+    print(p.time, ", ", p.latitude, ", ", p.longitude)

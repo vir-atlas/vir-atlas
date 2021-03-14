@@ -3,6 +3,8 @@
 # @brief: reads in files that have the same output format as STELLA and makes a StellaPoint object, which can
 # access all possible attributes of stella given in the excel column header file (besides the "mark" objects)
 
+# @TODO This file should no longer be necessary.
+
 
 import StellaPoint as SP
 

@@ -50,6 +50,9 @@ def read_drone_csv(drone_data):
         # gps_points[count].print_gps()
 
     stream.close()
+
+    gps_points = median_points(gps_points)
+
     return gps_points
 
 
@@ -78,7 +81,7 @@ def median_points(gps_points):
 # read_drone_csv("/home/nova/cse326/Data Files_Feb-26th-2021-05-57PM-Flight-Airdata.csv")
 
 # test read on Ty's system
-points = read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-points = median_points(points)
-for p in points:
-    print(p.time, ", ", p.latitude, ", ", p.longitude)
+# points = read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
+# points = median_points(points)
+# for p in points:
+#     print(p.time, ", ", p.latitude, ", ", p.longitude)

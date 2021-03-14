@@ -12,16 +12,19 @@ class MapPoint:
     """map_point holds necessary info to put point on map.
     color = color to display
     x,y = pixel to display on"""
-    def __init__(self, stella_point, color, x, y):
+    def __init__(self, stella_point, gps_point, color, x, y, latitude, longitude):
         super(MapPoint, self).__init__()
         self.stella_point = stella_point        # added new stella_point attribute
+        self.gps_point = gps_point
         self.color = color
         self.x = x
         self.y = y
+        self.latitude = latitude
+        self.longitude = longitude
 
     """print data to terminal. for debugging"""
     def print_point(self):
-        print(self.stella_point.timestamp, self.color, self.x, self.y)  # stella_point.timestamp may not print
+        print(self.stella_point.timestamp, self.gps_point.time, self.color, self.x, self.y)  # stella_point.timestamp may not print
 
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
 def find_min_lat(gps_points):
@@ -58,6 +61,7 @@ def find_max_lon(gps_points):
 
 """assumes canvas size of 500 x 500 pixels and scales to it. Need to determine how we want to handle canvas size"""
 def set_xy(gps_points):
+
     min_lat = find_min_lat(gps_points)
     min_lon = find_min_lon(gps_points)
     max_lat = find_max_lat(gps_points)
@@ -72,24 +76,30 @@ def set_xy(gps_points):
 
     scale = canvas_size / delta
 
-    count = -1
-    while True:
-        count += 1
+    stella_points = SP.make_stella_points("Data Files/data.csv")  # create StellaPoint List, may not be the right place
+    # count = -1
+    for gps in gps_points:
 
-        if count >= len(gps_points):
-            break
+        y = (abs(max_lat - gps.latitude)) * scale
+        x = (gps.longitude - min_lon) * scale
+        #
+        # if count >= len(stella_points):     # stop adding points after exhausting stella_point List
+        #     print("Not enough Stella Objects")
+        #     break
 
-        y = (abs(max_lat - gps_points[count].latitude)) * scale
-        x = (gps_points[count].longitude - min_lon) * scale
+        i = 0
+        stella = None
+        for point in stella_points:
+            i += 1
+            if point.timestamp == gps.time:
+                stella = point
 
-        stella_points = SP.make_stella_points("Data Files/data.csv")    # create StellaPoint List, may not be the right place
+        if stella is None:
+            continue
 
-        if count >= len(stella_points):     # stop adding points after exhausting stella_point List
-            break
-
-        color = set_color(stella_points[count])                         # create RGB color (type str)
-        map_points.append(MapPoint(stella_points[count], color, x, y))  # create new MapPoint object with stella_point
-        map_points[count].print_point()                                 # and associated color
+        color = set_color(stella)                         # create RGB color (type str)
+        map_points.append(MapPoint(stella, gps, color, x, y, gps.latitude, gps.longitude))  # create new MapPoint object with stella_point
+        print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ', gps.longitude, color)   # and associated color
 
     return map_points
 
@@ -129,5 +139,5 @@ def print_mins(gps_points):
 # set_xy(gps_points)
 
 # test for Ty's computer
-# gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-# set_xy(gps_points)
+gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
+set_xy(gps_points)

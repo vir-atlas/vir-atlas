@@ -39,7 +39,7 @@ class Color:
             XYZ[1] += data[x] * (self.gaussian(0.821, wavelength[x], 568.8, 0.0213, 0.0247) + self.gaussian(0.286, wavelength[x], 530.9, 0.0613, 0.0322))
 
             XYZ[2] +=  data[x] * (self.gaussian(1.217, wavelength[x], 437, 0.0845, 0.0278) + self.gaussian(0.681, wavelength[x], 459, 0.0385, 0.0725))
-            print(XYZ)
+            # print(XYZ)
         return XYZ
 
     '''convert CIE 1931 XYZ values to RGB linearly.'''
@@ -57,7 +57,7 @@ class Color:
                 RGB[x] *= 12.92
             elif RGB[x] > 0.0031308:
                 RGB[x] = 1.055 * (RGB[x] ** (1/2.4)) - 0.055
-        print(RGB)
+        # print(RGB)
         return RGB
 
     '''scale brightness so readings in high or low exposure result in high contrast colors'''
@@ -73,7 +73,7 @@ class Color:
 
     def rgb_to_hex(self, RGB):
         RGB = self.scale_brightness(RGB)
-        print("#{:02x}{:02x}{:02x}".format(int(RGB[0]), int(RGB[1]), int(RGB[2])))
+        # print("#{:02x}{:02x}{:02x}".format(int(RGB[0]), int(RGB[1]), int(RGB[2])))
         return "#{:02x}{:02x}{:02x}".format(int(RGB[0]), int(RGB[1]), int(RGB[2]))
 
     '''complete translation from data to RGB color'''

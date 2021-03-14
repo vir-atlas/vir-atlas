@@ -22,17 +22,20 @@ map_points = MapPoint.set_xy(gps_points)
 
 window = Tk()
 map = Canvas(window,
-            width = canvas_size,
-            height = canvas_size)
+             width=canvas_size,
+             height=canvas_size)
 map.pack()
 
-count = -1
-while True:
-    count += 1
+for point in map_points:
+    create_circle(point, map)
 
-    if count >= len(map_points):
-        break
-
-    create_circle(map_points[count], map)
+# count = -1
+# while True:
+#     count += 1
+#
+#     if count >= len(map_points):
+#         break
+#
+#     create_circle(map_points[count], map)
 
 window.mainloop()

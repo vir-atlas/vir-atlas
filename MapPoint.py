@@ -1,30 +1,43 @@
-"""TODO:    -find a way to define canvas_size
-            -give map points correct color (black for testing)
-            -build exception case for international dateline"""
+# @author   Sophia Novo-Gradac
+# 3/12/2021
+# @brief    map_point object: holds respective stella_point, gps_point, and the various colors to display at coords x,y
+#           Combines stella_point and gps_point into a point with a color and x,y coords for placing onto a canvas
+# last updated: 3/16/2021 by Sophia Novo-Gradac
+# @updates  added colors for each type of map. (vs, nir, and temp)
+#           link map_points based on delta ms timestamps calculated in both gps and stella points
+#           colors are calculated on init in map_point object
+#
+# TODO:     consider chopping points from takeoff/landing
+#           consider any other data points from the drone that shoul be kept
+#           define canvas_size by data
+#           build exception case for itnl dateline
+#           add temp_rgb function
+
 import gpsPoint
-import StellaPoint as SP
-from color import Color
+import StellaPoint
+import Color
 
 canvas_size = 500
-black = "000000"
+black = "#000000"
 
 class MapPoint:
     """map_point holds necessary info to put point on map.
     color = color to display
     x,y = pixel to display on"""
-    def __init__(self, stella_point, gps_point, color, x, y, latitude, longitude):
+    def __init__(self, stella_point, gps_point, x, y):
         super(MapPoint, self).__init__()
         self.stella_point = stella_point        # added new stella_point attribute
         self.gps_point = gps_point
-        self.color = color
+        self.vs_rgb = set_vs(stella_point)
+        self.nir_rgb = set_nir(stella_point)
+        # self.temp_rgb
         self.x = x
         self.y = y
-        self.latitude = latitude
-        self.longitude = longitude
 
     """print data to terminal. for debugging"""
     def print_point(self):
-        print(self.stella_point.timestamp, self.gps_point.time, self.color, self.x, self.y)  # stella_point.timestamp may not print
+        # print(self.stella_point.timestamp, self.gps_point.time, self.color, self.x, self.y)  # stella_point.timestamp may not print
+        print(self.vs_rgb, self.nir_rgb, self.x, self.y)
 
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
 def find_min_lat(gps_points):
@@ -60,7 +73,7 @@ def find_max_lon(gps_points):
     return max
 
 """assumes canvas size of 500 x 500 pixels and scales to it. Need to determine how we want to handle canvas size"""
-def set_xy(gps_points):
+def set_xy(gps_points, stella_points):
 
     min_lat = find_min_lat(gps_points)
     min_lon = find_min_lon(gps_points)
@@ -76,56 +89,68 @@ def set_xy(gps_points):
 
     scale = canvas_size / delta
 
-    stella_points = SP.make_stella_points("Data Files/data.csv")  # create StellaPoint List, may not be the right place
-    # count = -1
+    s_cur = 0
+    g_cur = 0
     for gps in gps_points:
 
         y = (abs(max_lat - gps.latitude)) * scale
         x = (gps.longitude - min_lon) * scale
-        #
+
         # if count >= len(stella_points):     # stop adding points after exhausting stella_point List
         #     print("Not enough Stella Objects")
         #     break
 
-        i = 0
-        stella = None
-        for point in stella_points:
-            i += 1
-            if point.timestamp == gps.time:
-                stella = point
+        if g_cur == 0 and stella_points[s_cur]:
+            cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
+            post_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur + 1].time)
+            if cur_delta < post_delta:
+                map_points.append(MapPoint(stella_points[s_cur], gps, black, x, y))  # create new MapPoint object with stella_point
+                s_cur += 1
 
-        if stella is None:
-            continue
+        elif not (g_cur >= len(gps_points)) and stella_points[s_cur]:
+            prev_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur - 1].time)
+            cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
+            if cur_delta < prev_delta:
+                map_points.append(MapPoint(stella_points[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                s_cur += 1
 
-        color = set_color(stella)                         # create RGB color (type str)
-        map_points.append(MapPoint(stella, gps, color, x, y, gps.latitude, gps.longitude))  # create new MapPoint object with stella_point
-        print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ', gps.longitude, color)   # and associated color
+        elif stella_points[s_cur]:
+            prev_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur - 1].time)
+            cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
+            post_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur + 1].time)
+
+            if cur_delta < prev_delta and cur_delta < post_delta:
+                map_points.append(MapPoint(stella_points[s_cur], gps, black, x, y))  # create new MapPoint object with stella_point
+                s_cur += 1
+
+        g_cur += 1
+        # color = set_color(stella)                         # create RGB color (type str)
+        # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ', gps.longitude, color)   # and associated color
 
     return map_points
 
 
-"""set_color pulls altitude and irradiance values (of type str) from a stella_point object, casts them to floats,
+"""functions below set the various colors for map_point. Vs nir, and temp respectively.
+    currently handles workaround where all values are 0"""
+"""pull irradiance values from a stella_point object
     calls Color.data_to_hex() to gather the RGB value (of type str) and return it to calling method."""
-def set_color(stella_point):
-
-    # There's likely a better way to initialize the irradiance list. Do we want this to be general so it will work with
-    # either the visual OR infrared bands?
-    irradiance = list()
-    irradiance += [stella_point.vs_power_450, stella_point.vs_power_500, stella_point.vs_power_550,
-                  stella_point.vs_power_570, stella_point.vs_power_600, stella_point.vs_power_650]
-
-    irradiance = [float(i) for i in irradiance]
-    altitude = float(stella_point.altitude_m_uncal)
-
-    # right now this is a hack to workaround stella_point objects with NO values in the vs_power range.
-    color = Color()
-    max_i = max(irradiance)
-    rgb = str
+def set_vs(stella_point):
+    max_i = max(stella_point.vs_pows)
+    rgb = black
     if max_i > 0:
-        rgb = color.data_to_hex(altitude, irradiance)
+        rgb = Color.data_to_hex(stella_point.vs_pows)
 
     return rgb
 
+def set_nir(stella_point):
+    max_i = max(stella_point.nir_pows)
+    rgb = black
+    if max_i > 0:
+        rgb = Color.data_to_hex(stella_point.nir_pows)
+
+    return rgb
+
+# def set_temp(stella_point):
 
 """test function"""
 def print_mins(gps_points):
@@ -135,9 +160,14 @@ def print_mins(gps_points):
 
 
 # test for Sophia's computer
-# gps_points = gpsPoint.read_drone_csv("/home/nova/cse326/Data Files_Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-# set_xy(gps_points)
+# gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
+# stella_points = StellaPoint.make_stella_points("Data Files/data.csv")
+# stella_points = StellaPoint.get_batch(stella_points, "1.X")
+# map_points = set_xy(gps_points, stella_points)
+#
+# for map in map_points:
+#     map.print_point()
 
-# test for Ty's computer
-gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-set_xy(gps_points)
+# # test for Ty's computer
+# gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
+# set_xy(gps_points)

@@ -16,6 +16,7 @@
 import gpsPoint
 import StellaPoint
 import Color
+from math import *
 
 canvas_size = 500
 black = "#000000"
@@ -30,7 +31,7 @@ class MapPoint:
         self.gps_point = gps_point
         self.vs_rgb = set_vs(stella_point)
         self.nir_rgb = set_nir(stella_point)
-        # self.temp_rgb
+        self.temp_rgb = set_temp(stella_point)
         self.x = x
         self.y = y
 
@@ -150,7 +151,73 @@ def set_nir(stella_point):
 
     return rgb
 
-# def set_temp(stella_point):
+def set_temp(stella_point):
+    max_temp = 40.0
+    min_temp = -30.0
+    red = 0
+    green = 0
+    blue = 0
+
+    # convert temp to a percentage scale of 0 to 100
+    temp = (-1 * min_temp + float(stella_point.surface_temp))/(-1 * min_temp + max_temp)
+
+    # OoR = out of range
+    def OoR(color):
+        if color < 0:
+            color = 0
+
+        if color > 255:
+            color = 255
+
+        return color
+
+    # define the red value
+    def rgb_red(temp):
+        if temp <= 66:
+            red = 255
+
+        else:
+            red = temp - 60
+            red = 329.698727446 * (red ** -0.1332047592)
+            red = OoR(red)
+
+        return red
+
+    # define the green value
+    def rgb_green(temp):
+        if temp <= 66:
+            green = temp
+            green = 99.4708025861 * log(green) - 161.1195681661
+
+        else:
+            green = temp - 60
+            green = 288.1221695283 * (green ** -0.0755148492)
+
+        green = OoR(green)
+
+        return green
+
+    # define the blue value
+    def rgb_blue(temp):
+        if temp >= 66:
+            blue = 255
+
+        else:
+            if temp <= 19:
+                blue = 0
+
+            else:
+                blue = temp - 10
+                blue = 138.5177312231 * log(blue) - 305.0447927307
+                blue = OoR(blue)
+
+        return blue
+
+    red = rgb_red(temp)
+    green = rgb_green(temp)
+    blue = rgb_blue(temp)
+    return Color.rgb_to_hex([red, green, blue])
+
 
 """test function"""
 def print_mins(gps_points):

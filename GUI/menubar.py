@@ -4,51 +4,53 @@
 # @todo positoning, and buttons relating to each initial menu button
 from tkinter import *
 
-root = Tk()
 
-root.geometry("800x600")
-
-root.title("VIR - Atlas")
-
+# this is the main function
 def menubar():
-    #create buttons
-    filebutt = Menubutton(
-        root,
-        text="File",
-        bg="black",
-        activebg="blue",
-        fg="white"
-    )
-    viewbutt = Menubutton(
-        root,
-        text="View",
-        bg="black",
-        activebg="blue",
-        fg="white"
-    )
-    annotatebutt = Menubutton(
-        root,
-        text="Annotate",
-        bg="black",
-        active="blue",
-        fg="white"
-    )
-    helpbutt = Menubutton(
-        root,
-        text="Help",
-        bg="black",
-        activebg="blue",
-        fg="white"
-    )
+    root = Tk()  # this will need to be removed because main.py already has it
+    root.geometry("800x600")
+    root.title("VIR - Atlas")
 
-    filebutt.menu = Menu(filebutt)
-    viewbutt.menu = Menu(viewbutt)
-    annotatebutt.menu = Menu(annotatebutt)
-    helpbutt.menu = Menu(helpbutt)
+    menu = Menu(root)
+
+    filebutt = Menu(menu, tearoff=0)
+    filebutt.add_command(label="Open", command=open_file)
+    filebutt.add_command(labe="Save", command=save_file)
+    filebutt.add_separator()
+    menu.add_cascade(label="File", menu=filebutt)
+
+    viewbutt = Menu(menu,tearoff=0)
+    viewbutt.add_command(label="Zoom In", command=zoom)
+    viewbutt.add_command(label="Zoom Out", command=zoom)
+    menu.add_cascade(label="View", menu=viewbutt)
+
+    annotatebutt = Menu(menu, tearoff=0)
+    annotatebutt.add_command(label="New Annotation", command=new_annotate)
+    menu.add_cascade(label="Annotate", menu=annotatebutt)
+
+    helpbutt = Menu(menu, tearoff=0)
+    helpbutt.add_command(label="About", command=about)
+    menu.add_cascade(label="Help", menu=helpbutt)
+
+    root.config(menu=menu)
+    root.mainloop()
 
 
+# these can be filled in later, but this is where the commands will be executed
+def open_file():
+    x = 0
 
+def save_file():
+    x = 0
 
+def zoom():
+    x = 0
 
+def new_annotate():
+    x = 0
 
+def about():
+    x = 0
 
+if __name__ == '__main__':
+    menubar()

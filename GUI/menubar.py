@@ -1,3 +1,7 @@
+# @author Tenise and Brynn
+# @date 3/26/21
+# @brief Menubar for the top of the screen / following Menubutton widget tutorial from Geeks4Geeks
+# @todo positoning, and buttons relating to each initial menu button
 from tkinter import *
 
 root = Tk()

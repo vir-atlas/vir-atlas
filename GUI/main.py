@@ -5,19 +5,21 @@
 
 import tkinter as tk
 import os
+import menubar as menu
 
 def main():
     # Create main window
     root = tk.Tk()
     root.configure(background='black')
+    root.title('VIR - Atlas')
     root.geometry("800x600")
 
-    # Generate frames for each component
-    menubar = tk.Frame(master=root, width=800, height=40, bg='grey')
-    menubar.place(x=0,y=0)
-    menubar.pack(fill=tk.X)
+    # Generate and place frames for each component
+    # Generate menu and buttons
+    root = menu.menubar(root)
 
     irmap = tk.Frame(master=root, width=500, height=400, bg='grey')
+    irmap = test(irmap)
     irmap.place(x=10, y=60)
 
     legend = tk.Frame(master=root, width=30, height=400, bg='grey')
@@ -32,9 +34,11 @@ def main():
     annotations = tk.Frame(master=root, width=220, height=310, bg='grey')
     annotations.place(x=570,y=270)
 
-
     root.mainloop()
 
+def test(frame):
+    label = tk.Label(master=frame, text='fuck', bg='white').pack()
+    return frame
 
 if __name__ == '__main__':
     main()

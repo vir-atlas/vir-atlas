@@ -6,10 +6,7 @@ from tkinter import *
 
 
 # this is the main function
-def menubar():
-    root = Tk()  # this will need to be removed because main.py already has it
-    root.geometry("800x600")
-    root.title("VIR - Atlas")
+def menubar(root):
 
     menu = Menu(root)
 
@@ -33,7 +30,7 @@ def menubar():
     menu.add_cascade(label="Help", menu=helpbutt)
 
     root.config(menu=menu)
-    root.mainloop()
+    return root
 
 
 # these can be filled in later, but this is where the commands will be executed

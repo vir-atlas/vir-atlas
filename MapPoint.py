@@ -11,7 +11,7 @@
 #           consider any other data points from the drone that shoul be kept
 #           define canvas_size by data
 #           build exception case for itnl dateline
-#           add temp_rgb function
+#           fix temp_rgb function (only displaying red right now?)
 
 import gpsPoint
 import StellaPoint

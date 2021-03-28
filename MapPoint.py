@@ -18,7 +18,6 @@ import StellaPoint
 import Color
 from math import *
 
-canvas_size = 500
 black = "#000000"
 
 class MapPoint:
@@ -73,8 +72,9 @@ def find_max_lon(gps_points):
             max = gps_points[i].longitude
     return max
 
-"""assumes canvas size of 500 x 500 pixels and scales to it. Need to determine how we want to handle canvas size"""
-def set_xy(gps_points, stella_points):
+"""Scales to given canvas_size
+returns list of map_points and the width and height of the canvas"""
+def set_xy(gps_points, stella_points, canvas_size):
 
     min_lat = find_min_lat(gps_points)
     min_lon = find_min_lon(gps_points)

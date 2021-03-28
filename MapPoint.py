@@ -90,6 +90,10 @@ def set_xy(gps_points, stella_points):
 
     scale = canvas_size / delta
 
+    height = (max_lat - min_lat) * scale #canvas height
+    width = (max_lon - min_lon)* scale #canvas width
+    #one of the above will be equal to canvas_size depending on shape of data
+
     s_cur = 0
     g_cur = 0
     for gps in gps_points:
@@ -128,7 +132,7 @@ def set_xy(gps_points, stella_points):
         # color = set_color(stella)                         # create RGB color (type str)
         # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ', gps.longitude, color)   # and associated color
 
-    return map_points
+    return map_points, width, height
 
 
 """functions below set the various colors for map_point. Vs nir, and temp respectively.

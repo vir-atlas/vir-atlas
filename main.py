@@ -47,7 +47,7 @@ def display_map_canvas(keyword):
     map_canvas = tk.Canvas(map_frame, width = width, height = height)
     map_canvas.pack()
     poly_fill = MapGen.get_poly(height, width)
-    filled = MapGen.draw_data(map_points, poly_fill, keyword)
+    filled = MapGen.draw_data(map_points, poly_fill, keyword, resolution, width)
     MapGen.fill_all(filled, poly_fill, width, height, resolution)
     for t in poly_fill:
         t.draw(map_canvas)

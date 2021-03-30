@@ -36,7 +36,7 @@ def display_map_canvas(keyword):
     canvas_size = 1200
     resolution = 10
     gps_points = MapGen.gpsPoint.read_drone_csv(r'Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv')
-    stella_points = StellaPoint.make_stella_points(r'Data Files/data.csv')
+    stella_points = StellaPoint.make_stella_points(r'Data Files/data.txt')
 
     stella_points = StellaPoint.get_batch(stella_points, "1.X")
     map_points,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)

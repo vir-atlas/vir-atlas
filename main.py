@@ -1,7 +1,7 @@
 # @authors Brynn and Tenise
 # @date 3/26/21
 # @brief Generates the main window for VIR - Atlas software.
-# @todo Create functions for each GUI component
+# @todo Make window dynamically scaleable, create scrollable map/resize map properly, make open/save functions, create legend, display satmap... etc.
 
 import tkinter as tk
 import os
@@ -10,13 +10,12 @@ import MapPoint
 import MapGen
 import StellaPoint
 
-
 def main():
     # Create main window
     root = tk.Tk()
     root.configure(background='black')
     root.title('VIR - Atlas')
-    root.geometry("800x600")
+    root.geometry("1300x500")
 
     # Generate and place frames for each component
     # Generate menu and buttons
@@ -25,33 +24,26 @@ def main():
     root = menu.menubar(root)
 
     # Generate the Frame that will contain the Canvas
-    map_frame = tk.Frame(master=root, width=500, height=400, bg='grey')
+    map_frame = tk.Frame(master=root, width=500, height=500, bg='grey')
 
     # Import canvas from MapGen
     map_frame = MapGen.get_vis(map_frame)
-    map_frame.place(x=10, y=60)
+    map_frame.place(x=10, y=10)
 
-    # Generate Canvas
- #   map_canvas = tk.Canvas(map_frame, width=500, height=400)
- #   map_frame.place(x=10, y=60)
- #   map_canvas.pack()
- #   map_canvas.create_text(260, 80, text="Canvas")
-
-    legend_frame = tk.Frame(master=root, width=30, height=400, bg='grey')
-    legend_frame.place(x=520, y=60)
+    legend_frame = tk.Frame(master=root, width=30, height=260, bg='grey')
+    legend_frame.place(x=1020, y=10)
 
     satmap_frame = tk.Frame(master=root, width=220, height=200, bg='grey')
-    satmap_frame.place(x=570, y=60)
+    satmap_frame.place(x=1070, y=10)
 
-    notes_frame = tk.Frame(master=root, width=540, height=100, bg='grey')
+    notes_frame = tk.Frame(master=root, width=1000, height=180, bg='grey')
     # Call display point if a point is selected
-    notes_frame.place(x=10, y=480)
+    notes_frame.place(x=10, y=280)
 
-    annotation_frame = tk.Frame(master=root, width=220, height=310, bg='grey')
-    annotation_frame.place(x=570, y=270)
+    annotation_frame = tk.Frame(master=root, width=220, height=200, bg='grey')
+    annotation_frame.place(x=1070, y=250)
 
     root.mainloop()
-
 
 def test(frame):
     label = tk.Label(master=frame, text='fuck', bg='white').pack()
@@ -59,8 +51,6 @@ def test(frame):
 
 
 """Displays specific data on a point selected in to the notes canvas"""
-
-
 def display_point_data(notes, point):
     nir_wavebands = ""
     vs_wavebands = ""

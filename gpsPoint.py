@@ -37,6 +37,7 @@ def read_drone_csv(drone_data):
         stream = open(drone_data, 'r')
     except FileNotFoundError as no_file:
         print("Error in reading drone data file", no_file)
+        exit()
 
     line = stream.readline() # skip first line of csv
 

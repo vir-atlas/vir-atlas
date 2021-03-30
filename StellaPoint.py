@@ -91,8 +91,10 @@ def make_stella_points(file):
         stella_output = open(file, 'r')
     except FileNotFoundError as no_file:
         print("Error in reading stella input file", no_file)
+        exit()
 
     # Read all contents from file into a List object, close file
+    input_file = stella_output.readline() #rid header line
     input_file = stella_output.readlines()
     stella_output.close()
 

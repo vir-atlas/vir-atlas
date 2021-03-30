@@ -19,6 +19,8 @@ import Color
 from math import *
 import numpy as np
 
+vis_wl = [450, 500, 550, 570, 600, 650] #visual wavelengths taken by STELLA are constant
+nir_wl = [610, 680, 730, 760, 810, 860] #near infared wavelengths taken by STELLA are constant
 black = "#000000"
 
 class MapPoint:
@@ -146,7 +148,7 @@ def set_vs(stella_point):
     max_i = max(stella_point.vs_pows)
     rgb = black
     if max_i > 0:
-        rgb = Color.data_to_hex(stella_point.vs_pows)
+        rgb = Color.data_to_hex(stella_point.vs_pows, vis_wl)
 
     return rgb
 
@@ -154,7 +156,7 @@ def set_nir(stella_point):
     max_i = max(stella_point.nir_pows)
     rgb = black
     if max_i > 0:
-        rgb = Color.data_to_hex(stella_point.nir_pows)
+        rgb = Color.data_to_hex(stella_point.nir_pows, nir_wl)
 
     return rgb
 

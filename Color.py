@@ -13,8 +13,6 @@
 import math
 import numpy as np
 
-vis_wl = [450, 500, 550, 570, 600, 650] #visual wavelengths taken by STELLA are constant
-
 '''calculate and return piecewise gaussian function
 S represents a heaviside function following S(x,y,z) = y(1-H(x)) + zH(x)'''
 def gaussian(alpha, lam, beta, gamma, delta):
@@ -37,13 +35,13 @@ def z_fit_31(wave):
 Where X = sum(P(lam)*x(lam)*lam) and Y,Z also follow this equation
 Calculate X,Y,Z
 returned linearized X,Y,Z (each is in range 0-1)'''
-def spec_to_xyz(data):
+def spec_to_xyz(data, wl):
     X, Y, Z = 0, 0, 0
 
     for i in range(0,6):
-        X += data[i] * x_fit_31(vis_wl[i]) * vis_wl[i]
-        Y += data[i] * y_fit_31(vis_wl[i]) * vis_wl[i]
-        Z += data[i] * z_fit_31(vis_wl[i]) * vis_wl[i]
+        X += data[i] * x_fit_31(wl[i]) * wl[i]
+        Y += data[i] * y_fit_31(wl[i]) * wl[i]
+        Z += data[i] * z_fit_31(wl[i]) * wl[i]
 
     sum = X + Y + Z
     # XYZ = [X / sum, Y / sum, Z / sum]
@@ -110,5 +108,5 @@ def average_color(colors):
     return rgb_to_hex(sum)
 
 '''complete translation from data to RGB color'''
-def data_to_hex(data):
-    return rgb_to_hex(gamma_correction(xyz_to_rgb(spec_to_xyz(data))))
+def data_to_hex(data, wl):
+    return rgb_to_hex(gamma_correction(xyz_to_rgb(spec_to_xyz(data, wl))))

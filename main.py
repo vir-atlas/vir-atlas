@@ -25,24 +25,30 @@ def main():
     root = menu.menubar(root)
 
     # Generate the Frame that will contain the Canvas
-    irmap = tk.Frame(master=root, width=500, height=400, bg='grey')
-    canvas_map = tk.Canvas(irmap, width=500, height=400)
-    irmap.place(x=10, y=60)
-    canvas_map.pack()
-    canvas_map.create_text(260, 80, text="Canvas")
+    map_frame = tk.Frame(master=root, width=500, height=400, bg='grey')
 
-    legend = tk.Frame(master=root, width=30, height=400, bg='grey')
-    legend.place(x=520, y=60)
+    # Import canvas from MapGen
+    #MapGen.main()
 
-    satmap = tk.Frame(master=root, width=220, height=200, bg='grey')
-    satmap.place(x=570, y=60)
 
-    notes = tk.Frame(master=root, width=540, height=100, bg='grey')
+    # Generate Canvas
+    map_canvas = tk.Canvas(map_frame, width=500, height=400)
+    map_frame.place(x=10, y=60)
+    map_canvas.pack()
+    map_canvas.create_text(260, 80, text="Canvas")
+
+    legend_frame = tk.Frame(master=root, width=30, height=400, bg='grey')
+    legend_frame.place(x=520, y=60)
+
+    satmap_frame = tk.Frame(master=root, width=220, height=200, bg='grey')
+    satmap_frame.place(x=570, y=60)
+
+    notes_frame = tk.Frame(master=root, width=540, height=100, bg='grey')
     # Call display point if a point is selected
-    notes.place(x=10, y=480)
+    notes_frame.place(x=10, y=480)
 
-    annotations = tk.Frame(master=root, width=220, height=310, bg='grey')
-    annotations.place(x=570, y=270)
+    annotation_frame = tk.Frame(master=root, width=220, height=310, bg='grey')
+    annotation_frame.place(x=570, y=270)
 
     root.mainloop()
 

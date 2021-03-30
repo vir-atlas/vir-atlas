@@ -28,14 +28,14 @@ def main():
     map_frame = tk.Frame(master=root, width=500, height=400, bg='grey')
 
     # Import canvas from MapGen
-    #MapGen.main()
-
+    map_frame = MapGen.get_vis(map_frame)
+    map_frame.place(x=10, y=60)
 
     # Generate Canvas
-    map_canvas = tk.Canvas(map_frame, width=500, height=400)
-    map_frame.place(x=10, y=60)
-    map_canvas.pack()
-    map_canvas.create_text(260, 80, text="Canvas")
+ #   map_canvas = tk.Canvas(map_frame, width=500, height=400)
+ #   map_frame.place(x=10, y=60)
+ #   map_canvas.pack()
+ #   map_canvas.create_text(260, 80, text="Canvas")
 
     legend_frame = tk.Frame(master=root, width=30, height=400, bg='grey')
     legend_frame.place(x=520, y=60)

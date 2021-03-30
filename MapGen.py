@@ -165,42 +165,53 @@ def create_circle(map_point, radius, canvasName): #center coordinates, radius
     canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill = map_point.nir_rgb)
 
 #test on sophia's pc
-gps_points = gpsPoint.read_drone_csv(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
-stella_points = StellaPoint.make_stella_points(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\data.csv')
-stella_points = StellaPoint.get_batch(stella_points, "1.X")
-map_points,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
+#gps_points = gpsPoint.read_drone_csv(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
+#stella_points = StellaPoint.make_stella_points(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\data.csv')
 
-height = round(height/10) * 10
-width = round(width/10) * 10
+# Test on Brynn's laptop. (I'll try and make this dynamic later where the user can enter the directory)
+# gps_points reads in feb26th flight airdata
+# stella_points reads data.csv
+def main():
+    gps_points = gpsPoint.read_drone_csv(r'Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv')
+    stella_points = StellaPoint.make_stella_points(r'Data Files/data.csv')
 
-window = tk.Tk()
-vis_map = tk.Canvas(window, width = width, height = height)
-nir_map = tk.Canvas(window, width = width, height = height)
-tmp_map = tk.Canvas(window, width = width, height = height)
+    stella_points = StellaPoint.get_batch(stella_points, "1.X")
+    map_points,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
 
-vis_map.pack()
-nir_map.pack()
-tmp_map.pack()
+    height = round(height/10) * 10
+    width = round(width/10) * 10
 
-poly_fill = get_poly(height, width)
-filled = draw_data(map_points, poly_fill, 'vis')
-fill_all(filled, poly_fill, width, height, resolution)
-for t in poly_fill:
-    t.draw(vis_map)
-draw_flight_path(map_points, vis_map)
+    window = tk.Tk()
+    vis_map = tk.Canvas(window, width = width, height = height)
+    nir_map = tk.Canvas(window, width = width, height = height)
+    tmp_map = tk.Canvas(window, width = width, height = height)
 
-clear_poly(poly_fill)
-filled = draw_data(map_points, poly_fill, 'nir')
-fill_all(filled, poly_fill, width, height, resolution)
-for t in poly_fill:
-    t.draw(nir_map)
-draw_flight_path(map_points, nir_map)
+    vis_map.pack()
+    nir_map.pack()
+    tmp_map.pack()
 
-clear_poly(poly_fill)
-filled = draw_data(map_points, poly_fill, 'tmp')
-fill_all(filled, poly_fill, width, height, resolution)
-for t in poly_fill:
-    t.draw(tmp_map)
-draw_flight_path(map_points, tmp_map)
+    poly_fill = get_poly(height, width)
+    filled = draw_data(map_points, poly_fill, 'vis')
+    fill_all(filled, poly_fill, width, height, resolution)
+    for t in poly_fill:
+        t.draw(vis_map)
+    draw_flight_path(map_points, vis_map)
 
-window.mainloop()
+    clear_poly(poly_fill)
+    filled = draw_data(map_points, poly_fill, 'nir')
+    fill_all(filled, poly_fill, width, height, resolution)
+    for t in poly_fill:
+        t.draw(nir_map)
+    draw_flight_path(map_points, nir_map)
+
+    clear_poly(poly_fill)
+    filled = draw_data(map_points, poly_fill, 'tmp')
+    fill_all(filled, poly_fill, width, height, resolution)
+    for t in poly_fill:
+        t.draw(tmp_map)
+    draw_flight_path(map_points, tmp_map)
+
+    window.mainloop()
+
+if __name__ == '__main__':
+    main()

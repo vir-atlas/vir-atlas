@@ -168,7 +168,7 @@ def create_circle(map_point, radius, canvasName): #center coordinates, radius
 #gps_points = gpsPoint.read_drone_csv(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
 #stella_points = StellaPoint.make_stella_points(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\data.csv')
 
-# Test on Brynn's laptop. (I'll try and make this dynamic later where the user can enter the directory)
+# Test on Brynn's laptop. This should work for everyone since its realative in the git directory. (I'll try and make this dynamic later where the user can enter the directory)
 # gps_points reads in feb26th flight airdata
 # stella_points reads data.csv
 def main():
@@ -212,31 +212,6 @@ def main():
     draw_flight_path(map_points, tmp_map)
 
     window.mainloop()
-
-# A function for loading the canvases into main.py
-def get_vis(frame):
-    gps_points = gpsPoint.read_drone_csv(r'Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv')
-    stella_points = StellaPoint.make_stella_points(r'Data Files/data.csv')
-
-    stella_points = StellaPoint.get_batch(stella_points, "1.X")
-    map_points,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
-
-    frame.pack(expand=True)
-
-    height = round(height/10) * 10
-    width = round(width/10) * 10
-
-    vis_map = tk.Canvas(frame, width=width, height=height)
-    poly_fill = get_poly(height, width)
-    filled = draw_data(map_points, poly_fill, 'vis')
-    fill_all(filled, poly_fill, width, height, resolution)
-    for t in poly_fill:
-        t.draw(vis_map)
-    draw_flight_path(map_points, vis_map)
-    vis_map.pack()
-
-    return(frame)
-    
 
 if __name__ == '__main__':
     main()

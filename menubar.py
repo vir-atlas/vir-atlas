@@ -4,7 +4,6 @@
 # @todo commands
 from tkinter import *
 
-
 # this is the main function
 def menubar(root):
     menu = Menu(root, background='black', foreground='white',
@@ -18,9 +17,9 @@ def menubar(root):
 
     # View
     viewbutt = Menu(menu, tearoff=0, background='black', foreground='white')
-    viewbutt.add_command(label="Infrared Map", command=change_map)
-    viewbutt.add_command(label="Near Infrared Map", command=change_map)
-    viewbutt.add_command(label="Other", command=change_map)
+    viewbutt.add_command(label="Visual Map", command=get_vis)
+    viewbutt.add_command(label="NIR Map", command=get_nir)
+    viewbutt.add_command(label="Temperature Map", command=get_tmp)
     viewbutt.add_separator()
     viewbutt.add_command(label="Zoom In", command=zoom)
     viewbutt.add_command(label="Zoom Out", command=zoom)
@@ -70,9 +69,14 @@ def about():
           ).pack()
 
 
-def change_map():
-    x = 0
+def get_vis():
+    main.display_map_canvas(0)
 
+def get_nir():
+    main.display_map_canvas(1)
+
+def get_tmp():
+    main.display_map_canvas(2)
 
 if __name__ == '__main__':
     menubar()

@@ -127,12 +127,20 @@ def clear_poly(poly_fill):
 
 '''find all triangles containing a map point and fill them
 add to list of filled triangles (this is used later!)'''
-def draw_data(map_points, poly_fill, mode):
+def draw_data(map_points, poly_fill, mode, resolution, width):
     filled = []
     for mp in map_points: 
-        for t in poly_fill:
-            if t.contains_point(mp, mode):
-                filled.append(t)
+        # O(n^2) alg. Only use if other alg is failing
+        # for t in poly_fill:
+        #     if t.contains_point(mp, mode):
+        #         filled.append(t)
+        id = int(mp.y / resolution) * int(4 * width /resolution) + int(mp.x / resolution) * 4
+        
+        for i in range(4):
+            if(id >= len(poly_fill)):
+                break
+            if poly_fill[id + i].contains_point(mp, mode):
+                filled.append(poly_fill[id + i])
     return filled
 
 '''fill all remaining triangles with "None" as their color
@@ -168,12 +176,12 @@ def create_circle(map_point, radius, canvasName): #center coordinates, radius
 #gps_points = gpsPoint.read_drone_csv(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
 #stella_points = StellaPoint.make_stella_points(r'C:\Users\Sophia\Documents\Sophia\college\Spring2021 Textbooks\CSE326\vir-atlas-master\vir-atlas-master\Data Files\data.csv')
 
-# Test on Brynn's laptop. (I'll try and make this dynamic later where the user can enter the directory)
+# Test on Brynn's laptop. This should work for everyone since its realative in the git directory. (I'll try and make this dynamic later where the user can enter the directory)
 # gps_points reads in feb26th flight airdata
 # stella_points reads data.csv
 def main():
-    gps_points = gpsPoint.read_drone_csv(r'Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv')
-    stella_points = StellaPoint.make_stella_points(r'Data Files/data.csv')
+    gps_points = gpsPoint.read_drone_csv(r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
+    stella_points = StellaPoint.make_stella_points(r'vir-atlas-master\Data Files\data.csv')
 
     stella_points = StellaPoint.get_batch(stella_points, "1.X")
     map_points,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
@@ -191,27 +199,28 @@ def main():
     tmp_map.pack()
 
     poly_fill = get_poly(height, width)
-    filled = draw_data(map_points, poly_fill, 'vis')
+    filled = draw_data(map_points, poly_fill, 'vis', resolution, width)
     fill_all(filled, poly_fill, width, height, resolution)
     for t in poly_fill:
         t.draw(vis_map)
     draw_flight_path(map_points, vis_map)
 
     clear_poly(poly_fill)
-    filled = draw_data(map_points, poly_fill, 'nir')
+    filled = draw_data(map_points, poly_fill, 'nir', resolution, width)
     fill_all(filled, poly_fill, width, height, resolution)
     for t in poly_fill:
         t.draw(nir_map)
     draw_flight_path(map_points, nir_map)
 
     clear_poly(poly_fill)
-    filled = draw_data(map_points, poly_fill, 'tmp')
+    filled = draw_data(map_points, poly_fill, 'tmp', resolution, width)
     fill_all(filled, poly_fill, width, height, resolution)
     for t in poly_fill:
         t.draw(tmp_map)
     draw_flight_path(map_points, tmp_map)
 
     window.mainloop()
+
 
 if __name__ == '__main__':
     main()

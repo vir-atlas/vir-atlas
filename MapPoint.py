@@ -17,7 +17,10 @@ import gpsPoint
 import StellaPoint
 import Color
 from math import *
+import numpy as np
 
+vis_wl = [450, 500, 550, 570, 600, 650] #visual wavelengths taken by STELLA are constant
+nir_wl = [610, 680, 730, 760, 810, 860] #near infared wavelengths taken by STELLA are constant
 black = "#000000"
 
 class MapPoint:
@@ -30,7 +33,7 @@ class MapPoint:
         self.gps_point = gps_point
         self.vs_rgb = set_vs(stella_point)
         self.nir_rgb = set_nir(stella_point)
-        self.temp_rgb = set_temp(stella_point)
+        self.temp_rgb = "None"
         self.x = x
         self.y = y
 
@@ -105,32 +108,34 @@ def set_xy(gps_points, stella_points, canvas_size):
         #     print("Not enough Stella Objects")
         #     break
 
-        if g_cur == 0 and stella_points[s_cur]:
-            cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
-            post_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur + 1].time)
-            if cur_delta < post_delta:
-                map_points.append(MapPoint(stella_points[s_cur], gps, black, x, y))  # create new MapPoint object with stella_point
-                s_cur += 1
+        if s_cur < len(stella_points):
+            if g_cur == 0:
+                cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
+                post_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur + 1].time)
+                if cur_delta < post_delta:
+                    map_points.append(MapPoint(stella_points[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                    s_cur += 1
 
-        elif not (g_cur >= len(gps_points)) and stella_points[s_cur]:
-            prev_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur - 1].time)
-            cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
-            if cur_delta < prev_delta:
-                map_points.append(MapPoint(stella_points[s_cur], gps, x, y))  # create new MapPoint object with stella_point
-                s_cur += 1
+            elif g_cur < len(gps_points):
+                prev_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur - 1].time)
+                cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
+                if cur_delta < prev_delta:
+                    map_points.append(MapPoint(stella_points[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                    s_cur += 1
 
-        elif stella_points[s_cur]:
-            prev_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur - 1].time)
-            cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
-            post_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur + 1].time)
+            else:
+                prev_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur - 1].time)
+                cur_delta = abs(stella_points[s_cur].timestamp - gps.time)
+                post_delta = abs(stella_points[s_cur].timestamp - gps_points[g_cur + 1].time)
 
-            if cur_delta < prev_delta and cur_delta < post_delta:
-                map_points.append(MapPoint(stella_points[s_cur], gps, black, x, y))  # create new MapPoint object with stella_point
-                s_cur += 1
+                if cur_delta < prev_delta and cur_delta < post_delta:
+                    map_points.append(MapPoint(stella_points[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                    s_cur += 1
 
         g_cur += 1
         # color = set_color(stella)                         # create RGB color (type str)
         # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ', gps.longitude, color)   # and associated color
+    set_all_temps(map_points, stella_points)
 
     return map_points, width, height
 
@@ -143,7 +148,7 @@ def set_vs(stella_point):
     max_i = max(stella_point.vs_pows)
     rgb = black
     if max_i > 0:
-        rgb = Color.data_to_hex(stella_point.vs_pows)
+        rgb = Color.data_to_hex(stella_point.vs_pows, vis_wl)
 
     return rgb
 
@@ -151,20 +156,51 @@ def set_nir(stella_point):
     max_i = max(stella_point.nir_pows)
     rgb = black
     if max_i > 0:
-        rgb = Color.data_to_hex(stella_point.nir_pows)
+        rgb = Color.data_to_hex(stella_point.nir_pows, nir_wl)
 
     return rgb
 
-def set_temp(stella_point):
-    max_temp = 40.0
-    min_temp = -30.0
-    red = 0
-    green = 0
-    blue = 0
+def get_min_temp(stella_points):
+    min_temp = float(stella_points[0].surface_temp)
+    for s in stella_points:
+        if float(s.surface_temp) < min_temp:
+            min_temp = float(s.surface_temp)
+    return min_temp
 
+def get_max_temp(stella_points):
+    max_temp = float(stella_points[0].surface_temp)
+    for s in stella_points:
+        if float(s.surface_temp) > max_temp:
+            max_temp = float(s.surface_temp)
+    return max_temp
+
+def set_temp(stella_point, max_temp, min_temp):
+    # max_temp = 85.0
+    # min_temp = -40.0 #max and min the sensor can see
+
+    d_blue = np.array([0, 0, 128])    # 0
+    cyan = np.array([0, 255, 255])    # 0.25
+    yellow = np.array([255, 255, 0])  # 0.5
+    orange = np.array([255, 128, 0])  # 0.75
+    red = np.array([255, 0, 0])       # 1
+
+    color = []
     # convert temp to a percentage scale of 0 to 100
-    temp = (-1 * min_temp + float(stella_point.surface_temp))/(-1 * min_temp + max_temp)
+    temp = (float(stella_point.surface_temp) - min_temp)/(max_temp - min_temp)
 
+    if temp < 0.25:
+        color = (1 - temp / 0.25) * d_blue + (temp / 0.25) * cyan
+    elif temp < 0.5:
+        temp = temp - 0.25
+        color = (1 - temp / 0.25) * cyan + (temp / 0.25) * yellow
+    elif temp < 0.75:
+        temp = temp - 0.5
+        color = (1 - temp / 0.25) * yellow + (temp / 0.25) * orange
+    else:
+        temp = temp - 0.75
+        color = (1 - temp / 0.25) * orange + (temp / 0.25) * red
+
+    
     # OoR = out of range
     def OoR(color):
         if color < 0:
@@ -176,69 +212,56 @@ def set_temp(stella_point):
         return color
 
     # define the red value
-    def rgb_red(temp):
-        if temp <= 66:
-            red = 255
+    # def rgb_red(temp):
+        # if temp >= 66:
+        #     red = 255
 
-        else:
-            red = temp - 60
-            red = 329.698727446 * (red ** -0.1332047592)
-            red = OoR(red)
-
-        return red
+        # else:
+        #     red = temp - 60
+        #     red = 329.698727446 * (red ** -0.1332047592)
+        #     red = OoR(red)
 
     # define the green value
-    def rgb_green(temp):
-        if temp <= 66:
-            green = temp
-            green = 99.4708025861 * log(green) - 161.1195681661
+    # def rgb_green(temp):
+        # if temp <= 66:
+        #     green = temp
+        #     green = 99.4708025861 * log(green) - 161.1195681661
 
-        else:
-            green = temp - 60
-            green = 288.1221695283 * (green ** -0.0755148492)
+        # else:
+        #     green = temp - 60
+        #     green = 288.1221695283 * (green ** -0.0755148492)
 
-        green = OoR(green)
-
-        return green
-
+        # green = OoR(green)
+        
     # define the blue value
-    def rgb_blue(temp):
-        if temp >= 66:
-            blue = 255
+    # def rgb_blue(temp):
+        # if temp >= 66:
+        #     blue = 255
 
-        else:
-            if temp <= 19:
-                blue = 0
+        # else:
+        #     if temp <= 19:
+        #         blue = 0
 
-            else:
-                blue = temp - 10
-                blue = 138.5177312231 * log(blue) - 305.0447927307
-                blue = OoR(blue)
+        #     else:
+        #         blue = temp - 10
+        #         blue = 138.5177312231 * log(blue) - 305.0447927307
+        #         blue = OoR(blue)
 
-        return blue
+    # red = rgb_red(temp)
+    # green = rgb_green(temp)
+    # blue = rgb_blue(temp)
+    # return Color.rgb_to_hex([red, green, blue])
+    return Color.rgb_to_hex(color)
 
-    red = rgb_red(temp)
-    green = rgb_green(temp)
-    blue = rgb_blue(temp)
-    return Color.rgb_to_hex([red, green, blue])
 
+def set_all_temps(map_points, stella_points):
+    max_temp = get_max_temp(stella_points)
+    min_temp = get_min_temp(stella_points)
+    for m in map_points:
+        m.temp_rgb = set_temp(m.stella_point, max_temp, min_temp)
 
 """test function"""
 def print_mins(gps_points):
     min_lat = find_min_lat(gps_points)
     min_lon = find_min_lon(gps_points)
     print(min_lat, min_lon)
-
-
-# test for Sophia's computer
-# gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-# stella_points = StellaPoint.make_stella_points("Data Files/data.csv")
-# stella_points = StellaPoint.get_batch(stella_points, "1.X")
-# map_points = set_xy(gps_points, stella_points)
-#
-# for map in map_points:
-#     map.print_point()
-
-# # test for Ty's computer
-# gps_points = gpsPoint.read_drone_csv("Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv")
-# set_xy(gps_points)

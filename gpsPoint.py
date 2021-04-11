@@ -3,10 +3,11 @@
 # @brief:   gps_point object: object that holds the decimal gps location of the drone and the timestamp at which it was taken.
 #           __init__ parameters are the 1st, 2nd, and 3rd column (time, latitude, longitude) in the csv.
 #           functions outside the class process the csv vile into gps_points
-# last updated: 3/16/2021 by Sophia Novo-Gradac
+# last updated: 4/10/2021 by Marisa Loraas
 # @updates  median_points no longer needed. Code for this is commented out
 #           gps_point now holds the delta of time since the first data point. This is what will be compared to stella_point
 #           pandas no longer needed. commented out.
+#           added feet_since_takeoff attribute to GPS point
 # TODO:     add better error checking from drone data file
 
 from datetime import datetime
@@ -15,16 +16,18 @@ from statistics import median
 
 """gps_point holds necessary time and GPS data from the drone to compute the gps for the map"""
 class GpsPoint(object):
-    def __init__(self, milliseconds, time, latitude, longitude):
+    def __init__(self, milliseconds, time, latitude, longitude, feet_since_takeoff):
         super(GpsPoint, self).__init__()
         self.milliseconds = milliseconds    # milliseconds since takeoff
         self.time = time                    # datetime at which data was taken
         self.latitude = float(latitude)
         self.longitude = float(longitude)
+        self.feet_since_takeoff = float(feet_since_takeoff)
 
     """print data to terminal. for debugging"""
     def print_gps(self):
-        print(self.milliseconds, self.time, self.latitude, self.longitude)
+        print(self.milliseconds, self.time, self.latitude, self.longitude, self.feet_since_takeoff)
+
 
 """given a csv with the format:
     [milliseconds, time(utc), latitude, longitude, etc]
@@ -61,7 +64,7 @@ def read_drone_csv(drone_data):
         if len(gps_points) == 0:
             start = int(words[0])
 
-        gps_points.append(GpsPoint(int(words[0]) - start, time, words[2], words[3]))
+        gps_points.append(GpsPoint(int(words[0]) - start, time, words[2], words[3], words[4]))
 
         # debug print statement
         # gps_points[count].print_gps()

@@ -6,9 +6,9 @@
 # @updates  added colors for each type of map. (vs, nir, and temp)
 #           link map_points based on delta ms timestamps calculated in both gps and stella points
 #           colors are calculated on init in map_point object
+#           chopping points from takeoff/landing
 #
-# TODO:     consider chopping points from takeoff/landing
-#           consider any other data points from the drone that shoul be kept
+# TODO:     consider any other data points from the drone that shoul be kept
 #           define canvas_size by data
 #           build exception case for itnl dateline
 #           fix temp_rgb function (only displaying red right now?)
@@ -107,6 +107,12 @@ def set_xy(gps_points, stella_points, canvas_size):
         # if count >= len(stella_points):     # stop adding points after exhausting stella_point List
         #     print("Not enough Stella Objects")
         #     break
+
+        # skips over points that are recorded less than 1 foot off the ground
+        if gps.feet_since_takeoff < 1:
+            s_cur += 1
+            g_cur += 1
+            continue
 
         if s_cur < len(stella_points):
             if g_cur == 0:

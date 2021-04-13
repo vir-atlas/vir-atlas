@@ -2,12 +2,11 @@
 # 2/26/2021
 # @brief:   contains functions for translating various data into hex strings for color
 #           most deal with the process of translating irradiance values to rgb
-# last updated: 3/28/2021 by Sophia Novo-Gradac
-# @updates  removed functions that included altitude in calculations (solid_ang, data_to_spec, and data_to_hex)
-#           added average_color and hex_to_rgb
-#           added numpy and generally streamlined file
+# last updated: 4/12/2021 by Sophia Novo-Gradac
+# @updates  Moved false_color algorithm from Map_Point
+#           Moved OoR() from Map_Point
+#           Modified OoR to scale out of bounds values instead of setting to bounds
 # TODO:     infared works, but it might be desirable to define differently
-#           turn into utility class?
 
 #!/usr/bin/env python3
 import math
@@ -44,7 +43,6 @@ def spec_to_xyz(data, wl):
         Z += data[i] * z_fit_31(wl[i]) * wl[i]
 
     sum = X + Y + Z
-    # XYZ = [X / sum, Y / sum, Z / sum]
     return X/sum, Y/sum, Z/sum
 
 '''convert CIE 1931 XYZ values to linear RGB 
@@ -66,19 +64,31 @@ def gamma_correction(RGB):
             RGB[x] *= 12.92
         else:
             RGB[x] = 1.055 * (RGB[x] ** (1/2.4)) - 0.055
-        if RGB[x] < 0:
-            RGB[x] = 0
-        if RGB[x] > 1:
-            RGB[x] = 1
 
     RGB = scale_brightness(RGB)
     return RGB
 
+# OoR = out of range
+def OoR(RGB):
+    col_min = min(RGB)
+    if col_min < 0:
+        for i in range(3):
+            RGB[i] -= col_min
+    
+    scale = 255 / max(RGB)
+    if scale < 1:
+        for i in range(3):
+            RGB[i] *= scale
+        
+    return RGB
+    
 '''scale from sRGB to 32 bit color
     RGB values should be in range 0-1'''
 def scale_brightness(RGB):
     for x in range(3):
         RGB[x] *= 255
+
+    OoR(RGB)
     return RGB
 
 '''convert RGB given in list format to hex string'''
@@ -110,3 +120,30 @@ def average_color(colors):
 '''complete translation from data to RGB color'''
 def data_to_hex(data, wl):
     return rgb_to_hex(gamma_correction(xyz_to_rgb(spec_to_xyz(data, wl))))
+
+'''takes 3 floats and returns a false color RGB string
+value should be between min and max. Min and max are the bounds used for calculating the color'''
+def false_color(value, min, max):
+    d_blue = np.array([0, 0, 128])    # 0
+    cyan = np.array([0, 255, 255])    # 0.25
+    yellow = np.array([255, 255, 0])  # 0.5
+    orange = np.array([255, 128, 0])  # 0.75
+    red = np.array([255, 0, 0])       # 1
+
+    color = []
+    # convert temp to a percentage scale of 0 to 100
+    p = (value - min)/(max - min)
+
+    if p < 0.25:
+        color = (1 - p / 0.25) * d_blue + (p / 0.25) * cyan
+    elif p < 0.5:
+        p = p - 0.25
+        color = (1 - p / 0.25) * cyan + (p / 0.25) * yellow
+    elif p < 0.75:
+        p = p - 0.5
+        color = (1 - p / 0.25) * yellow + (p / 0.25) * orange
+    else:
+        p = p - 0.75
+        color = (1 - p / 0.25) * orange + (p / 0.25) * red
+
+    return rgb_to_hex(color)

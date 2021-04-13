@@ -2,17 +2,13 @@
 # 3/12/2021
 # @brief:   gps_point object: object that holds the decimal gps location of the drone and the timestamp at which it was taken.
 #           __init__ parameters are the 1st, 2nd, and 3rd column (time, latitude, longitude) in the csv.
-#           functions outside the class process the csv vile into gps_points
-# last updated: 4/10/2021 by Marisa Loraas
-# @updates  median_points no longer needed. Code for this is commented out
-#           gps_point now holds the delta of time since the first data point. This is what will be compared to stella_point
-#           pandas no longer needed. commented out.
-#           added feet_since_takeoff attribute to GPS point
+#           functions outside the class process the csv vile into gps_list
+# last updated: 4/12/2021 by Marisa Loraas
+# @updates  
 # TODO:     add better error checking from drone data file
 
 from datetime import datetime
 from statistics import median
-# import pandas as pd
 
 """gps_point holds necessary time and GPS data from the drone to compute the gps for the map"""
 class GpsPoint(object):
@@ -28,10 +24,9 @@ class GpsPoint(object):
     def print_gps(self):
         print(self.milliseconds, self.time, self.latitude, self.longitude, self.feet_since_takeoff)
 
-
 """given a csv with the format:
     [milliseconds, time(utc), latitude, longitude, etc]
-    read data into a list of gps_points"""
+    read data into a list of gps_list"""
 def read_drone_csv(drone_data):
 
     # Check that file can be read from
@@ -44,7 +39,7 @@ def read_drone_csv(drone_data):
 
     line = stream.readline() # skip first line of csv
 
-    gps_points = []
+    gps_list = []
 
     count = -1
     while True:
@@ -61,29 +56,28 @@ def read_drone_csv(drone_data):
         time = datetime.strptime(words[1], "%Y-%m-%d %H:%M:%S")
 
         #calculate milliseconds since takeoff
-        if len(gps_points) == 0:
+        if len(gps_list) == 0:
             start = int(words[0])
 
-        gps_points.append(GpsPoint(int(words[0]) - start, time, words[2], words[3], words[4]))
+        gps_list.append(GpsPoint(int(words[0]) - start, time, words[2], words[3], words[4]))
 
         # debug print statement
-        # gps_points[count].print_gps()
+        # gps_list[count].print_gps()
 
     stream.close()
 
-    # gps_points = median_points(gps_points)
+    # gps_list = median_points(gps_list)
 
-    return gps_points
-
+    return gps_list
 
 # this function finds the median value of all points in a GpsPoint List with matching timestamps and returns
 # a new GpsPoint List that has been stripped of "duplicate" timestamp samples
-# def median_points(gps_points):
+# def median_points(gps_list):
 #
-#     # convert gps_points List into the data DataFrame so we can apply the median aggregation operation and remove
+#     # convert gps_list List into the data DataFrame so we can apply the median aggregation operation and remove
 #     # extra sample data
 #     variables = ["time", "latitude", "longitude"]
-#     data = pd.DataFrame([[getattr(i, j) for j in variables] for i in gps_points], columns=variables)
+#     data = pd.DataFrame([[getattr(i, j) for j in variables] for i in gps_list], columns=variables)
 #     df = data.groupby('time', as_index=False).agg({'latitude': median, 'longitude': median})
 #
 #     # convert the dataframe back into a GpsPoint List

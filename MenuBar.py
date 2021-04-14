@@ -1,4 +1,4 @@
-# @ authors Brynn
+# @authors Brynn
 # @date 4/13/21
 # @brief Houses all components and functions of the top menu
 # @todo fill in functions

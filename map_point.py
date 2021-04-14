@@ -10,18 +10,22 @@
 import gpsPoint
 import StellaPoint
 import Color as col
-from math import tan 
+from math import tan
 import numpy as np
 import datetime
 
-vis_wl = [450, 500, 550, 570, 600, 650] #visual wavelengths taken by STELLA are constant
-nir_wl = [610, 680, 730, 760, 810, 860] #near infared wavelengths taken by STELLA are constant
+# visual wavelengths taken by STELLA are constant
+vis_wl = [450, 500, 550, 570, 600, 650]
+# near infared wavelengths taken by STELLA are constant
+nir_wl = [610, 680, 730, 760, 810, 860]
 black = "#000000"
+
 
 class MapPoint:
     """map_point holds necessary info to put point on map.
     color = color to display
     x,y = pixel to display on"""
+
     def __init__(self, stella_point, gps_point, x, y):
         super(MapPoint, self).__init__()
         self.stella_point = stella_point        # added new stella_point attribute
@@ -31,14 +35,20 @@ class MapPoint:
         self.temp_rgb = "None"
         self.x = x
         self.y = y
-        self.confidence = gps_point.feet_since_takeoff * tan(0.349066) #radius of data area. Aperature is +- 20 degrees (0.349 rads)
+        # radius of data area. Aperature is +- 20 degrees (0.349 rads)
+        self.confidence = gps_point.feet_since_takeoff * tan(0.349066)
 
     """print data to terminal. for debugging"""
+
     def print_point(self):
-        # print(self.stella_point.timestamp, self.gps_point.time, self.color, self.x, self.y)  # stella_point.timestamp may not print
+        # print(self.stella_point.timestamp, self.gps_point.time, self.color,
+        # self.x, self.y)  # stella_point.timestamp may not print
         print(self.vis_rgb, self.nir_rgb, self.x, self.y)
 
+
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
+
+
 def find_min_lat(gps_list):
     num_points = len(gps_list)
     min = gps_list[0].latitude
@@ -46,6 +56,7 @@ def find_min_lat(gps_list):
         if gps_list[i].latitude < min:
             min = gps_list[i].latitude
     return min
+
 
 def find_min_lon(gps_list):
     num_points = len(gps_list)
@@ -55,6 +66,7 @@ def find_min_lon(gps_list):
             min = gps_list[i].longitude
     return min
 
+
 def find_max_lat(gps_list):
     num_points = len(gps_list)
     max = gps_list[0].latitude
@@ -62,6 +74,7 @@ def find_max_lat(gps_list):
         if gps_list[i].latitude > max:
             max = gps_list[i].latitude
     return max
+
 
 def find_max_lon(gps_list):
     num_points = len(gps_list)
@@ -71,8 +84,11 @@ def find_max_lon(gps_list):
             max = gps_list[i].longitude
     return max
 
+
 """Scales to given canvas_size
 returns list of map_list and the width and height of the canvas"""
+
+
 def set_xy(gps_list, stella_list, canvas_size):
 
     min_lat = find_min_lat(gps_list)
@@ -82,16 +98,16 @@ def set_xy(gps_list, stella_list, canvas_size):
 
     map_list = []
 
-    if (max_lat - min_lat) >=  (max_lon - min_lon):
+    if (max_lat - min_lat) >= (max_lon - min_lon):
         delta = max_lat - min_lat
     else:
         delta = max_lon - min_lon
 
     scale = canvas_size / delta
 
-    height = (max_lat - min_lat) * scale #canvas height
-    width = (max_lon - min_lon)* scale #canvas width
-    #one of the above will be equal to canvas_size depending on shape of data
+    height = (max_lat - min_lat) * scale  # canvas height
+    width = (max_lon - min_lon) * scale  # canvas width
+    # one of the above will be equal to canvas_size depending on shape of data
 
     s_cur = 0
     g_cur = 0
@@ -113,30 +129,38 @@ def set_xy(gps_list, stella_list, canvas_size):
         if s_cur < len(stella_list):
             if g_cur == 0:
                 cur_delta = abs(stella_list[s_cur].timestamp - gps.time)
-                post_delta = abs(stella_list[s_cur].timestamp - gps_list[g_cur + 1].time)
+                post_delta = abs(
+                    stella_list[s_cur].timestamp - gps_list[g_cur + 1].time)
                 if cur_delta < post_delta:
-                    map_list.append(MapPoint(stella_list[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                    # create new MapPoint object with stella_point
+                    map_list.append(MapPoint(stella_list[s_cur], gps, x, y))
                     s_cur += 1
 
             elif g_cur < len(gps_list):
-                prev_delta = abs(stella_list[s_cur].timestamp - gps_list[g_cur - 1].time)
+                prev_delta = abs(
+                    stella_list[s_cur].timestamp - gps_list[g_cur - 1].time)
                 cur_delta = abs(stella_list[s_cur].timestamp - gps.time)
                 if cur_delta < prev_delta:
-                    map_list.append(MapPoint(stella_list[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                    # create new MapPoint object with stella_point
+                    map_list.append(MapPoint(stella_list[s_cur], gps, x, y))
                     s_cur += 1
 
             else:
-                prev_delta = abs(stella_list[s_cur].timestamp - gps_list[g_cur - 1].time)
+                prev_delta = abs(
+                    stella_list[s_cur].timestamp - gps_list[g_cur - 1].time)
                 cur_delta = abs(stella_list[s_cur].timestamp - gps.time)
-                post_delta = abs(stella_list[s_cur].timestamp - gps_list[g_cur + 1].time)
+                post_delta = abs(
+                    stella_list[s_cur].timestamp - gps_list[g_cur + 1].time)
 
                 if cur_delta < prev_delta and cur_delta < post_delta:
-                    map_list.append(MapPoint(stella_list[s_cur], gps, x, y))  # create new MapPoint object with stella_point
+                    # create new MapPoint object with stella_point
+                    map_list.append(MapPoint(stella_list[s_cur], gps, x, y))
                     s_cur += 1
 
         g_cur += 1
         # color = set_color(stella)                         # create RGB color (type str)
-        # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ', gps.longitude, color)   # and associated color
+        # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ',
+        # gps.longitude, color)   # and associated color
     set_all_temps(map_list, stella_list)
 
     return map_list, width, height, max_lat - min_lat
@@ -146,6 +170,8 @@ def set_xy(gps_list, stella_list, canvas_size):
     currently handles workaround where all values are 0"""
 """pull irradiance values from a stella_point object
     calls col.data_to_hex() to gather the RGB value (of type str) and return it to calling method."""
+
+
 def set_vis(stella_point):
     max_i = max(stella_point.vis_pows)
     rgb = black
@@ -153,6 +179,7 @@ def set_vis(stella_point):
         rgb = col.data_to_hex(stella_point.vis_pows, vis_wl)
 
     return rgb
+
 
 def set_nir(stella_point):
     max_i = max(stella_point.nir_pows)
@@ -162,12 +189,14 @@ def set_nir(stella_point):
 
     return rgb
 
+
 def get_min_temp(stella_list):
     min_temp = float(stella_list[0].surface_temp)
     for s in stella_list:
         if float(s.surface_temp) < min_temp:
             min_temp = float(s.surface_temp)
     return min_temp
+
 
 def get_max_temp(stella_list):
     max_temp = float(stella_list[0].surface_temp)
@@ -176,10 +205,12 @@ def get_max_temp(stella_list):
             max_temp = float(s.surface_temp)
     return max_temp
 
+
 def set_temp(stella_point, min_temp, max_temp):
     # max_temp = 85.0
     # min_temp = -40.0 #max and min the sensor can see
     col.false_color(stella_point.surface_temp, min_temp, max_temp)
+
 
 def set_all_temps(map_list, stella_list):
     max_temp = get_max_temp(stella_list)
@@ -187,11 +218,15 @@ def set_all_temps(map_list, stella_list):
     for m in map_list:
         set_temp(m.stella_point, min_temp, max_temp)
 
+
 """test function"""
+
+
 def print_mins(gps_list):
     min_lat = find_min_lat(gps_list)
     min_lon = find_min_lon(gps_list)
     print(min_lat, min_lon)
+
 
 def detect_batch(gps_list, stella_list):
     time = gps_list[0].time
@@ -205,8 +240,11 @@ def detect_batch(gps_list, stella_list):
             batch = s.batch
     return batch
 
+
 '''do all function for MapPoint.
-use to process all data''' 
+use to process all data'''
+
+
 def init_map_list(gps_file, stella_file, canvas_size):
     gps_list = gpsPoint.read_drone_csv(gps_file)
     stella_list = StellaPoint.make_stella_list(stella_file)
@@ -215,5 +253,6 @@ def init_map_list(gps_file, stella_file, canvas_size):
 
     stella_list = StellaPoint.get_batch(stella_list, batch)
 
-    map_list, width, height, delta_lat = set_xy(gps_list, stella_list, canvas_size)
+    map_list, width, height, delta_lat = set_xy(
+        gps_list, stella_list, canvas_size)
     return map_list, width, height, delta_lat

@@ -12,11 +12,30 @@
 from datetime import datetime
 # import csv
 
+
 class StellaPoint:
-    def __init__(self, batch, day, timestamp, decimal_hour, milliseconds, surface_temp, surface_temp_error_bar,
-                 air_temp_units, air_temp, air_temp_error_bar, relative_humidity, relative_humidity_error_bar,
-                 air_pressure_hpa, air_pressure_error_bar, altitude_m_uncal, altitude_error_bar, visible_spectrum_error_bar,
-                 vis_pows, nir_spectrum_error_bar, nir_pows):
+    def __init__(
+            self,
+            batch,
+            day,
+            timestamp,
+            decimal_hour,
+            milliseconds,
+            surface_temp,
+            surface_temp_error_bar,
+            air_temp_units,
+            air_temp,
+            air_temp_error_bar,
+            relative_humidity,
+            relative_humidity_error_bar,
+            air_pressure_hpa,
+            air_pressure_error_bar,
+            altitude_m_uncal,
+            altitude_error_bar,
+            visible_spectrum_error_bar,
+            vis_pows,
+            nir_spectrum_error_bar,
+            nir_pows):
         self.batch = batch
         self.day = day
         self.timestamp = timestamp
@@ -47,19 +66,42 @@ class StellaPoint:
     #   self.vis_waveband_units = vis_waveband_units
     #   self.vis_power_units = vis_power_units
         self.vis_error_bar = visible_spectrum_error_bar
-        self.vis_pows = vis_pows #changed to an array of the powers. wavebands is constant and we dont need to pull it.
+        # changed to an array of the powers. wavebands is constant and we dont
+        # need to pull it.
+        self.vis_pows = vis_pows
         self.nir_spectrum_error_bar = nir_spectrum_error_bar
-        self.nir_pows = nir_pows #changed to an array of the powers. wavebands is constant and we dont need to pull it.
-
+        # changed to an array of the powers. wavebands is constant and we dont
+        # need to pull it.
+        self.nir_pows = nir_pows
 
     """print data to terminal. for debugging"""
+
     def print_stella(self):
-        print(self.batch, self.day, self.timestamp, self.dh, self.ms, self.surface_temp, self.st_error_bar, self.air_temp,
-              self.at_error_bar, self.rel_humid, self.rh_error_bar, self.air_pressure_hpa, self.ap_error_bar,
-              self.altitude_m_uncal, self.altitude_error_bar, self.vis_error_bar, self.vis_pows, self.nir_spectrum_error_bar,
-              self.nir_pows)
+        print(
+            self.batch,
+            self.day,
+            self.timestamp,
+            self.dh,
+            self.ms,
+            self.surface_temp,
+            self.st_error_bar,
+            self.air_temp,
+            self.at_error_bar,
+            self.rel_humid,
+            self.rh_error_bar,
+            self.air_pressure_hpa,
+            self.ap_error_bar,
+            self.altitude_m_uncal,
+            self.altitude_error_bar,
+            self.vis_error_bar,
+            self.vis_pows,
+            self.nir_spectrum_error_bar,
+            self.nir_pows)
+
 
 """find a way to pull out the batches so user can select which one"""
+
+
 def make_stella_list(file):
 
     # Check that file can be read from
@@ -70,13 +112,14 @@ def make_stella_list(file):
         print("Error in reading stella input file", no_file)
         exit()
 
+    stella_output.readline()  # rid header line
 
-    stella_output.readline() # rid header line
-
-    input_file = stella_output.readlines() # Read all contents from file into a List object, close file
+    # Read all contents from file into a List object, close file
+    input_file = stella_output.readlines()
     stella_output.close()
 
-    # Subdivide lines into check if the length of each list in points is correct
+    # Subdivide lines into check if the length of each list in points is
+    # correct
     points = list()
     for line in input_file:
         points.append(str(line).rstrip().split(','))
@@ -102,7 +145,8 @@ def make_stella_list(file):
             except ValueError:
                 continue
 
-    #  stella_list: list of all StellaPoint objects in the order given by the file
+    # stella_list: list of all StellaPoint objects in the order given by the
+    # file
     stella_list = list()
     batches = []
     cur_batch = ""
@@ -113,19 +157,35 @@ def make_stella_list(file):
             batches.append(cur_batch)
             # print(start)
 
-        ms = (float(point[3]) - start)* 60 * 60 * 1000
+        ms = (float(point[3]) - start) * 60 * 60 * 1000
         vis_pows = [float(point[23]), float(point[25]), float(point[27]),
                     float(point[29]), float(point[31]), float(point[33])]
         nir_pows = [float(point[38]), float(point[40]), float(point[42]),
                     float(point[44]), float(point[46]), float(point[48])]
-        stella = StellaPoint(point[0], point[1], point[2], point[3], ms, point[5],
-                             point[6], point[7], point[8], point[9],
-                             point[11], point[12],
-                             point[14], point[15],
-                             point[17], point[18],
-                             point[21], vis_pows, point[36], nir_pows)
+        stella = StellaPoint(
+            point[0],
+            point[1],
+            point[2],
+            point[3],
+            ms,
+            point[5],
+            point[6],
+            point[7],
+            point[8],
+            point[9],
+            point[11],
+            point[12],
+            point[14],
+            point[15],
+            point[17],
+            point[18],
+            point[21],
+            vis_pows,
+            point[36],
+            nir_pows)
 
-        stella.timestamp = datetime.strptime(stella.timestamp, "%Y%m%dT%H%M%SZ") # Sample 20210225T203501Z
+        stella.timestamp = datetime.strptime(
+            stella.timestamp, "%Y%m%dT%H%M%SZ")  # Sample 20210225T203501Z
         stella_list.append(stella)
 
         # stella.print_stella() #for error checking
@@ -133,7 +193,10 @@ def make_stella_list(file):
     # print(batches)
     return stella_list
 
+
 """returns a new list of stella_list based on their batch"""
+
+
 def get_batch(stella_list, batch):
     points = []
     for stella in stella_list:
@@ -146,5 +209,5 @@ def get_batch(stella_list, batch):
 # stella_point = make_stella_list(file)
 # print('Size of Stella Point Object: ', len(stella_point))
 
-#Test StellaPoint -- Sophia
+# Test StellaPoint -- Sophia
 # stella_list = make_stella_list("Data Files/data.csv")

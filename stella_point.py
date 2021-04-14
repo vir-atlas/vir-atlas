@@ -48,35 +48,9 @@ class StellaPoint:
     #   self.vis_power_units = vis_power_units
         self.vis_error_bar = visible_spectrum_error_bar
         self.vis_pows = vis_pows #changed to an array of the powers. wavebands is constant and we dont need to pull it.
-    #   self.vis_waveband_450 = vis_waveband_450  # <-- check
-    #   self.vis_power_450 = vis_power_450
-    #   self.vis_waveband_500 = vis_waveband_500  # <-- check
-    #   self.vis_power_500 = vis_power_500
-    #   self.vis_waveband_550 = vis_waveband_550  # <-- check
-    #   self.vis_power_550 = vis_power_550
-    #   self.vis_waveband_570 = vis_waveband_570
-    #   self.vis_power_570 = vis_power_570
-    #   self.vis_waveband_600 = vis_waveband_600  # <-- check
-    #   self.vis_power_600 = vis_power_600
-    #   self.vis_waveband_650 = vis_waveband_650
-    #   self.vis_power_650 = vis_power_650
-    #   self.nir_spectrum_mark = nir_spectrum_mark
-    #   self.nir_waveband_units = nir_waveband_units
-    #   self.nir_power_units = nir_power_units
         self.nir_spectrum_error_bar = nir_spectrum_error_bar
         self.nir_pows = nir_pows #changed to an array of the powers. wavebands is constant and we dont need to pull it.
-    #   self.nir_waveband_610 = nir_waveband_610  # <--Check
-    #   self.nir_power_610 = nir_power_610
-    #   self.nir_waveband_680 = nir_waveband_680  # <--Check
-    #   self.nir_power_680 = nir_power_680
-    #   self.nir_waveband_730 = nir_waveband_730  # <-- Check
-    #   self.nir_power_730 = nir_power_730
-    #   self.nir_waveband_760 = nir_waveband_760  # <--Check
-    #   self.nir_power_760 = nir_power_760
-    #   self.nir_waveband_810 = nir_waveband_810  # <--Check
-    #   self.nir_power_810 = nir_power_810
-    #   self.nir_waveband_860 = nir_waveband_860  # <-- check
-    #   self.nir_power_860 = nir_power_860
+
 
     """print data to terminal. for debugging"""
     def print_stella(self):
@@ -158,22 +132,6 @@ def make_stella_list(file):
 
     # print(batches)
     return stella_list
-
-
-# def read_file(file, limit):
-#
-#     stella_output = None
-#
-#     try:
-#         stella_output = open(file, 'r')  # check that file can be opened
-#     except IOError as no_file:
-#         print("Error in reading stella input file", no_file)
-#         exit()
-#
-#     input_file =
-#
-#     stella_output.close()
-
 
 """returns a new list of stella_list based on their batch"""
 def get_batch(stella_list, batch):

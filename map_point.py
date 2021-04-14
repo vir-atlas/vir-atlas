@@ -7,7 +7,7 @@
 #           added detect_batch() which finds the correct batch based on gps data
 # TODO:     build exception case for itnl dateline
 
-import gpsPoint
+import gps_point
 import StellaPoint
 import Color as col
 from math import tan

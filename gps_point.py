@@ -4,15 +4,23 @@
 #           __init__ parameters are the 1st, 2nd, and 3rd column (time, latitude, longitude) in the csv.
 #           functions outside the class process the csv vile into gps_list
 # last updated: 4/12/2021 by Marisa Loraas
-# @updates  
+# @updates
 # TODO:     add better error checking from drone data file
 
 from datetime import datetime
 from statistics import median
 
 """gps_point holds necessary time and GPS data from the drone to compute the gps for the map"""
+
+
 class GpsPoint(object):
-    def __init__(self, milliseconds, time, latitude, longitude, feet_since_takeoff):
+    def __init__(
+            self,
+            milliseconds,
+            time,
+            latitude,
+            longitude,
+            feet_since_takeoff):
         super(GpsPoint, self).__init__()
         self.milliseconds = milliseconds    # milliseconds since takeoff
         self.time = time                    # datetime at which data was taken
@@ -21,12 +29,21 @@ class GpsPoint(object):
         self.feet_since_takeoff = float(feet_since_takeoff)
 
     """print data to terminal. for debugging"""
+
     def print_gps(self):
-        print(self.milliseconds, self.time, self.latitude, self.longitude, self.feet_since_takeoff)
+        print(
+            self.milliseconds,
+            self.time,
+            self.latitude,
+            self.longitude,
+            self.feet_since_takeoff)
+
 
 """given a csv with the format:
     [milliseconds, time(utc), latitude, longitude, etc]
     read data into a list of gps_list"""
+
+
 def read_drone_csv(drone_data):
 
     # Check that file can be read from
@@ -37,7 +54,7 @@ def read_drone_csv(drone_data):
         print("Error in reading drone data file", no_file)
         exit()
 
-    line = stream.readline() # skip first line of csv
+    line = stream.readline()  # skip first line of csv
 
     gps_list = []
 
@@ -55,11 +72,12 @@ def read_drone_csv(drone_data):
         # we can compare it against others
         time = datetime.strptime(words[1], "%Y-%m-%d %H:%M:%S")
 
-        #calculate milliseconds since takeoff
+        # calculate milliseconds since takeoff
         if len(gps_list) == 0:
             start = int(words[0])
 
-        gps_list.append(GpsPoint(int(words[0]) - start, time, words[2], words[3], words[4]))
+        gps_list.append(
+            GpsPoint(int(words[0]) - start, time, words[2], words[3], words[4]))
 
         # debug print statement
         # gps_list[count].print_gps()

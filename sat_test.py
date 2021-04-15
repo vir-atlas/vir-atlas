@@ -4,6 +4,7 @@
 # TODO: add a way to specify where the file is saved and what it gets named
 
 from satsearch import Search
+from satstac import ItemCollection
 from datetime import date
 
 def retrieveSatelliteImage(min_lon, min_lat, max_lon, max_lat):
@@ -12,18 +13,15 @@ def retrieveSatelliteImage(min_lon, min_lat, max_lon, max_lat):
 	end_date = date.today().strftime('%Y-%m-%dT00:00:00Z')
 
 	search = Search(bbox=[min_lon, min_lat, max_lon, max_lat],
-					datetime=start_date + '/' + end_date)
-	# print('bbox search: %s items' % search.found())
+					datetime=start_date + '/' + end_date,
+					url='https://earth-search.aws.element84.com/v0')
 
 	items = search.items(limit=1)
 
 	keys = [k for i in items for k in i.assets]
 
-	# print(items.summary())
+	items[0].download(
+		keys[0],
+		filename_template='satellite_images/image')
 
-	# for item in items:
-	# 	print(item)
-
-	# print(items[0].download(str(items[0])))
-
-	items[0].download(keys[0])
+retrieveSatelliteImage(-110, 39.5, -109, 40.5)

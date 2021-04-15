@@ -34,7 +34,7 @@ class StellaFrame(tk.Frame):
         # Create the default empty canvas
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='grey')
 
-    # This needs to be called to display a map
+    # This needs to be called after a file is loaded to display the map
     def set_canvas(self):
         if self.mode == 'temp':
             self.canvas = self.temp_canvas

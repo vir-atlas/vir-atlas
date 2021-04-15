@@ -167,6 +167,7 @@ def create_circle(map_point, ftpix, mode, canvasName): #center coordinates, radi
     x = map_point.x
     y = map_point.y
     radius = map_point.confidence * ftpix
+    color = '#000000'
     if mode == 'vis':
         color = map_point.vis_rgb
     if mode == 'nir':
@@ -176,7 +177,7 @@ def create_circle(map_point, ftpix, mode, canvasName): #center coordinates, radi
     canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill = color)
 
 def get_map(gps_file, stella_file, canvas_size, resolution, mode):
-    map_list, width, height = map_point.init_map_list(gps_file, stella_file, canvas_size)
+    map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
     
     width = round(width/resolution) * resolution
     height = round(height/resolution) * resolution
@@ -201,36 +202,27 @@ def feet_to_pix(delta_lat, height):
     delta_ft = delta_lat * 60 * 6076.12
     return height / delta_ft
 
-def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode):
+def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode, canvas):
     map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
     
     width = round(width/resolution) * resolution
     height = round(height/resolution) * resolution
 
     ftpix = feet_to_pix(delta_lat, height)
-    
-    window = tk.Tk()
-    map = tk.Canvas(window, width = width, height = height)
-    map.pack()
 
     for m in map_list:
-        create_circle(m, ftpix, mode, map)
+        create_circle(m, ftpix, mode, canvas)
 
-    draw_flight_path(map_list, map)
-    window.mainloop()
-    return map
+    draw_flight_path(map_list, canvas)
+    return canvas
 
-# gps_file = r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv'
-# stella_file = r'vir-atlas-master\Data Files\data.txt'
-# # map = get_map(gps_file, stella_file, canvas_size, resolution, 'vis')
-# map = get_map_alt(gps_file, stella_file, canvas_size, resolution, 'vis')
 
 # def main():
 #     gps_points = gpsPoint.read_drone_csv(r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
 #     stella_points = StellaPoint.make_stella_points(r'vir-atlas-master\Data Files\data.csv')
 
 #     stella_points = StellaPoint.get_batch(stella_points, "1.X")
-#     map_list,width,height = map_point.set_xy(gps_points, stella_points, canvas_size)
+#     map_list,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
 
         # width = round(width/resolution) * resolution
         # height = round(height/resolution) * resolution

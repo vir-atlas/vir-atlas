@@ -16,12 +16,16 @@ def retrieveSatelliteImage(min_lon, min_lat, max_lon, max_lat):
 					datetime=start_date + '/' + end_date,
 					url='https://earth-search.aws.element84.com/v0')
 
+	print(search)
+
 	items = search.items(limit=1)
 
 	keys = [k for i in items for k in i.assets]
 
-	items[0].download(
+	filename = items[0].download(
 		keys[0],
 		filename_template='satellite_images/image')
 
-retrieveSatelliteImage(-110, 39.5, -109, 40.5)
+	return filename
+
+print(retrieveSatelliteImage(-110, 39.5, -109, 40.5))

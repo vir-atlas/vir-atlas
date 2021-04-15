@@ -4,6 +4,7 @@
 # @todo fill in functions
 
 import tkinter as tk
+from tkinter import filedialog
 import sys
 
 
@@ -29,7 +30,7 @@ class MenuBar(tk.Menu):
         # Dropdown menu of file options: open, save, exit
         file_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="File", underline=0, menu=file_menu)
-        file_menu.add_command(label="Open File", underline=1, command=self.quit)
+        file_menu.add_command(label="Open File", underline=1, command=self.open_files)
         file_menu.add_command(label="Save File", underline=1, command=self.quit)
         file_menu.add_command(label="Exit", underline=1, command=self.quit)
 
@@ -54,6 +55,20 @@ class MenuBar(tk.Menu):
     # Closes the window
     def quit(self):
         sys.exit(0)
+
+    # Opens the stella and gps data files.
+    def open_files(self):
+        # @TODO We need to make sure the starting directory works on all machines
+        self.master.set_stella_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE',
+                                                               title="Select STELLA data",
+                                                               filetypes=(("Text Files", "*.txt"),)))
+        self.master.set_gps_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
+                                                            title="Select GPS data",
+                                                            filetypes=(("CSV Files", "*.csv"),)))
+        self.master.update()
+        self.master.stella_frame.load_canvases()
+        self.master.stella_frame.set_canvases()
+        self.master.mainloop()
 
 
 # Window for testing purposes only. Shows how to create a MenuBar object.

@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fc553022-3dad-4323-a06c-e201116d29a2" name="Default Changelist" comment="Fixed import names in backend -Brynn">
+    <list default="true" id="fc553022-3dad-4323-a06c-e201116d29a2" name="Default Changelist" comment="Working on displaying a default canvas for stella_frame.py -Brynn">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu_bar.py" beforeDir="false" afterPath="$PROJECT_DIR$/menu_bar.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stella_frame.py" beforeDir="false" afterPath="$PROJECT_DIR$/stella_frame.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +54,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.stella_frame">
+  <component name="RunManager" selected="Python.main (1)">
     <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vir-atlas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -124,8 +125,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.stella_frame" />
         <item itemvalue="Python.main (1)" />
+        <item itemvalue="Python.stella_frame" />
         <item itemvalue="Python.vir-atlas" />
       </list>
     </recent_temporary>
@@ -174,7 +175,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618457479928</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Working on displaying a default canvas for stella_frame.py -Brynn">
+      <created>1618458755469</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1618458755469</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -215,6 +223,7 @@
     <MESSAGE value="implemented about() in menubar.py, just as a test run before implementing change_map.py - Tenise" />
     <MESSAGE value="First draft of stella_frame.py -Brynn" />
     <MESSAGE value="Fixed import names in backend -Brynn" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed import names in backend -Brynn" />
+    <MESSAGE value="Working on displaying a default canvas for stella_frame.py -Brynn" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on displaying a default canvas for stella_frame.py -Brynn" />
   </component>
 </project>

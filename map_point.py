@@ -9,7 +9,7 @@
 
 import gps_point
 import stella_point
-import Color as col
+import color as col
 from math import tan
 import numpy as np
 import datetime

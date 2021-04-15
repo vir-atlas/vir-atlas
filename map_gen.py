@@ -9,8 +9,8 @@
 #           determine aesthetics
 
 import tkinter as tk
-import MapPoint
-import Color as col
+import map_point
+import color as col
 import math
 
 canvas_size = 1000 #test canvas size
@@ -176,7 +176,7 @@ def create_circle(map_point, ftpix, mode, canvasName): #center coordinates, radi
     canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill = color)
 
 def get_map(gps_file, stella_file, canvas_size, resolution, mode):
-    map_list, width, height = MapPoint.init_map_list(gps_file, stella_file, canvas_size)
+    map_list, width, height = map_point.init_map_list(gps_file, stella_file, canvas_size)
     
     width = round(width/resolution) * resolution
     height = round(height/resolution) * resolution
@@ -202,7 +202,7 @@ def feet_to_pix(delta_lat, height):
     return height / delta_ft
 
 def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode):
-    map_list, width, height, delta_lat = MapPoint.init_map_list(gps_file, stella_file, canvas_size)
+    map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
     
     width = round(width/resolution) * resolution
     height = round(height/resolution) * resolution
@@ -230,7 +230,7 @@ def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode):
 #     stella_points = StellaPoint.make_stella_points(r'vir-atlas-master\Data Files\data.csv')
 
 #     stella_points = StellaPoint.get_batch(stella_points, "1.X")
-#     map_list,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
+#     map_list,width,height = map_point.set_xy(gps_points, stella_points, canvas_size)
 
         # width = round(width/resolution) * resolution
         # height = round(height/resolution) * resolution

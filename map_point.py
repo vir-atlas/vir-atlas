@@ -8,7 +8,7 @@
 # TODO:     build exception case for itnl dateline
 
 import gps_point
-import StellaPoint
+import stella_point
 import Color as col
 from math import tan
 import numpy as np

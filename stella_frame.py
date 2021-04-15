@@ -1,7 +1,7 @@
 # @authors Brynn and Frank
 # @date 4/14/21
 # @brief Everything within the STELLA map frame
-# @TODO everything lol
+# @TODO make sure the actual maps display
 
 import tkinter as tk
 import map_gen
@@ -18,21 +18,21 @@ class StellaFrame(tk.Frame):
         self.canvas_size = 500
         self.width = 500
         self.height = 500
-        self.resolution = 100
+        self.resolution = 10
 
         # set the default display mode
         self.mode = 'temp'
 
         # Create the default empty canvas
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='white')
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='black')
+        self.canvas.pack()
 
         # initialize all three canvases
         self.nir_canvas = self.canvas
         self.vis_canvas = self.canvas
         self.temp_canvas = self.canvas
 
-        self.canvas.place()
-
+    # This needs to be called after a file is loaded!
     def load_canvases(self):
         # initialize all three canvases
         self.nir_canvas = map_gen.get_map(self.master.gps_file, self.master.stella_file,
@@ -41,8 +41,9 @@ class StellaFrame(tk.Frame):
                                           self.canvas_size, self.resolution, 'vis')
         self.temp_canvas = map_gen.get_map(self.master.gps_file, self.master.stella_file,
                                            self.canvas_size, self.resolution, 'temp')
+        print("Canvases Loaded!")
 
-    # This needs to be called after a file is loaded to display the map
+    # This needs to be called to add the canvas to the frame
     def set_canvas(self):
         if self.mode == 'temp':
             self.canvas = self.temp_canvas
@@ -52,10 +53,11 @@ class StellaFrame(tk.Frame):
             self.canvas = self.nir_canvas
 
         # bound the scrolling region (needs work?)
-        # @TODO: Need to figure out what to use in place of window_width
+        # @TODO: Need to figure out what to use in place of window_width??
         self.canvas.configure(scrollregion=(0, 0, self.width, self.height))
 
         # place the canvas on the frame
+        self.canvas.pack()
         self.canvas.place()
 
         # This is what enables using the mouse:

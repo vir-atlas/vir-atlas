@@ -26,6 +26,14 @@ class Root(tk.Tk):
 
         # Add the stella_frame to the main window
         self.stella_frame = stella_frame.StellaFrame(self)
+        self.stella_frame.set_canvas()
+        self.stella_frame.place(x=20, y=20)
+
+    def set_stella_data(self, file):
+        self.stella_file = file
+
+    def set_gps_data(self, file):
+        self.gps_file = file
 
 
 if __name__ == "__main__":

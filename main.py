@@ -14,6 +14,8 @@ class Root(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
+        self.geometry('810x560')
+
         # Initialize data files
         self.stella_file = 0
         self.gps_file = 0

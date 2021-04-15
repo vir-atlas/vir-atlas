@@ -20,19 +20,27 @@ class StellaFrame(tk.Frame):
         self.height = 500
         self.resolution = 100
 
-        # initialize all three canvases
-        self.nir_canvas = map_gen.get_map(master.gps_file, master.stella_file,
-                                          self.canvas_size, self.resolution, 'nir')
-        self.vis_canvas = map_gen.get_map(master.gps_file, master.stella_file,
-                                          self.canvas_size, self.resolution, 'vis')
-        self.temp_canvas = map_gen.get_map(master.gps_file, master.stella_file,
-                                           self.canvas_size, self.resolution, 'temp')
-
         # set the default display mode
         self.mode = 'temp'
 
         # Create the default empty canvas
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='grey')
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='white')
+
+        # initialize all three canvases
+        self.nir_canvas = self.canvas
+        self.vis_canvas = self.canvas
+        self.temp_canvas = self.canvas
+
+        self.canvas.place()
+
+    def load_canvases(self):
+        # initialize all three canvases
+        self.nir_canvas = map_gen.get_map(self.master.gps_file, self.master.stella_file,
+                                          self.canvas_size, self.resolution, 'nir')
+        self.vis_canvas = map_gen.get_map(self.master.gps_file, self.master.stella_file,
+                                          self.canvas_size, self.resolution, 'vis')
+        self.temp_canvas = map_gen.get_map(self.master.gps_file, self.master.stella_file,
+                                           self.canvas_size, self.resolution, 'temp')
 
     # This needs to be called after a file is loaded to display the map
     def set_canvas(self):
@@ -84,4 +92,3 @@ class StellaFrame(tk.Frame):
     def zoomer_m(self, event):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-

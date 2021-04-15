@@ -14,12 +14,16 @@ class Root(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
+        # Initialize data files
+        self.stella_file = 0
+        self.gps_file = 0
+
         # Add the menu_bar to the main window
         menu_bar = menu.MenuBar(self)
         self.config(menu=menu_bar)
 
         # Add the stella_frame to the main window
-        self.stella_frame = stella_frame.StellaFrame()
+        self.stella_frame = stella_frame.StellaFrame(self)
 
 
 if __name__ == "__main__":

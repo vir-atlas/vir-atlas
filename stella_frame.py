@@ -85,10 +85,3 @@ class StellaFrame(tk.Frame):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-
-# Window for testing purposes only.
-if __name__ == '__main__':
-    master = tk.Tk()
-    master.geometry('1600x900')
-    StellaFrame(master)
-    master.mainloop()

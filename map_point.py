@@ -246,12 +246,12 @@ use to process all data'''
 
 
 def init_map_list(gps_file, stella_file, canvas_size):
-    gps_list = gpsPoint.read_drone_csv(gps_file)
-    stella_list = StellaPoint.make_stella_list(stella_file)
+    gps_list = gps_point.read_drone_csv(gps_file)
+    stella_list = stella_point.make_stella_list(stella_file)
 
     batch = detect_batch(gps_list, stella_list)
 
-    stella_list = StellaPoint.get_batch(stella_list, batch)
+    stella_list = stella_point.get_batch(stella_list, batch)
 
     map_list, width, height, delta_lat = set_xy(
         gps_list, stella_list, canvas_size)

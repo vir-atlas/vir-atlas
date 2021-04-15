@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import *
 import random
-import MapPoint
-import MapGen
-import StellaPoint
+import map_point
+import map_gen
+import stella_point
+import gps_point
 
 # class TestCreation(tk.Frame):
 # 	def __init__(self, parent):
@@ -208,38 +209,47 @@ class MapCreation(tk.Frame):
 		aboutWindow.mainloop()
 
 	def stellaCanvas(self, canvas):
+		gps_file = r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv'
+		stella_file = r'vir-atlas-master\Data Files\data.txt'
+
+		canvas_size = 1200
+		resolution = 10
+		mode = 'vis'
+
+		canvas = map_gen.get_map_alt(gps_file, stella_file, canvas_size, resolution, mode, canvas)
+
 		# pull data from files
-		self.gpsPoints = MapGen.gpsPoint.read_drone_csv(r'Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv')
-		self.stellaPoints = StellaPoint.make_stella_points(r'Data Files/data.txt')
+		# self.gpsPoints = gps_point.read_drone_csv(r'Data Files/Feb-26th-2021-05-57PM-Flight-Airdata.csv')
+		# self.stellaPoints = stella_point.make_stella_list(r'Data Files/data.txt')
 
 		# parse data, get width and height
-		self.stellaPoints = StellaPoint.get_batch(self.stellaPoints, "1.X")
-		self.mapPoints,self.mapWidth,self.mapHeight = \
-			MapPoint.set_xy(self.gpsPoints, self.stellaPoints, 1200)
+		# self.stellaPoints = stella_point.get_batch(self.stellaPoints, "1.X")
+		# self.mapPoints,self.mapWidth,self.mapHeight, delta_lat = \
+		# 	map_point.set_xy(self.gpsPoints, self.stellaPoints, 1200)
 
-		# preprocess width and height
-		self.mapWidth = round(self.mapWidth/10) * 10
-		self.mapHeight = round(self.mapHeight/10) * 10
+		# # preprocess width and height
+		# self.mapWidth = round(self.mapWidth/10) * 10
+		# self.mapHeight = round(self.mapHeight/10) * 10
 
-		# create image based on data
-		self.polyFill = MapGen.get_poly(self.mapHeight, self.mapWidth)
-		self.filled = MapGen.draw_data(self.mapPoints,
-			self.polyFill,
-			self.mode,
-			10,
-			self.mapWidth)
-		MapGen.fill_all(self.filled,
-			self.polyFill,
-			self.mapWidth,
-			self.mapHeight,
-			10)
+		# # create image based on data
+		# self.polyFill = map_gen.get_poly(self.mapHeight, self.mapWidth)
+		# self.filled = map_gen.draw_data(self.mapPoints,
+		# 	self.polyFill,
+		# 	self.mode,
+		# 	10,
+		# 	self.mapWidth)
+		# map_gen.fill_all(self.filled,
+		# 	self.polyFill,
+		# 	self.mapWidth,
+		# 	self.mapHeight,
+		# 	10)
 
-		# attach map imaging to the canvas
-		for t in self.polyFill:
-			t.draw(self.canvas)
+		# # attach map imaging to the canvas
+		# for t in self.polyFill:
+		# 	t.draw(self.canvas)
 
-		# draw the drone's flight path
-		MapGen.draw_flight_path(self.mapPoints, self.canvas)
+		# # draw the drone's flight path
+		# map_gen.draw_flight_path(self.mapPoints, self.canvas)
 
 	def setCanvas(self, baseFrame, canvasMode):
 		# tk.update() will allow retrieval of width and height

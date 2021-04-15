@@ -37,9 +37,9 @@ class MenuBar(tk.Menu):
         # Dropdown menu of view options: vis, nir, temp
         view_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="View", underline=0, menu=view_menu)
-        view_menu.add_command(label="Visual Map", underline=1, command=self.quit)
-        view_menu.add_command(label="NIR Map", underline=1, command=self.quit)
-        view_menu.add_command(label="Temp Map", underline=1, command=self.quit)
+        view_menu.add_command(label="Visual Map", underline=1, command=self.master.stella_frame.vis_mode)
+        view_menu.add_command(label="NIR Map", underline=1, command=self.master.stella_frame.nir_mode)
+        view_menu.add_command(label="Temp Map", underline=1, command=self.master.stella_frame.temp_mode)
 
         # Dropdown menu of annotation options
         annotate_menu = tk.Menu(self, tearoff=False)
@@ -67,7 +67,7 @@ class MenuBar(tk.Menu):
                                                             filetypes=(("CSV Files", "*.csv"),)))
         self.master.update()
         self.master.stella_frame.load_canvases()
-        self.master.stella_frame.set_canvases()
+        self.master.stella_frame.set_canvas()
         self.master.mainloop()
 
 

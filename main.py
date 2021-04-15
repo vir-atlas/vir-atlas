@@ -20,14 +20,14 @@ class Root(tk.Tk):
         self.stella_file = 0
         self.gps_file = 0
 
-        # Add the menu_bar to the main window
-        menu_bar = menu.MenuBar(self)
-        self.config(menu=menu_bar)
-
         # Add the stella_frame to the main window
         self.stella_frame = stella_frame.StellaFrame(self)
         self.stella_frame.set_canvas()
         self.stella_frame.place(x=20, y=20)
+
+        # Add the menu_bar to the main window
+        menu_bar = menu.MenuBar(self)
+        self.config(menu=menu_bar)
 
     def set_stella_data(self, file):
         self.stella_file = file

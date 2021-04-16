@@ -2,9 +2,9 @@
 # 3/12/2021
 # @brief:   draws entire map area based on stella data
 #           this is accomplished with triangles
-# last updated: 3/28/2021 by Sophia Novo-Gradac
-# @updates  fills entire map. done with triangles
-#           OR draw map using circles. radius calculated using data confidence
+# last updated: 4/15/2021 by Sophia Novo-Gradac
+# @updates  added ifs for VI and SVA map
+#           canvas size reconfiged based on calculations in get_map_alt
 # TODO:     fill map?
 #           determine aesthetics
 
@@ -174,27 +174,38 @@ def create_circle(map_point, ftpix, mode, canvasName): #center coordinates, radi
         color = map_point.nir_rgb
     if mode == 'temp':
         color = map_point.temp_rgb
+    if mode == 'ndvi':
+        color = map_point.ndvi_rgb # various vegetation index colors 
+    if mode == 'evi':
+        color = map_point.evi_rgb
+    if mode == 'savi':
+        color = map_point.savi_rgb
+    if mode == 'msavi':
+        color = map_point.msavi_rgb
+    if mode == 'sva':
+        color = map_point.sva_rgb
+        
     canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill = color)
 
-def get_map(gps_file, stella_file, canvas_size, resolution, mode):
-    map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
+# def get_map(gps_file, stella_file, canvas_size, resolution, mode):
+#     map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
     
-    width = round(width/resolution) * resolution
-    height = round(height/resolution) * resolution
+#     width = round(width/resolution) * resolution
+#     height = round(height/resolution) * resolution
     
-    window = tk.Tk()
-    map = tk.Canvas(window, width = width, height = height)
-    map.pack()
+#     window = tk.Tk()
+#     map = tk.Canvas(window, width = width, height = height)
+#     map.pack()
 
-    poly_fill = get_poly(height, width)
-    filled = draw_data(map_list, poly_fill, mode, resolution, width)
-    fill_all(filled, poly_fill, width, height, resolution)
-    for t in poly_fill:
-        t.draw(map)
+#     poly_fill = get_poly(height, width)
+#     filled = draw_data(map_list, poly_fill, mode, resolution, width)
+#     fill_all(filled, poly_fill, width, height, resolution)
+#     for t in poly_fill:
+#         t.draw(map)
 
-    draw_flight_path(map_list, map)
-    window.mainloop()
-    return map
+#     draw_flight_path(map_list, map)
+#     window.mainloop()
+#     return map
 
 '''return multiplier that translates feet to pixels
 height in pixels '''
@@ -208,6 +219,8 @@ def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode, canvas):
     width = round(width/resolution) * resolution
     height = round(height/resolution) * resolution
 
+    canvas.config(width = width, height = height)
+
     ftpix = feet_to_pix(delta_lat, height)
 
     for m in map_list:
@@ -216,6 +229,21 @@ def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode, canvas):
     draw_flight_path(map_list, canvas)
     return canvas
 
+# gps_file = r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv'
+# stella_file = r'vir-atlas-master\Data Files\data.txt'
+# canvas_size = 800
+# resolution = 10
+
+# window = tk.Tk()
+# map = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
+# map2 = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
+
+# get_map_alt(gps_file, stella_file, canvas_size, resolution, 'sva', map)
+# get_map_alt(gps_file, stella_file, canvas_size, resolution, 'temp', map2)
+
+# map.pack()
+# map2.pack()
+# window.mainloop()
 
 # def main():
 #     gps_points = gpsPoint.read_drone_csv(r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')

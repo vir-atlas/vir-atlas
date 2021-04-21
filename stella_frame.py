@@ -20,6 +20,8 @@ class StellaFrame(tk.Frame):
         self.height = 500
         self.resolution = 10
 
+        self.map_data = map_gen.Map()
+
         # set the default display mode
         self.mode = 'vis'
 
@@ -33,32 +35,29 @@ class StellaFrame(tk.Frame):
         self.temp_canvas = self.canvas
 
     # Testing purposes only, actual code commented below
-    def load_canvases(self):
-        # initialize all three canvases
-        self.nir_canvas = tk.Canvas(width=500, height=500, bg="blue")
-        self.vis_canvas = tk.Canvas(width=500, height=500, bg="green")
-        self.temp_canvas = tk.Canvas(width=500, height=500, bg="red")
+    # def load_canvases(self):
+    #     # initialize all three canvases
+    #     self.nir_canvas = tk.Canvas(width=500, height=500, bg="blue")
+    #     self.vis_canvas = tk.Canvas(width=500, height=500, bg="green")
+    #     self.temp_canvas = tk.Canvas(width=500, height=500, bg="red")
 
-    """
+    # """
     # This needs to be called after a file is loaded!
     def load_canvases(self):
         # initialize all three canvases
-        self.nir_canvas = map_gen.get_map_alt(self.master.gps_file, self.master.stella_file,
-                                              self.canvas_size, self.resolution, 'nir', self.canvas)
-        self.vis_canvas = map_gen.get_map_alt(self.master.gps_file, self.master.stella_file,
-                                              self.canvas_size, self.resolution, 'vis', self.canvas)
-        # Currently commented out due to color errors (Tries to use "None" color in get_map_alt)
-        # self.temp_canvas = map_gen.get_map_alt(self.master.gps_file, self.master.stella_file,
-        # self.canvas_size, self.resolution, 'temp', self.canvas)
-    """
+        self.nir_canvas = self.map_data.get_map_alt('nir', self.canvas)
+        self.vis_canvas = self.map_data.get_map_alt('vis', self.canvas)
+        self.temp_canvas = self.map_data.get_map_alt('temp', self.canvas)
+    # """
 
     # This needs to be called to add the canvas to the frame
     def set_canvas(self):
         # Create and display the default empty canvas
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='black')
+        self.map_data.update_map(self.canvas_size, gps_file = self.master.gps_file, stella_file = self.master.stella_file, map_file = self.master.map_file)
         self.update()
         self.canvas.destroy()
-
+        
         # Set the appropriate map
         if self.mode == 'temp':
             self.canvas = self.temp_canvas

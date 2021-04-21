@@ -7,7 +7,6 @@ import tkinter as tk
 from tkinter import filedialog
 import sys
 
-
 # Creates a new window with helpful information
 def about():
     about_window = tk.Tk()
@@ -30,8 +29,9 @@ class MenuBar(tk.Menu):
         # Dropdown menu of file options: open, save, exit
         file_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="File", underline=0, menu=file_menu)
-        file_menu.add_command(label="Open File", underline=1, command=self.open_files)
-        file_menu.add_command(label="Save File", underline=1, command=self.quit)
+        file_menu.add_command(label="Open New Files", underline=1, command=self.open_files)
+        file_menu.add_command(label="Load Previous File", underline=1, command=self.open_prev_file)
+        file_menu.add_command(label="Save File", underline=1, command=self.save_file)
         file_menu.add_command(label="Exit", underline=1, command=self.quit)
 
         # Dropdown menu of view options: vis, nir, temp
@@ -65,10 +65,25 @@ class MenuBar(tk.Menu):
         self.master.set_gps_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select GPS data",
                                                             filetypes=(("CSV Files", "*.csv"),)))
+                                               
         self.master.update()
         self.master.stella_frame.load_canvases()
         self.master.stella_frame.set_canvas()
         self.master.mainloop()
+
+    def open_prev_file(self):
+        self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
+                                                            title="Select Previous Map data",
+                                                            filetypes=(("VIR-Atlas Files", "*.vmap"),)))
+
+        self.master.update()
+        self.master.stella_frame.load_canvases()
+        self.master.stella_frame.set_canvas()
+        self.master.mainloop()
+
+    def save_file(self):
+        file = filedialog.asksaveasfile(defaultextension=".vmap")
+        self.master.map_data.save_list(file)
 
 
 # Window for testing purposes only. Shows how to create a MenuBar object.

@@ -13,6 +13,7 @@ import color as col
 import math
 import numpy as np
 import datetime
+import pickle
 
 # visual wavelengths taken by STELLA are constant
 vis_wl = [450, 500, 550, 570, 600, 650]
@@ -45,13 +46,29 @@ class MapPoint:
         self.y = y
         self.confidence = gps_point.feet_since_takeoff * math.tan(0.349066) # radius of data area. Aperature is +- 20 degrees (0.349 rads)
 
+        self.annotation = ""
+
     """print data to terminal. for debugging"""
 
     def print_point(self):
         # print(self.stella_point.timestamp, self.gps_point.time, self.color,
         # self.x, self.y)  # stella_point.timestamp may not print
-        print(self.vis_rgb, self.nir_rgb, self.x, self.y)
+        # print(self.vis_rgb, self.nir_rgb, self.x, self.y)
+        self.stella_point.print_stella()
+        self.gps_point.print_gps()
+        print(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb, 
+                self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb, 
+                self.x, self.y, self.confidence, self.annotation)
 
+    def write_point(self, file):
+        self.stella_point.write_stella(file)
+        self.gps_point.write_gps(file)
+        print(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb, 
+                self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb, 
+                self.x, self.y, self.confidence, self.annotation, file=file)
+        # file.write(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb, 
+        #         self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb, 
+        #         self.x, self.y, self.confidence, self.annotation)
 
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
 
@@ -348,6 +365,11 @@ def init_map_list(gps_file, stella_file, canvas_size):
 
     stella_list = stella_point.get_batch(stella_list, batch)
 
-    map_list, width, height, delta_lat = set_xy(
-        gps_list, stella_list, canvas_size)
+    map_list, width, height, delta_lat = set_xy(gps_list, stella_list, canvas_size)
     return map_list, width, height, delta_lat
+
+def save_list(map_list, save_file):
+    pickle.dump(map_list, open(save_file, "wb"))
+
+def read_map_list(file):
+    return pickle.load(open(file, 'rb'))

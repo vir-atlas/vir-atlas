@@ -19,6 +19,7 @@ class Root(tk.Tk):
         # Initialize data files
         self.stella_file = 0
         self.gps_file = 0
+        self.map_file = 0
 
         # Add the stella_frame to the main window
         self.stella_frame = stella_frame.StellaFrame(self)
@@ -33,7 +34,10 @@ class Root(tk.Tk):
         self.stella_file = file
 
     def set_gps_data(self, file):
-        self.gps_file = file
+        self.gps_file = file    
+    
+    def set_map_data(self, file):
+        self.map_file = file    
 
 
 if __name__ == "__main__":

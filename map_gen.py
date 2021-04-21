@@ -187,101 +187,93 @@ def create_circle(map_point, ftpix, mode, canvasName): #center coordinates, radi
         
     canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill = color)
 
-# def get_map(gps_file, stella_file, canvas_size, resolution, mode):
-#     map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
-    
-#     width = round(width/resolution) * resolution
-#     height = round(height/resolution) * resolution
-    
-#     window = tk.Tk()
-#     map = tk.Canvas(window, width = width, height = height)
-#     map.pack()
-
-#     poly_fill = get_poly(height, width)
-#     filled = draw_data(map_list, poly_fill, mode, resolution, width)
-#     fill_all(filled, poly_fill, width, height, resolution)
-#     for t in poly_fill:
-#         t.draw(map)
-
-#     draw_flight_path(map_list, map)
-#     window.mainloop()
-#     return map
-
 '''return multiplier that translates feet to pixels
 height in pixels '''
 def feet_to_pix(delta_lat, height):
     delta_ft = delta_lat * 60 * 6076.12
     return height / delta_ft
 
-def get_map_alt(gps_file, stella_file, canvas_size, resolution, mode, canvas):
-    map_list, width, height, delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
+
+class Map:
+    def __init__(self):
+        self.map_list = list()
+        self.width = 0 
+        self.height = 0
+        self.delta_lat = 0
+        self.scale = 0
+
+    def update_map(self, canvas_size, gps_file = 0, stella_file = 0, map_file = 0):
+        if map_file != 0:
+            print("in map file")
+            self.map_list = map_point.read_map_list(map_file)
+        
+            min_lat = self.map_list[0].gps_point.latitude
+            max_lat = self.map_list[0].gps_point.latitude
+            
+            for m in self.map_list:
+                if m.x > self.width:
+                    self.width = m.x
+                if m.y > self.height:
+                    self.height = m.y
+                if m.gps_point.latitude > max_lat:
+                    max_lat = m.gps_point.latitude
+                elif m.gps_point.latitude < min_lat:
+                    min_lat = m.gps_point.latitude
+
+            self.width = math.ceil(self.width)
+            self.height = math.ceil(self.height)
+
+            self.delta_lat = max_lat - min_lat
+            self.scale = feet_to_pix(self.delta_lat, self.height)
+
+        elif gps_file != 0 and stella_file != 0: 
+            print("generating new map")
+            self.map_list, self.width, self.height, self.delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
+            self.scale = feet_to_pix(self.delta_lat, self.height)
+
+
+    def get_map_alt(self, mode, canvas):
+        
+        canvas.config(width = self.width, height = self.height)
+
+        for m in self.map_list:
+            create_circle(m, self.scale, mode, canvas)
+
+        draw_flight_path(self.map_list, canvas)
+        return canvas
     
-    width = round(width/resolution) * resolution
-    height = round(height/resolution) * resolution
+    def get_map(self, resolution, mode, canvas):
 
-    canvas.config(width = width, height = height)
+        self.width = round(self.width/resolution) * resolution
+        self.height = round(self.height/resolution) * resolution
 
-    ftpix = feet_to_pix(delta_lat, height)
+        canvas.config(width = self.width, height = self.height)
+        
+        poly_fill = get_poly(self.height, self.width)
+        filled = draw_data(self.map_list, poly_fill, mode, resolution, self.width)
+        fill_all(filled, poly_fill, self.width, self.height, resolution)
+        for t in poly_fill:
+            t.draw(canvas)
 
-    for m in map_list:
-        create_circle(m, ftpix, mode, canvas)
-
-    draw_flight_path(map_list, canvas)
-    return canvas
+        draw_flight_path(self.map_list, canvas)
+        return canvas
+    
+    def save_map(self, file):
+        map_point.save_list(self.map_list, file)
+        
 
 # gps_file = r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv'
 # stella_file = r'vir-atlas-master\Data Files\data.txt'
+# map_file = r'vir-atlas-master\Data Files\savetest.vmap'
 # canvas_size = 800
 # resolution = 10
 
 # window = tk.Tk()
-# map = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
-# map2 = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
+# # map2 = Map(gps_file = gps_file, stella_file = stella_file, canvas_size)
+# map2 = Map(canvas_size, map_file=map_file)
+# canvas = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
+# map2.get_map_alt('vis', canvas)
 
-# get_map_alt(gps_file, stella_file, canvas_size, resolution, 'sva', map)
-# get_map_alt(gps_file, stella_file, canvas_size, resolution, 'temp', map2)
-
-# map.pack()
-# map2.pack()
+# # map.pack()
+# canvas.pack()
 # window.mainloop()
-
-# def main():
-#     gps_points = gpsPoint.read_drone_csv(r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv')
-#     stella_points = StellaPoint.make_stella_points(r'vir-atlas-master\Data Files\data.csv')
-
-#     stella_points = StellaPoint.get_batch(stella_points, "1.X")
-#     map_list,width,height = MapPoint.set_xy(gps_points, stella_points, canvas_size)
-
-        # width = round(width/resolution) * resolution
-        # height = round(height/resolution) * resolution
-    
-
-#     window = tk.Tk()
-#     vis_map = tk.Canvas(window, width = width, height = height)
-#     nir_map = tk.Canvas(window, width = width, height = height)
-#     temp_map = tk.Canvas(window, width = width, height = height)
-
-#     vis_map.pack()
-#     nir_map.pack()
-#     temp_map.pack()
-
-    
-#     clear_poly(poly_fill)
-#     filled = draw_data(map_list, poly_fill, 'nir', resolution, width)
-#     fill_all(filled, poly_fill, width, height, resolution)
-#     for t in poly_fill:
-#         t.draw(nir_map)
-#     draw_flight_path(map_list, nir_map)
-
-#     clear_poly(poly_fill)
-#     filled = draw_data(map_list, poly_fill, 'temp', resolution, width)
-#     fill_all(filled, poly_fill, width, height, resolution)
-#     for t in poly_fill:
-#         t.draw(temp_map)
-#     draw_flight_path(map_list, temp_map)
-
-#     window.mainloop()
-
-
-# if __name__ == '__main__':
-#     main()

@@ -14,6 +14,7 @@ import math
 import numpy as np
 import datetime
 import pickle
+import annotation
 
 # visual wavelengths taken by STELLA are constant
 vis_wl = [450, 500, 550, 570, 600, 650]
@@ -185,6 +186,7 @@ def set_xy(gps_list, stella_list, canvas_size):
         # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ',
         # gps.longitude, color)   # and associated color
     set_all_temps(map_list, stella_list)
+    annotation.set_map_list(map_list)
 
     return map_list, width, height, max_lat - min_lat
 

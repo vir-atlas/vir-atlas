@@ -203,8 +203,8 @@ class Map:
         self.scale = 0
 
     def update_map(self, canvas_size, gps_file = 0, stella_file = 0, map_file = 0):
+        self.clear_map()
         if map_file != 0:
-            print("in map file")
             self.map_list = map_point.read_map_list(map_file)
         
             min_lat = self.map_list[0].gps_point.latitude
@@ -226,15 +226,20 @@ class Map:
             self.delta_lat = max_lat - min_lat
             self.scale = feet_to_pix(self.delta_lat, self.height)
 
-        elif gps_file != 0 and stella_file != 0: 
-            print("generating new map")
+        elif gps_file != 0 and stella_file != 0:
             self.map_list, self.width, self.height, self.delta_lat = map_point.init_map_list(gps_file, stella_file, canvas_size)
             self.scale = feet_to_pix(self.delta_lat, self.height)
-
-
-    def get_map_alt(self, mode, canvas):
         
-        canvas.config(width = self.width, height = self.height)
+    def clear_map(self):
+        self.map_list.clear()
+        self.width = 0 
+        self.height = 0
+        self.delta_lat = 0
+        self.scale = 0
+
+    def gen_map_alt(self, mode, canvas):
+        
+        # canvas.config(width = self.width, height = self.height)
 
         for m in self.map_list:
             create_circle(m, self.scale, mode, canvas)
@@ -242,12 +247,12 @@ class Map:
         draw_flight_path(self.map_list, canvas)
         return canvas
     
-    def get_map(self, resolution, mode, canvas):
+    def gen_map(self, resolution, mode, canvas):
 
         self.width = round(self.width/resolution) * resolution
         self.height = round(self.height/resolution) * resolution
 
-        canvas.config(width = self.width, height = self.height)
+        # canvas.config(width = self.width, height = self.height)
         
         poly_fill = get_poly(self.height, self.width)
         filled = draw_data(self.map_list, poly_fill, mode, resolution, self.width)
@@ -269,11 +274,13 @@ class Map:
 # resolution = 10
 
 # window = tk.Tk()
-# # map2 = Map(gps_file = gps_file, stella_file = stella_file, canvas_size)
-# map2 = Map(canvas_size, map_file=map_file)
+# map2 = Map()
+# map2.update_map(canvas_size, gps_file = gps_file, stella_file = stella_file)
+# map2.update_map(canvas_size, map_file=map_file)
 # canvas = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
-# map2.get_map_alt('vis', canvas)
+# map2.get_map_alt('temp', canvas)
 
 # # map.pack()
 # canvas.pack()
 # window.mainloop()
+

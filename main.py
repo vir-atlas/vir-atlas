@@ -6,7 +6,7 @@
 import tkinter as tk
 import menu_bar as menu
 import stella_frame
-
+import map_gen
 
 # Class creating the base window
 class Root(tk.Tk):
@@ -20,6 +20,8 @@ class Root(tk.Tk):
         self.stella_file = 0
         self.gps_file = 0
         self.map_file = 0
+
+        self.map_data = map_gen.Map()
 
         # Add the stella_frame to the main window
         self.stella_frame = stella_frame.StellaFrame(self)
@@ -39,6 +41,12 @@ class Root(tk.Tk):
     def set_map_data(self, file):
         self.map_file = file    
 
+    def switch_frame(self, frame_class):
+        new_frame = frame_class(self)
+        if self.stella_frame is not None:
+            self.stella_frame.destroy()
+        self.stella_frame = new_frame
+        self.stella_frame.pack()
 
 if __name__ == "__main__":
     root = Root()

@@ -26,13 +26,15 @@ class StellaFrame(tk.Frame):
         self.mode = 'vis'
 
         # Create and display the default empty canvas
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='black')
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='grey')
         self.canvas.pack()
 
         # initialize all three canvases
-        self.nir_canvas = self.canvas
-        self.vis_canvas = self.canvas
-        self.temp_canvas = self.canvas
+        # self.nir_canvas = self.canvas
+        # self.vis_canvas = self.canvas
+        # self.temp_canvas = self.canvas
+
+        self.set_canvas()
 
     # Testing purposes only, actual code commented below
     # def load_canvases(self):
@@ -45,26 +47,29 @@ class StellaFrame(tk.Frame):
     # This needs to be called after a file is loaded!
     def load_canvases(self):
         # initialize all three canvases
-        self.nir_canvas = self.map_data.get_map_alt('nir', self.canvas)
-        self.vis_canvas = self.map_data.get_map_alt('vis', self.canvas)
-        self.temp_canvas = self.map_data.get_map_alt('temp', self.canvas)
+        self.master.stella_frame.map_data.update_map(self.master.stella_frame.canvas_size,
+                                                        gps_file = self.master.gps_file,
+                                                        stella_file = self.master.stella_file,
+                                                        map_file = self.master.map_file)
+        self.nir_canvas = self.map_data.gen_map_alt('nir', self.canvas)
+        self.vis_canvas = self.map_data.gen_map_alt('vis', self.canvas)
+        self.temp_canvas = self.map_data.gen_map_alt('temp', self.canvas)
     # """
 
     # This needs to be called to add the canvas to the frame
     def set_canvas(self):
         # Create and display the default empty canvas
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='black')
-        self.map_data.update_map(self.canvas_size, gps_file = self.master.gps_file, stella_file = self.master.stella_file, map_file = self.master.map_file)
-        self.update()
-        self.canvas.destroy()
+        # self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='black')
+        # self.update()
+        # self.canvas.destroy()
         
         # Set the appropriate map
-        if self.mode == 'temp':
-            self.canvas = self.temp_canvas
-        if self.mode == 'vis':
-            self.canvas = self.vis_canvas
-        if self.mode == 'nir':
-            self.canvas = self.nir_canvas
+        # if self.mode == 'temp':
+        #     self.canvas = self.temp_canvas
+        # if self.mode == 'vis':
+        #     self.canvas = self.vis_canvas
+        # if self.mode == 'nir':
+        #     self.canvas = self.nir_canvas
 
         # bound the scrolling region (needs work?)
         self.canvas.configure(scrollregion=(0, 0, self.width, self.height))
@@ -120,3 +125,51 @@ class StellaFrame(tk.Frame):
     def temp_mode(self):
         self.mode = 'temp'
         self.set_canvas()
+
+class VisFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('vis', self.canvas)
+        self.canvas.pack()
+        
+class NirFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('nir', self.canvas)
+        self.canvas.pack()    
+
+class TempFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('temp', self.canvas)
+        self.canvas.pack()
+        
+class SvaFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('sva', self.canvas)
+        self.canvas.pack()
+        
+class NdviFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('ndvi', self.canvas)
+        self.canvas.pack()
+        
+class EviFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('evi', self.canvas)
+        self.canvas.pack()
+        
+class SaviFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('savi', self.canvas)
+        self.canvas.pack()
+        
+class MsaviFrame(StellaFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        master.map_data.gen_map_alt('msavi', self.canvas)
+        self.canvas.pack()

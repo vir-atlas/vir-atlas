@@ -1,60 +1,21 @@
 # @authors  Timothy Goetsch
 # 4/21/2021
-# @brief    ColorLegend object:  creates legends for the various coloring schemes: vis, nir, temp
-# last updated: 4/21/2021 by Timothy Goetsch
-# @updates  Created the ColorLegend class. At the moment it produces a generic color scale using a fixed
-#           list of colors and a fixed size window.
-# TODO:     flesh out get_colors() method, create_legend() method, and various setters/getters where necessary
+# @brief    ColorLegend object:  creates legends for the following modes: VIS, NIR, TEMP, SVA, NDVI, EVI, SAVI, MSAVI
+# last updated: 4/22/2021 by Timothy Goetsch
+# @updates  streamlined the ColorLegend __init()__ method, now it should work for *any size* list. I haven't tested it
+#           extensively. VIS and NIS modes generate empty canvases because those legends are likely not possible in a bar
+#           legend like what ColorLegend currently produces. TEMP and the *VI modes all produce working legends afaik.
+#           SVA currently generates an empty canvas.
+
+# TODO:     finish the SVA legend logic, add create_legend() function for returning a legend. maybe rename file to
+#           legend.py to include the distance legend.
 
 import tkinter as tk
 from tkinter import Canvas, Frame, BOTH, W
+import color as col
+from math import floor
 
-
-class ColorLegend(Frame):
-    def __init__(self, mode: str):
-        super().__init__()
-
-        self.master.title("ColorBar")
-        self.pack(fill=BOTH, expand=1)
-
-        # set default display mode
-        self.mode = "vis"
-
-        # self.canvas_size = 700  # pulled from stella_frame.py, probably don't need (?)
-        self.width = 100
-        self.height = 600
-
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height)
-
-        color = self.get_colors()
-        start = 10
-        stop = 590
-        step = 1
-
-        for i in range(start, stop, step):
-            j = i % len(color)
-            self.canvas.create_rectangle(10, i, 60, i, outline=color[j], fill=color[j])
-
-        self.canvas.create_line(70, start, 70, stop)
-
-        step = 50
-        for i in range(start, stop, step):
-            self.canvas.create_line(70, i, 75, i)
-            self.canvas.create_text(80, i, anchor=W, font=("Arial", 8), text=i)
-
-        self.canvas.create_line(70, stop, 75, stop)
-        self.canvas.create_text(80, stop, anchor=W, font=("Arial", 8), text=stop)
-
-        self.canvas.pack(fill=BOTH, expand=1)
-
-    def get_colors(self):
-        if self.mode == "vis":
-            pass
-        elif self.mode == "nir":
-            pass
-        elif self.mode == "temp":
-            pass
-        return ['snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
+TEST_LIST = ['snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',
     'navajo white', 'lemon chiffon', 'mint cream', 'azure', 'alice blue', 'lavender',
     'lavender blush', 'misty rose', 'dark slate gray', 'dim gray', 'slate gray',
@@ -132,9 +93,129 @@ class ColorLegend(Frame):
     'gray93', 'gray94', 'gray95', 'gray97', 'gray98', 'gray99']
 
 
+class ColorLegend(Frame):
+    def __init__(self, mode="vis"):
+        super().__init__()
+
+        self.master.title("ColorBar")
+        self.pack(fill=BOTH, expand=1)
+
+        # set default display mode
+        self.mode = mode
+
+        # self.canvas_size = 700  # pulled from stella_frame.py, probably don't need (?)
+        self.width = 110
+        self.height = 840
+
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height)
+
+        # if mode == "vis":
+        #     self.set_map_vis()
+        # elif mode == "nir":
+        #     self.set_map_nir()
+        # elif mode == "temp":
+        #     self.set_map_temp()
+
+        color, scale = self.get_colors()
+        start = 10
+        stop = self.height - start
+        step = 1
+
+        # create colored rectangles
+        x_start = 10  # goes with window atm, may move to a method if both vertical and horizontal legends are produced
+        x_end = 60  # same as x_start
+        y = 10  # arbitrary y start value
+        # create rectangles, depends on x starting and ending values, y start value, and box_size, generalized for any mode
+        if color:
+            # determine size of bounding box for each color depending on number of elements in the color List
+            box_size = floor((stop - start) / len(color))
+            legend_size = box_size * len(color) + start
+
+            # create vertical bar for tick marks, generalized for any mode
+            x = 70
+            self.canvas.create_line(x, start, x, legend_size)
+
+            for num, c in enumerate(color):
+                self.canvas.create_rectangle(x_start, y, x_end, y+box_size, outline=c, fill=c)
+                self.canvas.create_line(70, y, 75, y)
+                if y == 0:
+                    self.canvas.create_text(80, y, anchor=W, font=("Arial", 8), text=scale[num])
+                else:
+                    self.canvas.create_text(80, y + (box_size/2), anchor=W, font=("Arial", 8), text=scale[num])
+                y += box_size
+                # print(y)
+
+            self.canvas.create_line(70, y, 75, y)
+
+        # pack canvas
+        self.canvas.pack(fill=BOTH, expand=1)
+
+    """
+    8 maps (only need 6 legends)
+    VIS (VISUAL LIGHT) (data_to_hex)
+    NIR (NEAR INFRARED LIGHT) (data_to_hex)
+
+    TEMP (DISTRIBUTION FROM MIN_TEMP TO MAX_TEMP RECORDED)
+    SVA (SURFACE VS AIR TEMP, WHITE IS AIR TEMP, SUBTRACTS AIR TEMP FROM SURFACE TO OBTAIN DELTA)
+    VI There are (-1, 1) NEGATIVE NUMBER SYMBOLIZES DEAD
+    """
+    def get_colors(self):
+        color = []
+        scale = []
+        # visual index (0, 1),
+        if self.mode == "vis":
+            # scale = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 11 values
+            # for i in scale:
+            #     color.append(col.false_color(i, 0, 1))
+            pass
+        # vegetative index (-1, 1) -> (d_blue, white, tan, green, d_green)
+        elif self.mode == "nir":
+            # scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 21 values
+            # for i in scale:
+            #     color.append(col.false_color_vi(i))
+            pass
+
+        # same as vir rn
+        elif self.mode == "temp":
+            scale = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 11 values
+            # scale = [0, 1]
+            for i in scale:
+                color.append(col.false_color(i, 0, 1))
+        elif self.mode == "sva":
+            # scale = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+            # temp = []
+            # air_temp = 5
+            # for num, s in enumerate(scale):
+            #     temp[num] = self.set_temp(s, scale[0], scale[-1], air_temp)
+            #
+            # for num, i in enumerate(scale):
+            #     color.append(col.false_two_color(air_temp, scale[0], scale[-1], temp[num], temp[-num]))
+            pass
+        elif self.mode == "ndvi" or self.mode == "evi" or self.mode == "savi" or self.mode == "msavi":
+            scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 21 values
+            for i in scale:
+                color.append(col.false_color_vi(i))
+
+        return color, scale
+
+    def set_temp(self, surface_temp, min_temp, max_temp, air_temp):
+        # max_temp = 85.0
+        # min_temp = -40.0 #max and min the sensor can see
+        temp_rgb = col.false_color(surface_temp, min_temp, max_temp)
+
+        temp_delta = surface_temp - air_temp
+        min_delta = min_temp - air_temp
+        max_delta = max_temp - air_temp
+        red = '#ff0000'
+        blue = '#0000ff'
+
+        sva_rgb = col.false_two_color(temp_delta, min_delta, max_delta, blue, red)
+        return sva_rgb
+
+
 def main():
     root = tk.Tk()
-    cb = ColorLegend("vis")
+    cb = ColorLegend("temp")
     # WIDTH X HEIGHT + Location on screen when opening (WIDTH + HEIGHT)
     # root.geometry("100x600+1000+500")
     root.mainloop()

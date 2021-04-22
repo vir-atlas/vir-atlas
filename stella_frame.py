@@ -15,9 +15,10 @@ class StellaFrame(tk.Frame):
 
         # I'm still unsure of these values. The width and height of the frame should both be 500
         # Set canvas size and resolution
-        self.canvas_size = 700
-        self.width = 500
-        self.height = 500
+        # self.canvas_size = 700
+        self.canvas_size = 900
+        self.width = 840
+        self.height = 840
         self.resolution = 10
 
         self.map_data = map_gen.Map()

@@ -15,7 +15,8 @@ class Root(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
-        self.geometry('810x560')
+        self.geometry('1450x900')
+        self.winfo_toplevel().title("VIR-Atlas")
 
         # Initialize data files
         self.stella_file = 0

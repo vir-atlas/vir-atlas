@@ -6,6 +6,7 @@
 import tkinter as tk
 import menu_bar as menu
 import stella_frame
+import map_gen
 
 
 # Class creating the base window
@@ -14,11 +15,15 @@ class Root(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
-        self.geometry('810x560')
+        self.geometry('1450x900')
+        self.winfo_toplevel().title("VIR-Atlas")
 
         # Initialize data files
         self.stella_file = 0
         self.gps_file = 0
+        self.map_file = 0
+
+        self.map_data = map_gen.Map()
 
         # Add the stella_frame to the main window
         self.stella_frame = stella_frame.StellaFrame(self)
@@ -34,6 +39,16 @@ class Root(tk.Tk):
 
     def set_gps_data(self, file):
         self.gps_file = file
+
+    def set_map_data(self, file):
+        self.map_file = file
+
+    def switch_frame(self, frame_class):
+        new_frame = frame_class(self)
+        if self.stella_frame is not None:
+            self.stella_frame.destroy()
+        self.stella_frame = new_frame
+        self.stella_frame.place(x=20, y=20)
 
 
 if __name__ == "__main__":

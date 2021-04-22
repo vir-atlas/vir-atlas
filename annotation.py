@@ -5,6 +5,9 @@
 
 import tkinter as tk
 import sys
+import map_point
+
+global map_list
 
 
 class Annotation(object):
@@ -12,6 +15,9 @@ class Annotation(object):
         tk.Tk.__init__(self)
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
+        for point in map_list:
+            if point.x == self.x_coordinate and point.y == self.y_coordinate:
+                point.annotation = note
         self.note = note
 
 
@@ -46,3 +52,17 @@ class AnnotationEditor(object):
     def save_note(self):
         self.save = self.note.get()
         self.top.destroy()
+
+def print_attributes(map_point):
+    map_point.stella_point.surface_temp
+    map_point.stella_point.air_temp
+    map_point.stella_point.relative_humidity
+    map_point.stella_point.air_pressure_hpa
+    map_point.stella_point.altitude_m_uncal
+    map_point.stella_point.vis_pows
+    map_point.stella_point.nir_pows
+
+
+def set_map_list(map_points):
+    global map_list
+    map_list = map_points

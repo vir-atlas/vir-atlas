@@ -8,6 +8,7 @@ import menu_bar as menu
 import stella_frame
 import map_gen
 
+
 # Class creating the base window
 class Root(tk.Tk):
     # Main window constructor
@@ -36,17 +37,18 @@ class Root(tk.Tk):
         self.stella_file = file
 
     def set_gps_data(self, file):
-        self.gps_file = file    
-    
+        self.gps_file = file
+
     def set_map_data(self, file):
-        self.map_file = file    
+        self.map_file = file
 
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)
         if self.stella_frame is not None:
             self.stella_frame.destroy()
         self.stella_frame = new_frame
-        self.stella_frame.pack()
+        self.stella_frame.place(x=20, y=20)
+
 
 if __name__ == "__main__":
     root = Root()

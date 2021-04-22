@@ -6,6 +6,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import sys
+import stella_frame
 
 # Creates a new window with helpful information
 def about():
@@ -37,10 +38,23 @@ class MenuBar(tk.Menu):
         # Dropdown menu of view options: vis, nir, temp
         view_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="View", underline=0, menu=view_menu)
-        view_menu.add_command(label="Visual Map", underline=1, command=self.master.stella_frame.vis_mode)
-        view_menu.add_command(label="NIR Map", underline=1, command=self.master.stella_frame.nir_mode)
-        view_menu.add_command(label="Temp Map", underline=1, command=self.master.stella_frame.temp_mode)
-
+        view_menu.add_command(label="Visual Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.VisFrame))
+        view_menu.add_command(label="NIR Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.NirFrame))
+        view_menu.add_command(label="Temp Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.TempFrame))
+        view_menu.add_command(label="Surface vs Air Temp Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.SvaFrame))
+        view_menu.add_command(label="NDVI Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.NdviFrame))
+        view_menu.add_command(label="EVI Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.EviFrame))
+        view_menu.add_command(label="SAVI Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.SaviFrame))
+        view_menu.add_command(label="MSAVI Map", underline=1,
+                                command=lambda: master.switch_frame(stella_frame.MsaviFrame))
+        
         # Dropdown menu of annotation options
         annotate_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="Annotate", underline=0, menu=annotate_menu)
@@ -65,25 +79,37 @@ class MenuBar(tk.Menu):
         self.master.set_gps_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select GPS data",
                                                             filetypes=(("CSV Files", "*.csv"),)))
-                                               
+        self.master.set_map_data(0)
+
+        self.master.map_data.update_map(700, gps_file = self.master.gps_file,
+                                                        stella_file = self.master.stella_file,
+                                                        map_file = self.master.map_file)
+
         self.master.update()
-        self.master.stella_frame.load_canvases()
-        self.master.stella_frame.set_canvas()
+        # self.master.stella_frame.load_canvases()
+        # self.master.stella_frame.set_canvas()
         self.master.mainloop()
 
     def open_prev_file(self):
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select Previous Map data",
                                                             filetypes=(("VIR-Atlas Files", "*.vmap"),)))
+        self.master.set_gps_data(0)
+        self.master.set_stella_data(0)
+
+        self.master.map_data.update_map(700, gps_file = self.master.gps_file,
+                                                        stella_file = self.master.stella_file,
+                                                        map_file = self.master.map_file)
+        
 
         self.master.update()
-        self.master.stella_frame.load_canvases()
-        self.master.stella_frame.set_canvas()
+        # self.master.stella_frame.load_canvases()
+        # self.master.stella_frame.set_canvas()
         self.master.mainloop()
 
     def save_file(self):
-        file = filedialog.asksaveasfile(defaultextension=".vmap")
-        self.master.map_data.save_list(file)
+        file = filedialog.asksaveasfile(filetypes = [('VIR-Atlas map', '.vmap'), ('All files', '*')], defaultextension=".vmap", mode='wb')
+        self.master.map_data.save_map(file)
 
 
 # Window for testing purposes only. Shows how to create a MenuBar object.

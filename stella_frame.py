@@ -57,7 +57,14 @@ class StellaFrame(tk.Frame):
         self.canvas.bind("<MouseWheel>", self.zoomer)
 
         # bound right clicking to Annotations
-        self.canvas.bind("<Button-3>", annotation.AnnotationEditor)
+        self.canvas.bind("<Button-3>", self.create_annotation)
+
+    # create a new annotation
+    def create_annotation(self, event):
+        # create new Annotation object
+        new_annotation = annotation.Annotation
+        # pass object to AnnotationEditor
+        annotation.AnnotationEditor(new_annotation)
 
     # move
     def move_start(self, event):

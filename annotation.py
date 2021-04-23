@@ -1,7 +1,7 @@
 # @authors Tenise and Marisa 
 # @date 04/14/2021
 # @brief Handles Annotations
-# @todo add "Cancel" button to AnnotationEditor, correlate event coordinates with stella coordinates
+# @todo correlate event coordinates with stella coordinates
 import tkinter
 import tkinter as tk
 import sys
@@ -64,7 +64,7 @@ class AnnotationFrame(tk.Frame):
 
 
 # Responsible for editing/adding Annotations
-class AnnotationEditor:
+class AnnotationEditor(Annotation):
     # constructor for AnnotationEditor
     def __init__(self, master):
         # call for popup window
@@ -75,38 +75,9 @@ class AnnotationEditor:
         self.label.pack()
 
         # create attribute frame
-        attribute_frame = tk.Frame(top).grid(row=0, column=0)
-
-        # when event handler is implemented, x and y should be event.x and event.y
-        def get_attribute(x, y):
-            for point in map_list:
-                # check if given points are STELLA points or not
-                if point.stella_point.x == x & point.stella_point.y == y:
-                    # display correlating data
-                    surface_temp = "Surface Temperature (C): " + str(point.stella_point.surface_temp)  # float
-                    air_temp = "Air Temperature (C): " + str(point.stella_point.air_temp)  # float
-                    relative_humidity = "Relative Humidity (%): " + str(point.stella_point.relative_humidity)
-                    air_pressure_hpa = "Air Pressure(hPa): " + str(point.stella_point.air_pressure_hpa)
-                    altitude_m_uncal = "Altitude (m)" + str(point.stella_point.altitude_m_uncal)
-                    vis_pows = "Visual Light Spectrum(uW/cm^2): 450 nm-> " + str(
-                        point.stella_point.vis_pows[0]) + " 500 nm-> " + str(
-                        point.stella_point.vis_pows[1]) + " 550 nm-> " + str(
-                        point.stella_point.vis_pows[2]) + " 570 nm-> " + str(
-                        point.stella_point.vis_pows[3]) + " 600 nm->" + str(
-                        point.stella_point.vis_pows[4]) + " 650 nm-> " + str(point.stella_point.vis_pows[5])
-                    nir_pows = "Near Infrared Light Spectrum(uW/cm^2): 610 nm-> " + str(point.stella_point.nir_pows[0]) + " 680 nm-> " + str(point.stella_point.nir_pows[1]) + " 730 nm-> " + str(point.stella_point.nir_pows[2]) +  " 760 nm-> " + str(point.stella_point.vis_pows[3]) + " 810 nm->" + str(point.stella_point.vis_pows[4]) + " 860 nm-> " + str(point.stella_point.vis_pows[5])
-
-                    tkinter.Label(attribute_frame, text=surface_temp)
-                    tkinter.Label(attribute_frame, text=air_temp)
-                    tkinter.Label(attribute_frame, text=relative_humidity)
-                    tkinter.Label(attribute_frame, text=air_temp)
-                    tkinter.Label(attribute_frame, text=air_pressure_hpa)
-                    tkinter.Label(attribute_frame, text=altitude_m_uncal)
-                    tkinter.Label(attribute_frame, text=vis_pows)
-                    tkinter.Label(attribute_frame, text=nir_pows)
-                else:
-                    # diplay message
-                    tkinter.Label(attribute_frame, text="No data recorded for selected point!")
+        self.attribute_frame = tk.Frame(top).grid(row=0, column=0)
+        # add attributes to frame
+        self.get_attribute(self, Annotation.x, Annotation.y)
 
         # create entry
         self.note = tk.Entry(top)
@@ -120,11 +91,46 @@ class AnnotationEditor:
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
         self.cancel = tk.Button(top, text="Cancel", command=self.top.destroy())
 
+    # when event handler is implemented, x and y should be event.x and event.y
+    def get_attribute(self, x, y):
+        for point in map_list:
+            # check if given points are STELLA points or not
+            if (point.x == float(x)) & (point.y == float(y)):
+                # display correlating data
+                surface_temp = "Surface Temperature (C): " + str(point.stella_point.surface_temp)
+                air_temp = "Air Temperature (C): " + str(point.stella_point.air_temp)
+                relative_humidity = "Relative Humidity (%): " + str(point.stella_point.relative_humidity)
+                air_pressure_hpa = "Air Pressure(hPa): " + str(point.stella_point.air_pressure_hpa)
+                altitude_m_uncal = "Altitude (m)" + str(point.stella_point.altitude_m_uncal)
+                vis_pows = "Visual Light Spectrum(uW/cm^2): 450 nm-> " + str(
+                    point.stella_point.vis_pows[0]) + " 500 nm-> " + str(
+                    point.stella_point.vis_pows[1]) + " 550 nm-> " + str(
+                    point.stella_point.vis_pows[2]) + " 570 nm-> " + str(
+                    point.stella_point.vis_pows[3]) + " 600 nm->" + str(
+                    point.stella_point.vis_pows[4]) + " 650 nm-> " + str(point.stella_point.vis_pows[5])
+                nir_pows = "Near Infrared Light Spectrum(uW/cm^2): 610 nm-> " + str(
+                    point.stella_point.nir_pows[0]) + " 680 nm-> " + str(
+                    point.stella_point.nir_pows[1]) + " 730 nm-> " + str(
+                    point.stella_point.nir_pows[2]) + " 760 nm-> " + str(
+                    point.stella_point.vis_pows[3]) + " 810 nm->" + str(
+                    point.stella_point.vis_pows[4]) + " 860 nm-> " + str(point.stella_point.vis_pows[5])
+
+                tk.Label(self.attribute_frame, text=surface_temp).pack
+                tk.Label(self.attribute_frame, text=air_temp).pack
+                tk.Label(self.attribute_frame, text=relative_humidity).pack
+                tk.Label(self.attribute_frame, text=air_temp).pack
+                tk.Label(self.attribute_frame, text=air_pressure_hpa).pack
+                tk.Label(self.attribute_frame, text=altitude_m_uncal).pack
+                tk.Label(self.attribute_frame, text=vis_pows).pack
+                tk.Label(self.attribute_frame, text=nir_pows).pack
+            else:
+                # display message if point doesn't have STELLA data attached to it
+                tk.Label(self.attribute_frame, text="No data recorded for selected point!").pack
+
     # saves notes made by user to the annotation attribute
     def save_note(self):
         Annotation.note = self.note.get()
         self.top.destroy()
-
 
 
 def set_map_list(map_points, map_scale):

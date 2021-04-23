@@ -1,7 +1,7 @@
 # @authors Brynn
-# @date 4/13/21
+# @date 4/22/21
 # @brief Houses all components and functions of the top menu
-# @todo fill in functions
+# @TODO Allow users to upload an image to replace the default satellite image
 
 import tkinter as tk
 from tkinter import filedialog
@@ -36,7 +36,7 @@ class MenuBar(tk.Menu):
         file_menu.add_command(label="Save File", underline=1, command=self.save_file)
         file_menu.add_command(label="Exit", underline=1, command=self.quit)
 
-        # Dropdown menu of view options: vis, nir, temp
+        # Dropdown menu of view options: vis, nir, temp, etc.
         view_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="View", underline=0, menu=view_menu)
         view_menu.add_command(label="Visual Map", underline=1,
@@ -61,6 +61,11 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="Annotate", underline=0, menu=annotate_menu)
         annotate_menu.add_command(label="New Annotation", underline=1, command=self.quit)
         annotate_menu.add_command(label="Clear Annotations", underline=1, command=self.quit)
+
+        # Dropdown menu of satellite frame options (uploading a new image or returning to the default)
+        satellite_menu = tk.Menu(self, tearoff=False)
+        self.add_cascade(label="Satellite", underline=0, menu=satellite_menu)
+        satellite_menu.add_command(label="Load Image", underline=1, command=master.user_sat)
 
         # Help Menu
         help_menu = tk.Menu(self, tearoff=False)

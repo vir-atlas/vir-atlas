@@ -5,9 +5,9 @@
 
 import tkinter as tk
 import menu_bar as menu
-import stella_frame
 import map_gen
 import color_legend
+from tkinter import filedialog
 
 
 # Class creating the base window
@@ -23,15 +23,11 @@ class Root(tk.Tk):
         self.stella_file = 0
         self.gps_file = 0
         self.map_file = 0
+        self.satellite_image = 0
+        # List of accepted types for user uploaded satellite images. Feel free to add.
+        self.image_formats = [("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")]
 
         self.map_data = map_gen.Map()
-
-        # Add the stella_frame to the main window
-        # self.stella_frame = stella_frame.StellaFrame(self)
-        # self.stella_frame.set_canvas()
-        # self.stella_frame.place(x=20, y=20)
-
-        self.stella_frame = None
 
         # Add default instructional canvas upon startup
         self.startup_message = tk.Canvas(width=840, height=840, bg="grey")
@@ -42,11 +38,11 @@ class Root(tk.Tk):
                                               "display in View")
         self.startup_message.place(y=20, x=20)
 
-        # Add the legend frame to the main window
+        # Initialize frames
+        self.stella_frame = None
         self.color_legend_frame = None
-
-        # Add the annotation frame to the main window
         self.annotation_frame = None
+        self.satellite_frame = None
 
         # Add the menu_bar to the main window
         menu_bar = menu.MenuBar(self)
@@ -74,6 +70,14 @@ class Root(tk.Tk):
             self.color_legend_frame.destroy()
         self.color_legend_frame = new_legend
         self.color_legend_frame.place(x=880, y=20)
+
+    # @TODO Open image file, load to frame
+    def user_sat(self):
+        if self.satellite_frame is not None:
+            self.satellite_frame.destroy()
+
+        self.satellite_image = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
+                                                          title="Select an image", filetypes=self.image_formats)
 
 
 if __name__ == "__main__":

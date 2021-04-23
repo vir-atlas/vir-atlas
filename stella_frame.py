@@ -3,6 +3,8 @@
 # @brief Everything within the STELLA map frame
 
 import tkinter as tk
+
+import annotation
 import map_gen
 
 
@@ -53,6 +55,9 @@ class StellaFrame(tk.Frame):
 
         # windows scroll
         self.canvas.bind("<MouseWheel>", self.zoomer)
+
+        # bound right clicking to Annotations
+        self.canvas.bind("<Button-3>", annotation.AnnotationEditor)
 
     # move
     def move_start(self, event):

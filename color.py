@@ -2,10 +2,8 @@
 # 2/26/2021
 # @brief:   contains functions for translating various data into hex strings for color
 #           most deal with the process of translating irradiance values to rgb
-# last updated: 4/12/2021 by Sophia Novo-Gradac
-# @updates  Moved false_color algorithm from Map_Point
-#           Moved OoR() from Map_Point
-#           Modified OoR to scale out of bounds values instead of setting to bounds
+# last updated: 4/15/2021 by Sophia Novo-Gradac
+# @updates  added 2 new false color functions
 # TODO:     infared works, but it might be desirable to define differently
 
 #!/usr/bin/env python3
@@ -147,3 +145,51 @@ def false_color(value, min, max):
         color = (1 - p / 0.25) * orange + (p / 0.25) * red
 
     return rgb_to_hex(color)
+
+'''false color for vegetative index
+takes value from -1 to 1'''
+def false_color_vi(value):
+    # print(value)
+    d_blue = np.array([0, 0, 128])      # -1  -> 0
+    white = np.array([255, 255, 255])   # 0   -> 0.5
+    tan = np.array([210, 180, 140])     # 0.1 -> 0.55
+    green = np.array([0, 255, 0])       # 0.5 -> 0.75
+    d_green = np.array([0, 128, 0])     # 1   -> 1
+
+    color = []
+    # convert temp to a percentage scale of 0 to 100
+    p = (value + 1)/(2)
+
+    if p < 0.5:
+        color = (1 - p / 0.5) * d_blue + (p / 0.5) * white
+    elif p < 0.55:
+        p = p - 0.5
+        color = (1 - p / 0.05) * white + (p / 0.05) * tan
+    elif p < 0.75:
+        p = p - 0.55
+        color = (1 - p / 0.2) * tan + (p / 0.2) * green
+    else:
+        p = p - 0.75
+        color = (1 - p / 0.25) * green + (p / 0.25) * d_green
+
+    # print(color)
+    # print(rgb_to_hex(color))
+    return rgb_to_hex(color)
+
+''' returns associated color between hex color 1 and color 2
+color1 to min, color2 to max, white to 0
+false color between 2 colors '''
+def false_two_color(value, min, max, color1, color2):
+    c1 = np.array(hex_to_rgb(color1))
+    c2 = np.array(hex_to_rgb(color2))
+    white = np.array([255,255,255])
+
+    p = (value - min)/(max - min)
+
+    if p < 0.5:
+        color = (1 - p / 0.5) * c1 + (p / 0.5) * white
+    else:
+        p = p - 0.5
+        color = (1 - p / 0.5) * white + (p / 0.5) * c2
+    return rgb_to_hex(color)
+

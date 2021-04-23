@@ -1,16 +1,17 @@
-# @author Marisa Loraas
+# @author Marisa Loraas, Sophia Novo-Gradac, Timothy Goetch
 # 2/20/2021
 # @brief:   StellaPoint object: creates an object for every point the STELLA records, so that you can access any attribute
 #           that stella outputs for any point of record. Each attribute in the __init__ parameters are the attributes given out
 #           by stella that can be seen in the stella_data_column_header.xlsx (besides the columns with "mark" in them because I
 #           deemed them not important for these attributes, but they are commented out
-# last updated: 3/20/2021 by Timothy Goetsch
-# @updates  added a line to remove the header from the Stella Data file. Started working on deconstructing the make_stella_point()
-#           into smaller single purpose functions.
+# last updated: 4/15/2021 by Sophia Novo-Gradac
+# @updates  nir values now adjusted to vis. (Paul's suggestion)
+#           air temps taken in as floats
 # TODO:     none
 
 from datetime import datetime
 # import csv
+import numpy as np
 
 
 class StellaPoint:
@@ -48,8 +49,8 @@ class StellaPoint:
         self.st_error_bar = float(surface_temp_error_bar)
     #   self.atm = air_temp_mark
     #   self.air_temp_units = air_temp_units
-        self.air_temp = air_temp
-        self.at_error_bar = air_temp_error_bar
+        self.air_temp = float(air_temp)
+        self.at_error_bar = float(air_temp_error_bar)
     #   self.rhm = relative_humidity_mark
     #   self.rel_humid_units = relative_humidity_units
         self.rel_humid = relative_humidity
@@ -73,6 +74,8 @@ class StellaPoint:
         # changed to an array of the powers. wavebands is constant and we dont
         # need to pull it.
         self.nir_pows = nir_pows
+        
+        self.adjust_nir()
 
     """print data to terminal. for debugging"""
 
@@ -97,7 +100,17 @@ class StellaPoint:
             self.vis_pows,
             self.nir_spectrum_error_bar,
             self.nir_pows)
+    
+    def adjust_nir(self):
+        val_610 = self.vis_pows[4] + (self.vis_pows[5] - self.vis_pows[4])/5
+        delta = abs(self.nir_pows[0] - val_610)
 
+        if val_610 > self.nir_pows[0]:
+            for i in range(6):
+                self.nir_pows[i] += delta
+        else:
+            for i in range(6):
+                self.vis_pows[i] += delta
 
 """find a way to pull out the batches so user can select which one"""
 
@@ -151,11 +164,18 @@ def make_stella_list(file):
     batches = []
     cur_batch = ""
     for point in list(points):
-        if (not cur_batch) or (cur_batch != point[0]):
+
+        arr = np.array([float(point[23]), float(point[25]), float(point[27]),
+                    float(point[29]), float(point[31]), float(point[33]), 
+                    float(point[38]), float(point[40]), float(point[42]),
+                    float(point[44]), float(point[46]), float(point[48])])
+        
+        if cur_batch != point[0]: 
+            if np.all((arr == 0)):
+                continue
             cur_batch = point[0]
             start = float(point[3])
             batches.append(cur_batch)
-            # print(start)
 
         ms = (float(point[3]) - start) * 60 * 60 * 1000
         vis_pows = [float(point[23]), float(point[25]), float(point[27]),
@@ -196,18 +216,9 @@ def make_stella_list(file):
 
 """returns a new list of stella_list based on their batch"""
 
-
 def get_batch(stella_list, batch):
     points = []
     for stella in stella_list:
         if stella.batch == batch:
             points.append(stella)
     return points
-
-# Test StellaPoint -- Ty
-# file = "Data Files/data.csv"
-# stella_point = make_stella_list(file)
-# print('Size of Stella Point Object: ', len(stella_point))
-
-# Test StellaPoint -- Sophia
-# stella_list = make_stella_list("Data Files/data.csv")

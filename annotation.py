@@ -30,9 +30,26 @@ class AnnotationFrame(tk.Frame):
         self.width = 420
         self.height = 420
 
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
+        # self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
 
-        self.set_canvas()
+        # set up the Listbox of all annotations
+        self.listbox = tk.Listbox(self, bg="white")
+        self.listbox.pack()
+        # set up Scrollbar for Listbox
+        self.scrollbar = tk.Scrollbar(self)
+        self.scrollbar.pack()
+
+        # insert available annotations into listbox
+        for point in map_list:
+            # check if there's something in the annotation attribute
+            if point.annotation != "":
+                self.listbox.insert(point)
+
+        # attaching listbox to scrollbar
+        self.listbox.config(yscrollcommand=self.scrollbar.set)
+
+        # adding scrollbar's command parameter
+        self.scrollbar.config(command=self.listbox.yview)
 
     def notes(self, event):
         pass

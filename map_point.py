@@ -29,22 +29,23 @@ class MapPoint:
 
     def __init__(self, stella_point, gps_point, x, y):
         super(MapPoint, self).__init__()
-        self.stella_point = stella_point        # added new stella_point attribute
+        self.stella_point = stella_point  # added new stella_point attribute
         self.gps_point = gps_point
-        
+
         self.vis_rgb = set_vis(stella_point)
         self.nir_rgb = set_nir(stella_point)
         self.temp_rgb = "None"
-        self.sva_rgb = "None" #surface vs air temperature
+        self.sva_rgb = "None"  # surface vs air temperature
 
-        self.ndvi_rgb = set_ndvi(stella_point) # various vegetation index colors 
+        self.ndvi_rgb = set_ndvi(stella_point)  # various vegetation index colors
         self.evi_rgb = set_evi(stella_point)
         self.savi_rgb = set_savi(stella_point)
         self.msavi_rgb = set_msavi(stella_point)
-        
+
         self.x = x
         self.y = y
-        self.confidence = gps_point.feet_since_takeoff * math.tan(0.349066) # radius of data area. Aperature is +- 20 degrees (0.349 rads)
+        self.confidence = gps_point.feet_since_takeoff * math.tan(
+            0.349066)  # radius of data area. Aperature is +- 20 degrees (0.349 rads)
 
         self.annotation = ""
 
@@ -56,21 +57,23 @@ class MapPoint:
         # print(self.vis_rgb, self.nir_rgb, self.x, self.y)
         self.stella_point.print_stella()
         self.gps_point.print_gps()
-        print(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb, 
-                self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb, 
-                self.x, self.y, self.confidence, self.annotation)
+        print(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb,
+              self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb,
+              self.x, self.y, self.confidence, self.annotation)
 
     def write_point(self, file):
         self.stella_point.write_stella(file)
         self.gps_point.write_gps(file)
-        print(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb, 
-                self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb, 
-                self.x, self.y, self.confidence, self.annotation, file=file)
+        print(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb,
+              self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb,
+              self.x, self.y, self.confidence, self.annotation, file=file)
         # file.write(self.vis_rgb, self.nir_rgb, self.temp_rgb, self.sva_rgb, 
         #         self.ndvi_rgb, self.evi_rgb, self.savi_rgb, self.msavi_rgb, 
         #         self.x, self.y, self.confidence, self.annotation)
 
+
 """ Next 4 functions find max or min of latitude or longitude from all gps data points """
+
 
 def find_min_lat(gps_list):
     num_points = len(gps_list)
@@ -113,7 +116,6 @@ returns list of map_list and the width and height of the canvas"""
 
 
 def set_xy(gps_list, stella_list, canvas_size):
-
     min_lat = find_min_lat(gps_list)
     min_lon = find_min_lon(gps_list)
     max_lat = find_max_lat(gps_list)
@@ -194,6 +196,7 @@ def set_xy(gps_list, stella_list, canvas_size):
 """pull irradiance values from a stella_point object
     calls col.data_to_hex() to gather the RGB value (of type str) and return it to calling method."""
 
+
 def set_vis(stella_point):
     max_i = max(stella_point.vis_pows)
     rgb = black
@@ -201,6 +204,7 @@ def set_vis(stella_point):
         rgb = col.data_to_hex(stella_point.vis_pows, vis_wl)
 
     return rgb
+
 
 def set_nir(stella_point):
     max_i = max(stella_point.nir_pows)
@@ -210,13 +214,17 @@ def set_nir(stella_point):
 
     return rgb
 
+
 '''below 2 functions get min/max temperatures recorded'''
+
+
 def get_min_temp(stella_list):
     min_temp = float(stella_list[0].surface_temp)
     for s in stella_list:
         if float(s.surface_temp) < min_temp:
             min_temp = float(s.surface_temp)
     return min_temp
+
 
 def get_max_temp(stella_list):
     max_temp = float(stella_list[0].surface_temp)
@@ -225,7 +233,10 @@ def get_max_temp(stella_list):
             max_temp = float(s.surface_temp)
     return max_temp
 
+
 ''' set the temp_rgb for 1 map_point'''
+
+
 def set_temp(map_point, min_temp, max_temp):
     # max_temp = 85.0
     # min_temp = -40.0 #max and min the sensor can see
@@ -239,7 +250,10 @@ def set_temp(map_point, min_temp, max_temp):
 
     map_point.sva_rgb = col.false_two_color(temp_delta, min_delta, max_delta, blue, red)
 
+
 ''' For all map_points in list, set the temp_rgb '''
+
+
 def set_all_temps(map_list, stella_list):
     max_temp = get_max_temp(stella_list)
     min_temp = get_min_temp(stella_list)
@@ -268,12 +282,13 @@ Band 10 - 10.60-11.19 - n/a
 Band 11 - 1.50-12.51 - n/a
 '''
 
+
 def set_ndvi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
 
-    ndvi = (band5 - band4) / (band5 + band4) #range of 1 -> -1
-    
+    ndvi = (band5 - band4) / (band5 + band4)  # range of 1 -> -1
+
     if ndvi > 1:
         print("ndvi > 1: ", ndvi)
         ndvi = 1
@@ -281,8 +296,9 @@ def set_ndvi(stella_point):
         print("ndvi < -1: ", ndvi)
         ndvi = -1
 
-    #1 = green, 0 = white?, -1 = blue
+    # 1 = green, 0 = white?, -1 = blue
     return col.false_color_vi(ndvi)
+
 
 def set_evi(stella_point):
     band2 = (stella_point.vis_pows[0] + stella_point.vis_pows[1]) / 2
@@ -306,6 +322,7 @@ def set_evi(stella_point):
 
     return col.false_color_vi(evi)
 
+
 def set_savi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
@@ -321,10 +338,11 @@ def set_savi(stella_point):
 
     return col.false_color_vi(savi)
 
+
 def set_msavi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
-    
+
     msavi = (2 * band5 + 1 - math.sqrt((2 * band5 + 1) ** 2 - 8 * (band5 - band4))) / 2
 
     if msavi > 1:
@@ -336,13 +354,19 @@ def set_msavi(stella_point):
 
     return col.false_color_vi(msavi)
 
+
 """test function"""
+
+
 def print_mins(gps_list):
     min_lat = find_min_lat(gps_list)
     min_lon = find_min_lon(gps_list)
     print(min_lat, min_lon)
 
-'''Based on the gps data, return correct stella batch''' 
+
+'''Based on the gps data, return correct stella batch'''
+
+
 def detect_batch(gps_list, stella_list):
     time = gps_list[0].time
     batch = stella_list[0].batch
@@ -355,8 +379,11 @@ def detect_batch(gps_list, stella_list):
             batch = s.batch
     return batch
 
+
 '''do all function for MapPoint.
 use to process all data'''
+
+
 def init_map_list(gps_file, stella_file, canvas_size):
     gps_list = gps_point.read_drone_csv(gps_file)
     stella_list = stella_point.make_stella_list(stella_file)
@@ -368,8 +395,10 @@ def init_map_list(gps_file, stella_file, canvas_size):
     map_list, width, height, delta_lat = set_xy(gps_list, stella_list, canvas_size)
     return map_list, width, height, delta_lat
 
+
 def save_list(map_list, save_file):
-    pickle.dump(map_list, open(save_file, "wb"))
+    pickle.dump(map_list, save_file)
+
 
 def read_map_list(file):
     return pickle.load(open(file, 'rb'))

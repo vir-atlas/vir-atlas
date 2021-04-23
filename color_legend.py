@@ -92,7 +92,6 @@ class ColorLegend(Frame):
     def __init__(self, mode="vis"):
         super().__init__()
 
-        self.master.title("ColorBar")
         self.pack(fill=BOTH, expand=1)
 
         # set display mode
@@ -120,7 +119,8 @@ class ColorLegend(Frame):
         x_start = 10  # goes with window atm, may move to a method if both vertical and horizontal legends are produced
         x_end = 60  # same as x_start
         y = 10  # arbitrary y start value
-        # create rectangles, depends on x starting and ending values, y start value, and box_size, generalized for any mode
+        # create rectangles, depends on x starting and ending values, y start value, and box_size, generalized for
+        # any mode
         if color:
             # determine size of bounding box for each color depending on number of elements in the color List
             box_size = floor((stop - start) / len(color))
@@ -131,12 +131,12 @@ class ColorLegend(Frame):
             self.canvas.create_line(x, start, x, legend_size)
 
             for num, c in enumerate(color):
-                self.canvas.create_rectangle(x_start, y, x_end, y+box_size, outline=c, fill=c)
+                self.canvas.create_rectangle(x_start, y, x_end, y + box_size, outline=c, fill=c)
                 self.canvas.create_line(70, y, 75, y)
                 if y == 0:
                     self.canvas.create_text(80, y, anchor=W, font=("Arial", 8), text=scale[num])
                 else:
-                    self.canvas.create_text(80, y + (box_size/2), anchor=W, font=("Arial", 8), text=scale[num])
+                    self.canvas.create_text(80, y + (box_size / 2), anchor=W, font=("Arial", 8), text=scale[num])
                 y += box_size
                 # print(y)
 
@@ -145,22 +145,6 @@ class ColorLegend(Frame):
         # pack canvas
         self.canvas.pack(fill=BOTH, expand=1)
 
-
-def set_scale(mode: str):
-    scale = []
-    if mode == "temp":
-        scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0]  # 11 values
-    elif mode == "ndvi" or mode == "evi" or mode == "savi" or mode == "msavi":
-        scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]  # 21 values
-    elif mode == "sva":
-        max_temp = 85
-        min_temp = -41  # range is exclusive of the max value, so we're adding 1 to the actual max value of the sva scale
-        for _ in range(max_temp, min_temp, -5):
-            scale.append(float(_))
-    return scale
-
-
-def get_colors(mode: str, scale: list):
     """
     8 maps (only need 3 unique legends)
     VIS (VISUAL LIGHT) (data_to_hex)

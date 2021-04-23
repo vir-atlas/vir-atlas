@@ -1,4 +1,4 @@
-# @authors Tenise
+# @authors Tenise and Marisa 
 # @date 04/14/2021
 # @brief Handles Annotations
 # @todo add "Cancel" button to AnnotationEditor, correlate event coordinates with stella coordinates
@@ -125,15 +125,6 @@ class AnnotationEditor:
         Annotation.note = self.note.get()
         self.top.destroy()
 
-
-def print_attributes(map_point):
-    map_point.stella_point.surface_temp  # float
-    map_point.stella_point.air_temp  # float
-    map_point.stella_point.relative_humidity
-    map_point.stella_point.air_pressure_hpa
-    map_point.stella_point.altitude_m_uncal
-    map_point.stella_point.vis_pows
-    map_point.stella_point.nir_pows
 
 
 def set_map_list(map_points, map_scale):

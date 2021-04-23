@@ -261,7 +261,7 @@ class Map:
         elif gps_file != 0 and stella_file != 0:
             self.map_list, self.width, self.height, self.delta_lat = map_point.init_map_list(gps_file, stella_file,
                                                                                              canvas_size)
-                                                                                             annotation.set_map_list(self.map_list)
+            annotation.set_map_list(self.map_list)
             self.scale = feet_to_pix(self.delta_lat, self.height)
 
     def clear_map(self):

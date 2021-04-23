@@ -22,10 +22,17 @@ class Annotation(object):
 
 
 # Responsible for the annotation_frame in main.py
-class AnnotationFrame:
+class AnnotationFrame(tk.Frame):
     def __init__(self, master):
-        pass
-        # annotations = self.annotations =
+        # constructor for AnnotationFrame
+        tk.Frame.__init__(self, master)
+
+        self.width = 420
+        self.height = 420
+
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
+
+        self.set_canvas()
 
     def notes(self, event):
         pass
@@ -49,9 +56,11 @@ class AnnotationEditor(object):
         # create "Save" button that initiates save_note()
         self.save = tk.Button(top, text="Save", command=self.save_note)
 
+    # saves notes made by user to the annotation attribute
     def save_note(self):
-        self.save = self.note.get()
+        Annotation.note = self.note.get()
         self.top.destroy()
+
 
 def print_attributes(map_point):
     map_point.stella_point.surface_temp

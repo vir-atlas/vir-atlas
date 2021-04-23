@@ -2,10 +2,12 @@
 # @date 04/14/2021
 # @brief Handles Annotations
 # @todo add "Cancel" button to AnnotationEditor, correlate event coordinates with stella coordinates
+import tkinter
 import tkinter as tk
 import sys
 import map_point
 import map_gen
+
 global map_list
 global scale
 
@@ -68,20 +70,44 @@ class AnnotationEditor(object):
         # call for popup window
         top = self.top = tk.Toplevel(master)
 
-        # label for Annotation Editor
+        # label for AnnotationEditor
         self.label = tk.Label(top, text="VIR Atlas Annotations Editor")
         self.label.pack()
 
+        # set up event handler to create new Annotation object
+
         # create attribute frame
+        attribute_frame = tk.Frame(top).grid(row=0, column=0)
+
+        # when event handler is implemented, x and y should be event.x and event.y
         def get_attribute(x, y):
             for point in map_list:
+                # check if given points are STELLA points or not
                 if point.stella_point.x == x & point.stella_point.y == y:
-                    Annotation.x_coordinate = x
-                    Annotation.y_coordinate = y
+                    # display correlating data
+                    surface_temp = str(point.stella_point.surface_temp)  # float
+                    air_temp = str(point.stella_point.air_temp)  # float
+                    relative_humidity = str(point.stella_point.relative_humidity)
+                    air_pressure_hpa = str(point.stella_point.air_pressure_hpa)
+                    altitude_m_uncal = str(point.stella_point.altitude_m_uncal)
+                    vis_pows = str(point.stella_point.vis_pows)
+                    nir_pows = str(point.stella_point.nir_pows)
+
+                    tkinter.Label(attribute_frame, text=surface_temp)
+                    tkinter.Label(attribute_frame, text=air_temp)
+                    tkinter.Label(attribute_frame, text=relative_humidity)
+                    tkinter.Label(attribute_frame, text=air_temp)
+                    tkinter.Label(attribute_frame, text=air_pressure_hpa)
+                    tkinter.Label(attribute_frame, text=altitude_m_uncal)
+                    tkinter.Label(attribute_frame, text=vis_pows)
+                    tkinter.Label(attribute_frame, text=nir_pows)
+                else:
+                    # diplay message
+                    tkinter.Label(attribute_frame, text="No data recorded for selected point!")
 
         # create entry
         self.note = tk.Entry(top)
-        self.note_frame = tk.Fram(top).grid(row=1, column=1)
+        self.note_frame = tk.Frame(top).grid(row=1, column=1)
         self.note.pack()
 
         # create "Save" button that initiates save_note()
@@ -98,8 +124,8 @@ class AnnotationEditor(object):
 
 
 def print_attributes(map_point):
-    map_point.stella_point.surface_temp
-    map_point.stella_point.air_temp
+    map_point.stella_point.surface_temp  # float
+    map_point.stella_point.air_temp  # float
     map_point.stella_point.relative_humidity
     map_point.stella_point.air_pressure_hpa
     map_point.stella_point.altitude_m_uncal

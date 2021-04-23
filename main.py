@@ -1,7 +1,7 @@
 # @authors Brynn
-# @date 4/13/21
+# @date 4/22/21
 # @brief The most recent main GUI file.
-# @TODO Everything ;-;
+# @TODO Add the legend, annotations, and satellite frames to the main window
 
 import tkinter as tk
 import menu_bar as menu
@@ -29,6 +29,12 @@ class Root(tk.Tk):
         self.stella_frame = stella_frame.StellaFrame(self)
         self.stella_frame.set_canvas()
         self.stella_frame.place(x=20, y=20)
+
+        # Add the legend frame to the main window
+        self.legend_frame = None
+
+        # Add the annotation frame to the main window
+        self.annotation_frame = None
 
         # Add the menu_bar to the main window
         menu_bar = menu.MenuBar(self)

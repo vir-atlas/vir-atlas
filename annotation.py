@@ -16,6 +16,7 @@ class Annotation(object):
         self.x_coordinate = x_coordinate
         self.y_coordinate = y_coordinate
         for point in map_list:
+            radius = map_gen.feet_to_pix(point.confidence, scale)
             if point.x == self.x_coordinate and point.y == self.y_coordinate:
                 point.stella_point.annotation = note
             elif point.stella_point.x + radius > self.x_coordinate > point.stella_point.x - radius:

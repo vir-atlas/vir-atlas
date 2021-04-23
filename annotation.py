@@ -66,32 +66,32 @@ class AnnotationFrame(tk.Frame):
 # Responsible for editing/adding Annotations
 class AnnotationEditor(Annotation):
     # constructor for AnnotationEditor
-    def __init__(self, master):
+    def __init__(self, x, y):
         # call for popup window
-        top = self.top = tk.Toplevel(master)
+        self.top = tk.Toplevel()
 
         # label for AnnotationEditor
-        self.label = tk.Label(top, text="VIR Atlas Annotations Editor")
+        self.label = tk.Label(self.top, text="VIR Atlas Annotations Editor")
         self.label.pack()
 
         # create attribute frame
-        self.attribute_frame = tk.Frame(top).grid(row=0, column=0)
+        self.attribute_frame = tk.Frame(self.top).grid(row=0, column=0)
         # add attributes to frame
-        self.get_attribute(self, Annotation.x, Annotation.y)
+        self.get_attribute(Annotation.x, Annotation.y)
 
         # create entry
-        self.note = tk.Entry(top)
-        self.note_frame = tk.Frame(top).grid(row=1, column=1)
+        self.note = tk.Entry(self.top)
+        self.note_frame = tk.Frame(self.top).grid(row=1, column=1)
         self.note.pack()
 
         # create "Save" button that initiates save_note()
-        self.save = tk.Button(top, text="Save", command=self.save_note)
+        self.save = tk.Button(self.top, text="Save", command=self.save_note)
 
         # create "Cancel" button that destroys the window
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
-        self.cancel = tk.Button(top, text="Cancel", command=self.top.destroy())
+        self.cancel = tk.Button(self.top, text="Cancel", command=self.top.destroy())
 
-    # when event handler is implemented, x and y should be event.x and event.y
+    # gets and displays all attributes (if available)
     def get_attribute(self, x, y):
         for point in map_list:
             # check if given points are STELLA points or not

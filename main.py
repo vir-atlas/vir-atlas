@@ -6,7 +6,7 @@
 import tkinter as tk
 import menu_bar as menu
 import map_gen
-import color_legend
+import legend
 from tkinter import filedialog
 
 
@@ -40,7 +40,7 @@ class Root(tk.Tk):
 
         # Initialize frames
         self.stella_frame = None
-        self.color_legend_frame = None
+        self.legend_frame = None
         self.annotation_frame = None
         self.satellite_frame = None
 
@@ -65,11 +65,11 @@ class Root(tk.Tk):
         self.stella_frame.place(x=20, y=20)
 
         # Switch legend to match current map
-        new_legend = color_legend.ColorLegend(self.stella_frame.mode)
-        if self.color_legend_frame is not None:
-            self.color_legend_frame.destroy()
-        self.color_legend_frame = new_legend
-        self.color_legend_frame.place(x=880, y=20)
+        new_legend = legend.Legend(self.stella_frame.mode)
+        if self.legend_frame is not None:
+            self.legend_frame.destroy()
+        self.legend_frame = new_legend
+        self.legend_frame.place(x=880, y=20)
 
     # @TODO Open image file, load to frame
     def user_sat(self):

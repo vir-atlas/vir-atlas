@@ -65,7 +65,7 @@ class Root(tk.Tk):
         self.stella_frame.place(x=20, y=20)
 
         # Switch legend to match current map
-        new_legend = legend.Legend(self.stella_frame.mode)
+        new_legend = legend.Legend(self, self.stella_frame.mode)
         if self.legend_frame is not None:
             self.legend_frame.destroy()
         self.legend_frame = new_legend

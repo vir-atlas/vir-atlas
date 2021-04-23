@@ -5,8 +5,9 @@
 import tkinter as tk
 import sys
 import map_point
-
+import map_gen
 global map_list
+global scale
 
 
 class Annotation(object):
@@ -17,6 +18,13 @@ class Annotation(object):
         for point in map_list:
             if point.x == self.x_coordinate and point.y == self.y_coordinate:
                 point.stella_point.annotation = note
+            elif point.stella_point.x + radius > self.x_coordinate > point.stella_point.x - radius:
+                if point.stella_point.y + radius > self.y_coordinate > point.stella_point.y - radius:
+                    """Checks to see if user click a point within a stella point area"""
+                    """If so, annotation coordinates are set to stella coordinates"""
+                    point.stella_point.annotation = note
+                    self.x_coordinate = point.stella_point.x
+                    self.y_coordinate = point.stella_point.y
         self.note = note
 
 
@@ -98,6 +106,7 @@ def print_attributes(map_point):
     map_point.stella_point.nir_pows
 
 
-def set_map_list(map_points):
-    global map_list
+def set_map_list(map_points, map_scale):
+    global map_list, scale
     map_list = map_points
+    scale = map_scale

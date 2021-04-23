@@ -1,8 +1,7 @@
 # @authors Tenise
 # @date 04/14/2021
 # @brief Handles Annotations
-# @todo add "Cancel" button to AnnotationEditor, work on Annotation and AnnotationFrame
-
+# @todo add "Cancel" button to AnnotationEditor, correlate event coordinates with stella coordinates
 import tkinter as tk
 import sys
 import map_point
@@ -35,6 +34,7 @@ class AnnotationFrame(tk.Frame):
         # set up the Listbox of all annotations
         self.listbox = tk.Listbox(self, bg="white")
         self.listbox.pack()
+
         # set up Scrollbar for Listbox
         self.scrollbar = tk.Scrollbar(self)
         self.scrollbar.pack()
@@ -51,9 +51,6 @@ class AnnotationFrame(tk.Frame):
         # adding scrollbar's command parameter
         self.scrollbar.config(command=self.listbox.yview)
 
-    def notes(self, event):
-        pass
-
 
 # Responsible for editing/adding Annotations
 class AnnotationEditor(object):
@@ -66,12 +63,24 @@ class AnnotationEditor(object):
         self.label = tk.Label(top, text="VIR Atlas Annotations Editor")
         self.label.pack()
 
+        # create attribute frame
+        def get_attribute(x, y):
+            for point in map_list:
+                if point.stella_point.x == x & point.stella_point.y == y:
+                    Annotation.x_coordinate = x
+                    Annotation.y_coordinate = y
+
         # create entry
         self.note = tk.Entry(top)
+        self.note_frame = tk.Fram(top).grid(row=1, column=1)
         self.note.pack()
 
         # create "Save" button that initiates save_note()
         self.save = tk.Button(top, text="Save", command=self.save_note)
+
+        # create "Cancel" button that destroys the window
+        # Do we need to make sure that this makes no changes to the Frame? I doubt it
+        self.cancel = tk.Button(top, text="Cancel", command=self.top.destroy())
 
     # saves notes made by user to the annotation attribute
     def save_note(self):

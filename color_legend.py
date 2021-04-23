@@ -2,13 +2,8 @@
 # 4/21/2021
 # @brief    ColorLegend object:  creates legends for the following modes: VIS, NIR, TEMP, SVA, NDVI, EVI, SAVI, MSAVI
 # last updated: 4/22/2021 by Timothy Goetsch
-# @updates  streamlined the ColorLegend __init()__ method, now it should work for *any size* list. I haven't tested it
-#           extensively. VIS and NIS modes generate empty canvases because those legends are likely not possible in a bar
-#           legend like what ColorLegend currently produces. TEMP and the *VI modes all produce working legends afaik.
-#           SVA currently generates an empty canvas.
-
-# TODO:     finish the SVA legend logic, add create_legend() function for returning a legend. maybe rename file to
-#           legend.py to include the distance legend.
+# @updates  SVA mode now produces a sample legend. We might actually be able use it for generic VIR-ATLAS stuff? idk.
+# TODO:
 
 import tkinter as tk
 from tkinter import Canvas, Frame, BOTH, W
@@ -100,23 +95,23 @@ class ColorLegend(Frame):
         self.master.title("ColorBar")
         self.pack(fill=BOTH, expand=1)
 
-        # set default display mode
+        # set display mode
         self.mode = mode
 
-        # self.canvas_size = 700  # pulled from stella_frame.py, probably don't need (?)
+        # set display size
         self.width = 110
         self.height = 840
 
+        # create canvas
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
 
-        # if mode == "vis":
-        #     self.set_map_vis()
-        # elif mode == "nir":
-        #     self.set_map_nir()
-        # elif mode == "temp":
-        #     self.set_map_temp()
+        # set scale
+        self.scale = set_scale(self.mode)
 
-        color, scale = self.get_colors()
+        # collect color and scale lists
+        color, scale = get_colors(self.mode, self.scale)
+
+        # specify how much space to leave above/below legend and canvas top/bottom
         start = 10
         stop = self.height - start
         step = 1
@@ -150,8 +145,24 @@ class ColorLegend(Frame):
         # pack canvas
         self.canvas.pack(fill=BOTH, expand=1)
 
+
+def set_scale(mode: str):
+    scale = []
+    if mode == "temp":
+        scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0]  # 11 values
+    elif mode == "ndvi" or mode == "evi" or mode == "savi" or mode == "msavi":
+        scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]  # 21 values
+    elif mode == "sva":
+        max_temp = 85
+        min_temp = -41  # range is exclusive of the max value, so we're adding 1 to the actual max value of the sva scale
+        for _ in range(max_temp, min_temp, -5):
+            scale.append(float(_))
+    return scale
+
+
+def get_colors(mode: str, scale: list):
     """
-    8 maps (only need 6 legends)
+    8 maps (only need 3 unique legends)
     VIS (VISUAL LIGHT) (data_to_hex)
     NIR (NEAR INFRARED LIGHT) (data_to_hex)
 
@@ -159,63 +170,66 @@ class ColorLegend(Frame):
     SVA (SURFACE VS AIR TEMP, WHITE IS AIR TEMP, SUBTRACTS AIR TEMP FROM SURFACE TO OBTAIN DELTA)
     VI There are (-1, 1) NEGATIVE NUMBER SYMBOLIZES DEAD
     """
-    def get_colors(self):
-        color = []
-        scale = []
-        # visual index (0, 1),
-        if self.mode == "vis":
-            # scale = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 11 values
-            # for i in scale:
-            #     color.append(col.false_color(i, 0, 1))
-            pass
-        # vegetative index (-1, 1) -> (d_blue, white, tan, green, d_green)
-        elif self.mode == "nir":
-            # scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 21 values
-            # for i in scale:
-            #     color.append(col.false_color_vi(i))
-            pass
+    color = []
 
-        # same as vir rn
-        elif self.mode == "temp":
-            scale = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 11 values
-            # scale = [0, 1]
-            for i in scale:
-                color.append(col.false_color(i, 0, 1))
-        elif self.mode == "sva":
-            # scale = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
-            # temp = []
-            # air_temp = 5
-            # for num, s in enumerate(scale):
-            #     temp[num] = self.set_temp(s, scale[0], scale[-1], air_temp)
-            #
-            # for num, i in enumerate(scale):
-            #     color.append(col.false_two_color(air_temp, scale[0], scale[-1], temp[num], temp[-num]))
-            pass
-        elif self.mode == "ndvi" or self.mode == "evi" or self.mode == "savi" or self.mode == "msavi":
-            scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 21 values
-            for i in scale:
-                color.append(col.false_color_vi(i))
+    if mode == "vis":
+        # visible spectrum, will likely need a different legend type than a plain bar.
+        # scale = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 11 values
+        # for i in scale:
+        #     color.append(col.false_color(i, 0, 1))
+        pass
+    elif mode == "nir":
+        # near infrared spectrum, will likely need a different legend type than a plain bar. (same as vis i think)
+        # scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 21 values
+        # for i in scale:
+        #     color.append(col.false_color_vi(i))
+        pass
+    elif mode == "temp":
+        # temperatures, range(0, 1, 0.1) -> (d_blue, cyan, yellow, orange, red)
+        for i in scale:
+            color.append(col.false_color(i, 0, 1))
+    elif mode == "sva":
+        # surface vs air temp, range(?) -> (?)
+        temp = [0] * len(scale)  # list containing hex values for corresponding surface temps
+        air_temp = scale[0] + scale[-1]  # arbitrary air temperature value, however it needs to be inside the (min, max) range of scale
 
-        return color, scale
+        for num, s in enumerate(scale):
+            temp[num] = set_temp(s, scale[0], scale[-1], air_temp)
 
-    def set_temp(self, surface_temp, min_temp, max_temp, air_temp):
-        # max_temp = 85.0
-        # min_temp = -40.0 #max and min the sensor can see
-        temp_rgb = col.false_color(surface_temp, min_temp, max_temp)
+        for num, i in enumerate(scale):
+            color.append(col.false_two_color(air_temp, scale[0], scale[-1], temp[num], temp[-num]))
+        pass
+    elif mode == "ndvi" or mode == "evi" or mode == "savi" or mode == "msavi":
+        # vegetative indexes, range(-1, 1, 0.1) -> (d_blue, white, tan, green, d_green)
+        for i in scale:
+            color.append(col.false_color_vi(i))
 
-        temp_delta = surface_temp - air_temp
-        min_delta = min_temp - air_temp
-        max_delta = max_temp - air_temp
-        red = '#ff0000'
-        blue = '#0000ff'
+    return color, scale
 
-        sva_rgb = col.false_two_color(temp_delta, min_delta, max_delta, blue, red)
-        return sva_rgb
+
+def set_temp(surface_temp, min_temp, max_temp, air_temp):
+    """
+    @todo: this likely needs to be placed in color.py and removed from here and stella_frame.py
+    """
+    # max_temp = 85.0
+    # min_temp = -40.0 #max and min the sensor can see
+    temp_rgb = col.false_color(surface_temp, min_temp, max_temp)
+
+    temp_delta = surface_temp - air_temp
+    min_delta = min_temp - air_temp
+    max_delta = max_temp - air_temp
+    red = '#ff0000'
+    blue = '#0000ff'
+
+    sva_rgb = col.false_two_color(temp_delta, min_delta, max_delta, blue, red)
+    return sva_rgb
+
+# def create_legend(mode: str, temp_max: str, temp_min: str)
 
 
 def main():
     root = tk.Tk()
-    cb = ColorLegend("temp")
+    cb = ColorLegend("sva")
     # WIDTH X HEIGHT + Location on screen when opening (WIDTH + HEIGHT)
     # root.geometry("100x600+1000+500")
     root.mainloop()

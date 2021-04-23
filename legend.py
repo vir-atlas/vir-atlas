@@ -1,8 +1,8 @@
 # @authors  Timothy Goetsch
 # 4/21/2021
-# @brief    ColorLegend object:  creates legends for the following modes: VIS, NIR, TEMP, SVA, NDVI, EVI, SAVI, MSAVI
+# @brief    Legend object:  creates legends for the following modes: VIS, NIR, TEMP, SVA, NDVI, EVI, SAVI, MSAVI
 # last updated: 4/22/2021 by Timothy Goetsch
-# @updates  SVA mode now produces a sample legend. We might actually be able use it for generic VIR-ATLAS stuff? idk.
+# @updates  Renamed file to legend.py and class to Legend.
 # TODO:
 
 import tkinter as tk
@@ -88,9 +88,10 @@ TEST_LIST = ['snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 
     'gray93', 'gray94', 'gray95', 'gray97', 'gray98', 'gray99']
 
 
-class ColorLegend(Frame):
-    def __init__(self, mode="vis"):
-        super().__init__()
+class Legend(Frame):
+    def __init__(self, master, mode="vis"):
+        # call constructor for tk.Frame
+        Frame.__init__(self, master)
 
         self.pack(fill=BOTH, expand=1)
 
@@ -134,9 +135,9 @@ class ColorLegend(Frame):
                 self.canvas.create_rectangle(x_start, y, x_end, y + box_size, outline=c, fill=c)
                 self.canvas.create_line(70, y, 75, y)
                 if y == 0:
-                    self.canvas.create_text(80, y, anchor=W, font=("Arial", 8), text=scale[num])
+                    self.canvas.create_text(80, y, anchor=W, font=("Arial", 10), text=scale[num])
                 else:
-                    self.canvas.create_text(80, y + (box_size / 2), anchor=W, font=("Arial", 8), text=scale[num])
+                    self.canvas.create_text(80, y + (box_size / 2), anchor=W, font=("Arial", 10), text=scale[num])
                 y += box_size
                 # print(y)
 
@@ -145,6 +146,22 @@ class ColorLegend(Frame):
         # pack canvas
         self.canvas.pack(fill=BOTH, expand=1)
 
+
+def set_scale(mode: str):
+    scale = []
+    if mode == "temp":
+        scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0]  # 11 values
+    elif mode == "ndvi" or mode == "evi" or mode == "savi" or mode == "msavi":
+        scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]  # 21 values
+    elif mode == "sva":
+        max_temp = 85
+        min_temp = -41  # range is exclusive of the max value, so we're adding 1 to the actual max value of the sva scale
+        for _ in range(max_temp, min_temp, -5):
+            scale.append(float(_))
+    return scale
+
+
+def get_colors(mode: str, scale: list):
     """
     8 maps (only need 3 unique legends)
     VIS (VISUAL LIGHT) (data_to_hex)
@@ -208,12 +225,12 @@ def set_temp(surface_temp, min_temp, max_temp, air_temp):
     sva_rgb = col.false_two_color(temp_delta, min_delta, max_delta, blue, red)
     return sva_rgb
 
-# def create_legend(mode: str, temp_max: str, temp_min: str)
+# def create_legend(mode: str, temp_max: str, temp_min: str):
 
 
 def main():
     root = tk.Tk()
-    cb = ColorLegend("sva")
+    cb = Legend(tk.Frame(), "sva")
     # WIDTH X HEIGHT + Location on screen when opening (WIDTH + HEIGHT)
     # root.geometry("100x600+1000+500")
     root.mainloop()

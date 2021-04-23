@@ -32,7 +32,7 @@ class Root(tk.Tk):
         self.stella_frame.place(x=20, y=20)
 
         # Add the legend frame to the main window
-        self.color_legend_frame = color_legend.ColorLegend(self)
+        self.color_legend_frame = color_legend.ColorLegend(self.stella_frame.mode)
         self.color_legend_frame.place(x=880, y=20)
 
         # Add the annotation frame to the main window
@@ -57,6 +57,13 @@ class Root(tk.Tk):
             self.stella_frame.destroy()
         self.stella_frame = new_frame
         self.stella_frame.place(x=20, y=20)
+
+        # Switch legend to match current map
+        new_legend = color_legend.ColorLegend(self.stella_frame.mode)
+        if self.color_legend_frame is not None:
+            self.color_legend_frame.destroy()
+        self.color_legend_frame = new_legend
+        self.color_legend_frame.place(x=880, y=20)
 
 
 if __name__ == "__main__":

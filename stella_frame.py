@@ -59,10 +59,6 @@ class StellaFrame(tk.Frame):
         # windows scroll
         self.canvas.bind("<MouseWheel>", self.zoomer)
 
-        # place the canvas on the frame
-        # self.canvas.pack()
-        # self.canvas.place()
-
     # move
     def move_start(self, event):
         self.canvas.scan_mark(event.x, event.y)
@@ -104,56 +100,53 @@ class StellaFrame(tk.Frame):
 class VisFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('vis', self.canvas)
-        # self.canvas.pack()
-        # self.place(x=20, y=20)
+        self.mode = "vis"
+        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class NirFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('nir', self.canvas)
-        self.canvas.pack()
-        self.place(x=20, y=20)
+        self.mode = "nir"
+        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class TempFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('temp', self.canvas)
-        self.canvas.pack()
+        self.mode = "temp"
+        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class SvaFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('sva', self.canvas)
-        self.canvas.pack()
+        self.mode = "sva"
+        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class NdviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('ndvi', self.canvas)
-        self.canvas.pack()
+        self.mode = "ndvi"
+        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class EviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         master.map_data.gen_map_alt('evi', self.canvas)
-        self.canvas.pack()
 
 
 class SaviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('savi', self.canvas)
-        self.canvas.pack()
+        self.mode = "savi"
+        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class MsaviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('msavi', self.canvas)
-        self.canvas.pack()
+        self.mode = "msavi"
+        master.map_data.gen_map_alt(self.mode, self.canvas)

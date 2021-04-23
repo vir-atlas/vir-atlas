@@ -95,7 +95,6 @@ class ColorLegend(Frame):
     def __init__(self, mode="vis"):
         super().__init__()
 
-        self.master.title("ColorBar")
         self.pack(fill=BOTH, expand=1)
 
         # set default display mode
@@ -170,9 +169,8 @@ class ColorLegend(Frame):
             pass
         # vegetative index (-1, 1) -> (d_blue, white, tan, green, d_green)
         elif self.mode == "nir":
-            # scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]  # 21 values
-            # for i in scale:
-            #     color.append(col.false_color_vi(i))
+            # scale = [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6,
+            # 0.7, 0.8, 0.9, 1]  # 21 values for i in scale: color.append(col.false_color_vi(i))
             pass
 
         # same as vir rn

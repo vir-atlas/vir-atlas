@@ -1,32 +1,30 @@
 # @authors Brynn and Frank
 # @date 4/14/21
 # @brief Everything within the STELLA map frame
-# @TODO ake the generated canvases replace the previous. (Need to use teh destroy function)
 
 import tkinter as tk
 import map_gen
 
 
 class StellaFrame(tk.Frame):
-    # constructor for StellaFrame @TODO: This needs to be redone
+    # constructor for StellaFrame
     def __init__(self, master):
         # call constructor for tk.Frame
         tk.Frame.__init__(self, master)
 
         # I'm still unsure of these values. The width and height of the frame should both be 500
         # Set canvas size and resolution
-        # self.canvas_size = 700
-        self.canvas_size = 900
+        self.canvas_size = 2000
         self.width = 840
         self.height = 840
-        self.resolution = 10
+        self.resolution = 100
 
         self.map_data = map_gen.Map()
 
         # set the default display mode
         self.mode = 'vis'
 
-        # Create and display the default empty canvas
+        # Create and display the default canvas with start message
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, background='grey')
         self.canvas.pack()
         self.set_canvas()
@@ -38,9 +36,6 @@ class StellaFrame(tk.Frame):
                                                      gps_file=self.master.gps_file,
                                                      stella_file=self.master.stella_file,
                                                      map_file=self.master.map_file)
-        self.nir_canvas = self.map_data.gen_map_alt('nir', self.canvas)
-        self.vis_canvas = self.map_data.gen_map_alt('vis', self.canvas)
-        self.temp_canvas = self.map_data.gen_map_alt('temp', self.canvas)
 
     # This needs to be called to add the canvas to the frame
     def set_canvas(self):

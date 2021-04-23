@@ -27,13 +27,23 @@ class Root(tk.Tk):
         self.map_data = map_gen.Map()
 
         # Add the stella_frame to the main window
-        self.stella_frame = stella_frame.StellaFrame(self)
-        self.stella_frame.set_canvas()
-        self.stella_frame.place(x=20, y=20)
+        # self.stella_frame = stella_frame.StellaFrame(self)
+        # self.stella_frame.set_canvas()
+        # self.stella_frame.place(x=20, y=20)
+
+        self.stella_frame = None
+
+        # Add default instructional canvas upon startup
+        self.startup_message = tk.Canvas(width=840, height=840, bg="grey")
+        self.startup_message.create_text(420, 420, font="Times 15", justify="center",
+                                         text="Welcome to VIR - Atlas!\nTo get started,"
+                                              " go to\nFiles -> Open New File\n\n Once you "
+                                              "have a file loaded,\nchoose a map to "
+                                              "display in View")
+        self.startup_message.place(y=20, x=20)
 
         # Add the legend frame to the main window
-        self.color_legend_frame = color_legend.ColorLegend(self.stella_frame.mode)
-        self.color_legend_frame.place(x=880, y=20)
+        self.color_legend_frame = None
 
         # Add the annotation frame to the main window
         self.annotation_frame = None

@@ -17,7 +17,7 @@ class Annotation(object):
         self.y_coordinate = y_coordinate
         for point in map_list:
             if point.x == self.x_coordinate and point.y == self.y_coordinate:
-                point.annotation = note
+                point.stella_point.annotation = note
         self.note = note
 
 

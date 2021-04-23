@@ -7,6 +7,7 @@ import tkinter as tk
 import menu_bar as menu
 import stella_frame
 import map_gen
+import color_legend
 
 
 # Class creating the base window
@@ -31,7 +32,8 @@ class Root(tk.Tk):
         self.stella_frame.place(x=20, y=20)
 
         # Add the legend frame to the main window
-        self.legend_frame = None
+        self.color_legend_frame = color_legend.ColorLegend(self)
+        self.color_legend_frame.place(x=880, y=20)
 
         # Add the annotation frame to the main window
         self.annotation_frame = None

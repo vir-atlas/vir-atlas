@@ -97,6 +97,7 @@ class MenuBar(tk.Menu):
         self.master.switch_frame(stella_frame.TempFrame)
         # Open the satellite image by default
         self.master.get_satellite()
+        self.master.get_annotation()
 
     def open_prev_file(self):
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',

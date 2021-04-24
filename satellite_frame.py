@@ -14,7 +14,7 @@ class SatelliteFrame(tk.Frame):
     def __init__(self, root, file_path):
         tk.Frame.__init__(self, root)
 
-        self.canvas = tk.Canvas(root)
+        self.canvas = tk.Canvas(root, width=420, height=420, bg='grey')
 
         self.canvas.grid(row=0, column=0, sticky='nswe')
         self.canvas.update()

@@ -9,6 +9,7 @@ import map_gen
 import legend
 import satellite_image
 from satellite_frame import SatelliteFrame
+import annotation
 
 
 # Class creating the base window
@@ -77,6 +78,15 @@ class Root(tk.Tk):
             self.legend_frame.destroy()
         self.legend_frame = new_legend
         self.legend_frame.place(x=880, y=20)
+
+    def get_annotation(self):
+        if self.annotation_frame is not None:
+            self.annotation_frame.destroy()
+
+        annotation.set_map_list(self.map_data.map_list, self.map_data.scale)
+        self.annotation_frame = annotation.AnnotationFrame(self)
+        self.annotation_frame.config(height=420, width=420, bg='blue')
+        self.annotation_frame.place(x=1010, y=460)
 
     # Displays the generated satellite image
     def get_satellite(self):

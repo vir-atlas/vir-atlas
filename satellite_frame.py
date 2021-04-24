@@ -100,9 +100,3 @@ class SatelliteFrame(ttk.Frame):
                                                anchor='nw', image=imagetk)
             self.canvas.lower(imageid)  # set image into background
             self.canvas.imagetk = imagetk  # keep an extra reference to prevent garbage-collection
-
-
-if __name__ == '__main__':
-    master = tk.Tk()
-    SatelliteFrame(master, "testytest.jpeg")
-    master.mainloop()

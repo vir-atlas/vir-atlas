@@ -13,7 +13,7 @@ global scale
 
 class Annotation(object):
     def __init__(self, x, y, note):
-        #tk.Tk.__init__(self)
+        # tk.Tk.__init__(self)
         self.x = x
         self.y = y
         for point in map_list:
@@ -38,7 +38,7 @@ class AnnotationFrame(tk.Frame):
         tk.Frame.__init__(self, master)
 
         self.width = 420
-        self.height = 420
+        self.height = 500
 
         # self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
 
@@ -77,10 +77,6 @@ class AnnotationEditor(Annotation):
         self.get_attribute(new_annotation.x, new_annotation.y)
 
         # create entry box for input
-        self.note = tk.Text(self.top)
-        self.note.pack()
-
-        # create entry box for input
         self.note = tk.Text(self.top, width=40, height=10)
         self.note.pack()
 
@@ -105,14 +101,14 @@ class AnnotationEditor(Annotation):
                 air_temp = "Air Temperature (C): " + str(point.stella_point.air_temp)
                 relative_humidity = "Relative Humidity (%): " + str(point.stella_point.rel_humid)
                 air_pressure_hpa = "Air Pressure(hPa): " + str(point.stella_point.air_pressure_hpa)
-                altitude_m_uncal = "Altitude (m)" + str(point.stella_point.altitude_m_uncal)
-                vis_pows = "Visual Light Spectrum(uW/cm^2): 450 nm-> " + str(
+                altitude_m_uncal = "Altitude (m): " + str(point.stella_point.altitude_m_uncal)
+                vis_pows = "Visual Light Spectrum(uW/cm^2):\n 450 nm-> " + str(
                     point.stella_point.vis_pows[0]) + "\n 500 nm-> " + str(
                     point.stella_point.vis_pows[1]) + "\n 550 nm-> " + str(
                     point.stella_point.vis_pows[2]) + "\n 570 nm-> " + str(
                     point.stella_point.vis_pows[3]) + "\n 600 nm->" + str(
                     point.stella_point.vis_pows[4]) + "\n 650 nm-> " + str(point.stella_point.vis_pows[5])
-                nir_pows = "Near Infrared Light Spectrum(uW/cm^2): 610 nm-> " + str(
+                nir_pows = "Near Infrared Light Spectrum(uW/cm^2):\n 610 nm-> " + str(
                     point.stella_point.nir_pows[0]) + "\n 680 nm-> " + str(
                     point.stella_point.nir_pows[1]) + "\n 730 nm-> " + str(
                     point.stella_point.nir_pows[2]) + "\n 760 nm-> " + str(
@@ -136,11 +132,12 @@ class AnnotationEditor(Annotation):
 
     # saves notes made by user to the annotation attribute
     def save_note(self):
-        Annotation.note = self.note.get()
+        Annotation.note = self.note.get('1.0', 'end-1c')
         self.top.destroy()
 
     def cancel(self):
         self.top.destroy()
+
 
 def set_map_list(map_points, map_scale):
     global map_list, scale

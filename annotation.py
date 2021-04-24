@@ -72,8 +72,6 @@ class AnnotationFrame(tk.Frame):
         for point in map_list:
             # check if there's something in the annotation attribute
             if point.annotation != "":
-                print(point)
-                print(point.annotation)
                 self.listbox.insert("end", point.annotation)
 
 

@@ -226,6 +226,28 @@ def feet_to_pix(delta_lat, height):
     return height / delta_ft
 
 
+def get_pairs(map_list):
+    min_lon = map_list[0].gps_point.longitude
+    min_lat = map_list[0].gps_point.latitude
+    max_lon = map_list[0].gps_point.longitude
+    max_lat = map_list[0].gps_point.latitude
+
+    for point in map_list:
+        if point.gps_point.longitude < min_lon:
+            min_lon = point.gps_point.longitude
+
+        if point.gps_point.latitude < min_lat:
+            min_lat = point.gps_point.latitude
+
+        if point.gps_point.longitude > max_lon:
+            max_lon = point.gps_point.longitude
+
+        if point.gps_point.latitude > max_lat:
+            max_lat = point.gps_point.latitude
+
+    return [min_lon, min_lat, max_lon, max_lat]
+
+
 class Map:
     def __init__(self):
         self.map_list = list()
@@ -264,7 +286,6 @@ class Map:
             self.scale = feet_to_pix(self.delta_lat, self.height)
         
         annotation.set_map_list(self.map_list, self.scale)
-
 
     def clear_map(self):
         self.map_list.clear()

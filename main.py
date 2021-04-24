@@ -8,6 +8,8 @@ import menu_bar as menu
 import map_gen
 import legend
 from tkinter import filedialog
+from satellite_image import get_satellite_image
+from satellite_frame import SatelliteFrame
 
 
 # Class creating the base window
@@ -24,10 +26,16 @@ class Root(tk.Tk):
         self.gps_file = 0
         self.map_file = 0
         self.satellite_image = 0
+        self.satellite_coords = None
         # List of accepted types for user uploaded satellite images. Feel free to add.
         self.image_formats = [("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")]
 
         self.map_data = map_gen.Map()
+        self.map_data.update_map(1000,
+                                 "Data Files/Apr-17th-2021-04-55PM-Flight-Airdata.csv",
+                                 "Data Files/data.txt")
+
+        self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
 
         # Add default instructional canvas upon startup
         self.startup_message = tk.Canvas(width=840, height=840, bg="grey")
@@ -47,6 +55,9 @@ class Root(tk.Tk):
         # Add the menu_bar to the main window
         menu_bar = menu.MenuBar(self)
         self.config(menu=menu_bar)
+
+        # Add the satellite frame to the main window
+        # self.user_sat()
 
     def set_stella_data(self, file):
         self.stella_file = file
@@ -76,8 +87,13 @@ class Root(tk.Tk):
         if self.satellite_frame is not None:
             self.satellite_frame.destroy()
 
-        self.satellite_image = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
-                                                          title="Select an image", filetypes=self.image_formats)
+        self.satellite_image = get_satellite_image(self.satellite_coords)
+        self.satellite_frame = SatelliteFrame(self, self.satellite_image)
+        self.satellite_frame.place(x=880, y=20)
+
+        # self.satellite_image = filedialog.askopenfilename(
+        #     initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
+        #     title="Select an image", filetypes=self.image_formats)
 
 
 if __name__ == "__main__":

@@ -22,6 +22,8 @@ class SatelliteFrame(ttk.Frame):
         self.master.rowconfigure(0, weight=1)
         self.master.columnconfigure(0, weight=1)
 
+        self.master.geometry("420x420")
+
         self.canvas.bind('<Configure>', self.update_image)
         self.canvas.bind('<ButtonPress-1>', self.move_from)
         self.canvas.bind('<B1-Motion>', self.move_to)
@@ -38,28 +40,6 @@ class SatelliteFrame(ttk.Frame):
 
         self.container = self.canvas.create_rectangle(0, 0, self.imageWidth, self.imageHeight, width=0)
         self.update_image()
-
-    # def get_satellite_image(self):
-    #     # set the date parameters for searching
-    #     self.start_date = '2021-04-07T00:00:00Z'
-    #     self.end_date = date.today().strftime('%Y-%m-%dT00:00:00Z')
-    #
-    #     # search for a satellite image match
-    #     self.search = Search(
-    #         bbox=self.coords,
-    #         datetime=self.start_date + '/' + self.end_date,
-    #         url='https://earth-search.aws.element84.com/v0')
-    #
-    #     # only record the latest one
-    #     self.items = self.search.items(limit=1)
-    #
-    #     # try to find a better way to do this
-    #     self.keys = [k for i in self.items for k in i.assets]
-    #
-    #     # download the latest one
-    #     self.filename = self.items[0].download(
-    #         self.keys[0],
-    #         filename_template='satellite_images/image')
 
     def move_from(self, event):
         self.canvas.scan_mark(event.x, event.y)
@@ -126,5 +106,5 @@ class SatelliteFrame(ttk.Frame):
 
 if __name__ == '__main__':
     master = tk.Tk()
-    SatelliteFrame(master, "testytest.jpeg")
+    SatelliteFrame(master, "satellite_images/image_thumbnail.jpg")
     master.mainloop()

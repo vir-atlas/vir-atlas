@@ -318,7 +318,6 @@ class Map:
             t.draw(canvas)
 
         draw_flight_path(self.map_list, canvas)
-        annotation.set_map_list(self.map_list, self.scale)
         return canvas
 
     def save_map(self, file):

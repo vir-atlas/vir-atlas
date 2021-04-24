@@ -10,17 +10,17 @@ from satsearch import Search
 from PIL import ImageTk, Image
 
 
-class SatelliteFrame(ttk.Frame):
+class SatelliteFrame(tk.Frame):
     def __init__(self, root, file_path):
-        ttk.Frame.__init__(self, master=root)
+        tk.Frame.__init__(self, root)
 
-        self.canvas = tk.Canvas(self.master)
+        self.canvas = tk.Canvas(root)
 
         self.canvas.grid(row=0, column=0, sticky='nswe')
         self.canvas.update()
 
-        self.master.rowconfigure(0, weight=1)
-        self.master.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+        root.columnconfigure(0, weight=1)
 
         # self.master.geometry("420x420")
 
@@ -106,5 +106,9 @@ class SatelliteFrame(ttk.Frame):
 
 if __name__ == '__main__':
     master = tk.Tk()
-    SatelliteFrame(master, "satellite_images/image_thumbnail.jpg")
+    master.geometry("1600x900")
+    test_frame = tk.Frame(master)
+    test_frame.config(height=420, width=420, bg='blue')
+    SatelliteFrame(test_frame, "satellite_images/image_thumbnail.jpg")
+    test_frame.place(x=400, y=400)
     master.mainloop()

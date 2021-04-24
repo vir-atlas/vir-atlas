@@ -7,8 +7,7 @@ import tkinter as tk
 import menu_bar as menu
 import map_gen
 import legend
-from tkinter import filedialog
-from satellite_image import get_satellite_image
+import satellite_image
 from satellite_frame import SatelliteFrame
 
 
@@ -31,19 +30,19 @@ class Root(tk.Tk):
         self.image_formats = [("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")]
 
         self.map_data = map_gen.Map()
+        """
         self.map_data.update_map(1000,
                                  "Data Files/Apr-17th-2021-04-55PM-Flight-Airdata.csv",
                                  "Data Files/data.txt")
 
-        self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
+        # self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
+        """
 
         # Add default instructional canvas upon startup
         self.startup_message = tk.Canvas(width=840, height=840, bg="grey")
         self.startup_message.create_text(420, 420, font="Times 15", justify="center",
                                          text="Welcome to VIR - Atlas!\nTo get started,"
-                                              " go to\nFiles -> Open New File\n\n Once you "
-                                              "have a file loaded,\nchoose a map to "
-                                              "display in View")
+                                              " go to\nFiles -> Open New File")
         self.startup_message.place(y=20, x=20)
 
         # Initialize frames
@@ -55,9 +54,6 @@ class Root(tk.Tk):
         # Add the menu_bar to the main window
         menu_bar = menu.MenuBar(self)
         self.config(menu=menu_bar)
-
-        # Add the satellite frame to the main window
-        # self.user_sat()
 
     def set_stella_data(self, file):
         self.stella_file = file
@@ -82,18 +78,26 @@ class Root(tk.Tk):
         self.legend_frame = new_legend
         self.legend_frame.place(x=880, y=20)
 
-    # @TODO Open image file, load to frame
-    def user_sat(self):
+    # Displays the generated satellite image
+    def get_satellite(self):
+        print("We got here at least")
+        self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
+        self.satellite_image = satellite_image.get_satellite_image(self.satellite_coords)
+
+        # new_frame = SatelliteFrame(self, self.satellite_image)
         if self.satellite_frame is not None:
             self.satellite_frame.destroy()
 
-        self.satellite_image = get_satellite_image(self.satellite_coords)
-        self.satellite_frame = SatelliteFrame(self, self.satellite_image)
-        self.satellite_frame.place(x=880, y=20)
+        # Create intermediate frame to place the satellite frame in.
+        self.satellite_frame = tk.Frame(self)
 
-        # self.satellite_image = filedialog.askopenfilename(
-        #     initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
-        #     title="Select an image", filetypes=self.image_formats)
+        # self.satellite_frame = new_frame
+        self.satellite_frame.config(bg="blue", height=420, width=420)
+        self.satellite_frame.place(x=1010, y=20)
+
+        """            
+        satellite_image = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
+                                                         title="Select an image", filetypes=self.image_formats)"""
 
 
 if __name__ == "__main__":

@@ -22,7 +22,7 @@ class SatelliteFrame(ttk.Frame):
         self.master.rowconfigure(0, weight=1)
         self.master.columnconfigure(0, weight=1)
 
-        self.master.geometry("420x420")
+        # self.master.geometry("420x420")
 
         self.canvas.bind('<Configure>', self.update_image)
         self.canvas.bind('<ButtonPress-1>', self.move_from)

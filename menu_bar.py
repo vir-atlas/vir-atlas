@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import filedialog
 import sys
 import stella_frame
+import map_gen
 
 
 # Creates a new window with helpful information
@@ -65,7 +66,8 @@ class MenuBar(tk.Menu):
         # Dropdown menu of satellite frame options (uploading a new image or returning to the default)
         satellite_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="Satellite", underline=0, menu=satellite_menu)
-        satellite_menu.add_command(label="Load Image", underline=1, command=master.user_sat)
+        satellite_menu.add_command(label="Get Satellite Image", underline=1, command=lambda: master.get_satellite())
+        satellite_menu.add_command(label="Upload Aerial Image", underline=1, command=self.quit)
 
         # Help Menu
         help_menu = tk.Menu(self, tearoff=False)

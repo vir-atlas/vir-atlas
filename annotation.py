@@ -10,6 +10,7 @@ import map_gen
 
 global map_list
 global scale
+global root
 
 
 class Annotation(object):
@@ -28,6 +29,7 @@ class Annotation(object):
                     point.annotation = note
                     self.x = int(point.x)
                     self.y = int(point.y)
+                    break
 
         self.note = note
 
@@ -37,7 +39,7 @@ class AnnotationFrame(tk.Frame):
     def __init__(self, master):
         # constructor for AnnotationFrame
         tk.Frame.__init__(self, master)
-
+        self.master = master
         self.width = 420
         self.height = 500
 
@@ -45,6 +47,7 @@ class AnnotationFrame(tk.Frame):
 
         # set up the Listbox of all annotations
         self.listbox = tk.Listbox(self, bg="white")
+         tk.Label(self, text="Annotations").pack()
         self.listbox.pack()
 
         # set up Scrollbar for Listbox
@@ -55,13 +58,23 @@ class AnnotationFrame(tk.Frame):
         for point in map_list:
             # check if there's something in the annotation attribute
             if point.annotation != "":
-                self.listbox.insert(point)
+                self.listbox.insert("end", point)
 
         # attaching listbox to scrollbar
         self.listbox.config(yscrollcommand=self.scrollbar.set)
 
         # adding scrollbar's command parameter
         self.scrollbar.config(command=self.listbox.yview)
+
+
+    def add_annotation(self):
+        self.listbox.delete(0, 'end')
+        for point in map_list:
+            # check if there's something in the annotation attribute
+            if point.annotation != "":
+                print(point)
+                print(point.annotation)
+                self.listbox.insert("end", point.annotation)
 
 
 # Responsible for editing/adding Annotations
@@ -73,7 +86,7 @@ class AnnotationEditor(Annotation):
         self.top.title("VIR Atlas Annotations Editor")
         self.top.geometry("400x400")
         # create attribute frame
-        tk.Label(self.top, text="Attribute Frame").pack(side="top")
+        tk.Label(self.top, text="Point Attributes").pack(side="top")
         # add attributes to frame
         self.get_attribute(new_annotation.x, new_annotation.y)
 
@@ -133,7 +146,8 @@ class AnnotationEditor(Annotation):
 
     # saves notes made by user to the annotation attribute
     def save_note(self):
-        Annotation.note = self.note.get('1.0', 'end-1c')
+        self.annotation = Annotation(self.annotation.x, self.annotation.y, self.note.get('1.0', 'end-1c'))
+        root.annotation_frame.add_annotation()
         self.top.destroy()
 
     def cancel(self):
@@ -144,3 +158,8 @@ def set_map_list(map_points, map_scale):
     global map_list, scale
     map_list = map_points
     scale = map_scale
+
+
+def get_root(main_root):
+    global root
+    root = main_root

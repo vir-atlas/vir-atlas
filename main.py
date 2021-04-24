@@ -110,4 +110,5 @@ class Root(tk.Tk):
 
 if __name__ == "__main__":
     root = Root()
+    annotation.get_root(root)
     root.mainloop()

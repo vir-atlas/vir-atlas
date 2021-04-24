@@ -82,6 +82,7 @@ class AnnotationEditor(Annotation):
     # constructor for AnnotationEditor
     def __init__(self, new_annotation):
         # call for popup window
+        self.annotation = new_annotation
         self.top = tk.Toplevel()
         self.top.title("VIR Atlas Annotations Editor")
         self.top.geometry("400x400")

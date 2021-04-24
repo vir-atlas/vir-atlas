@@ -21,7 +21,7 @@ class Annotation(object):
         for point in map_list:
             radius = point.confidence * scale
             if int(point.x) == self.x and int(point.y) == self.y:
-                point.map_point.annotation = note
+                point.annotation = note
             elif (point.x + radius) > self.x > (point.x - radius):
                 if (point.y + radius) > self.y > (point.y - radius):
                     """Checks to see if user click a point within a stella point area"""

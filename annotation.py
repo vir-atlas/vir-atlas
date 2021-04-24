@@ -77,7 +77,7 @@ class AnnotationEditor(Annotation):
         # add attributes to frame
         self.get_attribute(new_annotation.x, new_annotation.y)
 
-        # create entry
+        # create entry box for input
         self.note = tk.Entry(self.top)
         self.note.pack()
 

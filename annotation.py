@@ -77,7 +77,8 @@ class AnnotationFrame(tk.Frame):
             if point.annotation != "":
                 self.listbox.insert("end", point.annotation)
             if point.annotation == annotation.note:
-                root.annotation_frame.annotations.remove(annotation)
+                if annotation in root.annotation_frame.annotations:
+                    root.annotation_frame.annotations.remove(annotation)
         for annotation in root.annotation_frame.annotations:
             self.listbox.insert('end', annotation.note)
 

@@ -42,6 +42,8 @@ class AnnotationFrame(tk.Frame):
         self.master = master
         self.width = 420
         self.height = 500
+        #for annotations that are not in a map point
+        self.annotations = list()
 
         # self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
 
@@ -67,13 +69,17 @@ class AnnotationFrame(tk.Frame):
         self.scrollbar.config(command=self.listbox.yview)
 
 
-    def add_annotation(self):
+    def add_annotation(self, annotation):
         self.listbox.delete(0, 'end')
+        root.annotation_frame.annotations.append(annotation)
         for point in map_list:
             # check if there's something in the annotation attribute
             if point.annotation != "":
                 self.listbox.insert("end", point.annotation)
-
+            if point.annotation == annotation.note:
+                root.annotation_frame.annotations.remove(annotation)
+        for annotation in root.annotation_frame.annotations:
+            self.listbox.insert('end', annotation.note)
 
 # Responsible for editing/adding Annotations
 class AnnotationEditor(Annotation):
@@ -83,7 +89,7 @@ class AnnotationEditor(Annotation):
         self.annotation = new_annotation
         self.top = tk.Toplevel()
         self.top.title("VIR Atlas Annotations Editor")
-        self.top.geometry("400x400")
+        self.top.geometry("400x600")
         # create attribute frame
         tk.Label(self.top, text="Point Attributes").pack(side="top")
         # add attributes to frame
@@ -146,7 +152,7 @@ class AnnotationEditor(Annotation):
     # saves notes made by user to the annotation attribute
     def save_note(self):
         self.annotation = Annotation(self.annotation.x, self.annotation.y, self.note.get('1.0', 'end-1c'))
-        root.annotation_frame.add_annotation()
+        root.annotation_frame.add_annotation(self.annotation)
         self.top.destroy()
 
     def cancel(self):

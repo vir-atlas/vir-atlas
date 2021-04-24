@@ -62,9 +62,7 @@ class StellaFrame(tk.Frame):
     # create a new annotation
     def create_annotation(self, event):
         # create new Annotation object
-        new_annotation = annotation.Annotation
-        new_annotation.x = event.x
-        new_annotation.y = event.y
+        new_annotation = annotation.Annotation(event.x, event.y, "")
         # pass object to AnnotationEditor
         annotation.AnnotationEditor(new_annotation)
 

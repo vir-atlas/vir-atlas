@@ -91,10 +91,8 @@ class MenuBar(tk.Menu):
                                         stella_file=self.master.stella_file,
                                         map_file=self.master.map_file)
 
-        self.master.update()
-        # self.master.stella_frame.load_canvases()
-        # self.master.stella_frame.set_canvas()
-        self.master.mainloop()
+        # Open the temperature map by default
+        self.master.switch_frame(stella_frame.TempFrame)
 
     def open_prev_file(self):
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
@@ -107,10 +105,8 @@ class MenuBar(tk.Menu):
                                         stella_file=self.master.stella_file,
                                         map_file=self.master.map_file)
 
-        self.master.update()
-        # self.master.stella_frame.load_canvases()
-        # self.master.stella_frame.set_canvas()
-        self.master.mainloop()
+        # Open the temperature map by default
+        self.master.switch_frame(stella_frame.TempFrame)
 
     def save_file(self):
         file = filedialog.asksaveasfile(filetypes=[('VIR-Atlas map', '.vmap'), ('All files', '*')],

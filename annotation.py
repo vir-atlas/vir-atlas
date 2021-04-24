@@ -96,7 +96,7 @@ class AnnotationEditor(Annotation):
 
     # saves notes made by user to the annotation attribute
     def save_note(self, new_annotation):
-        new_annotation.note = self.note.get("1.0", tk.END)
+        new_annotation.note = self.note.get("1.0", "end-1c")
         self.top.destroy()
 
     # closes the window

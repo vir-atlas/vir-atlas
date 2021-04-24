@@ -88,12 +88,11 @@ class Root(tk.Tk):
         if self.satellite_frame is not None:
             self.satellite_frame.destroy()
 
-        # Create intermediate frame to place the satellite frame in.
-        self.satellite_frame = tk.Frame(self)
+        test_frame = tk.Frame(self)
+        test_frame.config(height=420, width=420, bg='blue')
+        SatelliteFrame(test_frame, self.satellite_image)
+        test_frame.place(x=1010, y=20)
 
-        # self.satellite_frame = new_frame
-        self.satellite_frame.config(bg="blue", height=420, width=420)
-        self.satellite_frame.place(x=1010, y=20)
 
         """            
         satellite_image = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/vir-atlas',

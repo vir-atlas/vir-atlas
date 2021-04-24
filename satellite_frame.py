@@ -22,6 +22,8 @@ class SatelliteFrame(ttk.Frame):
         self.master.rowconfigure(0, weight=1)
         self.master.columnconfigure(0, weight=1)
 
+        self.master.geometry("420x420")
+
         self.canvas.bind('<Configure>', self.update_image)
         self.canvas.bind('<ButtonPress-1>', self.move_from)
         self.canvas.bind('<B1-Motion>', self.move_to)
@@ -100,3 +102,9 @@ class SatelliteFrame(ttk.Frame):
                                                anchor='nw', image=imagetk)
             self.canvas.lower(imageid)  # set image into background
             self.canvas.imagetk = imagetk  # keep an extra reference to prevent garbage-collection
+
+
+if __name__ == '__main__':
+    master = tk.Tk()
+    SatelliteFrame(master, "satellite_images/image_thumbnail.jpg")
+    master.mainloop()

@@ -13,21 +13,21 @@ global scale
 
 
 class Annotation(object):
-    def __init__(self, x_coordinate, y_coordinate, note):
+    def __init__(self, x, y, note):
         tk.Tk.__init__(self)
-        self.x_coordinate = x_coordinate
-        self.y_coordinate = y_coordinate
+        self.x = x
+        self.y = y
         for point in map_list:
             radius = map_gen.feet_to_pix(point.confidence, scale)
-            if point.x == self.x_coordinate and point.y == self.y_coordinate:
+            if point.x == self.x and point.y == self.y:
                 point.stella_point.annotation = note
-            elif point.stella_point.x + radius > self.x_coordinate > point.stella_point.x - radius:
-                if point.stella_point.y + radius > self.y_coordinate > point.stella_point.y - radius:
+            elif point.stella_point.x + radius > self.x > point.stella_point.x - radius:
+                if point.stella_point.y + radius > self.y > point.stella_point.y - radius:
                     """Checks to see if user click a point within a stella point area"""
                     """If so, annotation coordinates are set to stella coordinates"""
                     point.stella_point.annotation = note
-                    self.x_coordinate = point.stella_point.x
-                    self.y_coordinate = point.stella_point.y
+                    self.x = point.stella_point.x
+                    self.y = point.stella_point.y
         self.note = note
 
 
@@ -66,30 +66,30 @@ class AnnotationFrame(tk.Frame):
 # Responsible for editing/adding Annotations
 class AnnotationEditor(Annotation):
     # constructor for AnnotationEditor
-    def __init__(self, x, y):
+    def __init__(self, new_annotation):
         # call for popup window
         self.top = tk.Toplevel()
-
-        # label for AnnotationEditor
-        self.label = tk.Label(self.top, text="VIR Atlas Annotations Editor")
-        self.label.pack()
+        self.top.title("VIR Atlas Annotations Editor")
+        self.top.geometry("400x400")
 
         # create attribute frame
-        self.attribute_frame = tk.Frame(self.top).grid(row=0, column=0)
+        self.attribute_frame = tk.Frame(self.top).pack()
+        tk.Label(self.attribute_frame, text="Attribute Frame").pack()
         # add attributes to frame
-        self.get_attribute(Annotation.x, Annotation.y)
+        self.get_attribute(new_annotation.x, new_annotation.y)
 
         # create entry
         self.note = tk.Entry(self.top)
-        self.note_frame = tk.Frame(self.top).grid(row=1, column=1)
         self.note.pack()
 
         # create "Save" button that initiates save_note()
         self.save = tk.Button(self.top, text="Save", command=self.save_note)
+        self.save.place(x=50, y=200)
 
         # create "Cancel" button that destroys the window
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
         self.cancel = tk.Button(self.top, text="Cancel", command=self.top.destroy())
+        self.cancel.place(x=150, y=200)
 
     # gets and displays all attributes (if available)
     def get_attribute(self, x, y):

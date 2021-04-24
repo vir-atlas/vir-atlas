@@ -82,16 +82,17 @@ class AnnotationEditor(Annotation):
         self.note.pack()
 
         # create "Save" button that initiates save_note()
-        self.save = tk.Button(self.top, text="Save", command=self.save_note)
+        self.save = tk.Button(self, text="Save", command=self.save_note)
         self.save.place(x=50, y=200)
 
         # create "Cancel" button that destroys the window
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
-        self.cancel = tk.Button(self.top, text="Cancel", command=self.top.destroy())
+        self.cancel = tk.Button(self, text="Cancel", command=self.top.destroy())
         self.cancel.place(x=150, y=200)
 
     # gets and displays all attributes (if available)
     def get_attribute(self, x, y):
+        flag = 0
         for point in map_list:
             # check if given points are STELLA points or not
             if (point.x == float(x)) & (point.y == float(y)):
@@ -113,7 +114,6 @@ class AnnotationEditor(Annotation):
                     point.stella_point.nir_pows[2]) + " 760 nm-> " + str(
                     point.stella_point.vis_pows[3]) + " 810 nm->" + str(
                     point.stella_point.vis_pows[4]) + " 860 nm-> " + str(point.stella_point.vis_pows[5])
-
                 tk.Label(self.top, text=surface_temp).pack(side="top")
                 tk.Label(self.top, text=air_temp).pack(side="top")
                 tk.Label(self.top, text=relative_humidity).pack(side="top")
@@ -122,9 +122,13 @@ class AnnotationEditor(Annotation):
                 tk.Label(self.top, text=altitude_m_uncal).pack(side="top")
                 tk.Label(self.top, text=vis_pows).pack(side="top")
                 tk.Label(self.top, text=nir_pows).pack(side="top")
+                flag = 1
+                break;
             else:
                 # display message if point doesn't have STELLA data attached to it
-                tk.Label(self.attribute_frame, text="No data recorded for selected point!").pack(side="top")
+                continue
+        if flag == 0:
+            tk.Label(self.top, text="No data recorded for selected point!").pack(side="top")
 
     # saves notes made by user to the annotation attribute
     def save_note(self):

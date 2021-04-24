@@ -95,6 +95,8 @@ class MenuBar(tk.Menu):
 
         # Open the temperature map by default
         self.master.switch_frame(stella_frame.TempFrame)
+        # Open the satellite image by default
+        self.master.get_satellite()
 
     def open_prev_file(self):
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
@@ -109,6 +111,8 @@ class MenuBar(tk.Menu):
 
         # Open the temperature map by default
         self.master.switch_frame(stella_frame.TempFrame)
+        # Open the satellite image by default
+        self.master.get_satellite()
 
     def save_file(self):
         file = filedialog.asksaveasfile(filetypes=[('VIR-Atlas map', '.vmap'), ('All files', '*')],

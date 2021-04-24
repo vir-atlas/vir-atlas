@@ -80,7 +80,6 @@ class Root(tk.Tk):
 
     # Displays the generated satellite image
     def get_satellite(self):
-        print("We got here at least")
         self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
         self.satellite_image = satellite_image.get_satellite_image(self.satellite_coords)
 
@@ -88,10 +87,10 @@ class Root(tk.Tk):
         if self.satellite_frame is not None:
             self.satellite_frame.destroy()
 
-        test_frame = tk.Frame(self)
-        test_frame.config(height=420, width=420, bg='blue')
-        SatelliteFrame(test_frame, self.satellite_image)
-        test_frame.place(x=1010, y=20)
+        self.satellite_frame = tk.Frame(self)
+        self.satellite_frame.config(height=420, width=420, bg='blue')
+        SatelliteFrame(self.satellite_frame, self.satellite_image)
+        self.satellite_frame.place(x=1010, y=20)
 
 
         """            

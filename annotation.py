@@ -73,8 +73,7 @@ class AnnotationEditor(Annotation):
         self.top.geometry("400x400")
 
         # create attribute frame
-        self.attribute_frame = tk.Frame(self.top).pack()
-        tk.Label(self.attribute_frame, text="Attribute Frame").pack()
+        tk.Label(self.top, text="Attribute Frame").pack(side="top")
         # add attributes to frame
         self.get_attribute(new_annotation.x, new_annotation.y)
 
@@ -115,17 +114,17 @@ class AnnotationEditor(Annotation):
                     point.stella_point.vis_pows[3]) + " 810 nm->" + str(
                     point.stella_point.vis_pows[4]) + " 860 nm-> " + str(point.stella_point.vis_pows[5])
 
-                tk.Label(self.attribute_frame, text=surface_temp).pack
-                tk.Label(self.attribute_frame, text=air_temp).pack
-                tk.Label(self.attribute_frame, text=relative_humidity).pack
-                tk.Label(self.attribute_frame, text=air_temp).pack
-                tk.Label(self.attribute_frame, text=air_pressure_hpa).pack
-                tk.Label(self.attribute_frame, text=altitude_m_uncal).pack
-                tk.Label(self.attribute_frame, text=vis_pows).pack
-                tk.Label(self.attribute_frame, text=nir_pows).pack
+                tk.Label(self.top, text=surface_temp).pack(side="top")
+                tk.Label(self.top, text=air_temp).pack(side="top")
+                tk.Label(self.top, text=relative_humidity).pack(side="top")
+                tk.Label(self.top, text=air_temp).pack(side="top")
+                tk.Label(self.top, text=air_pressure_hpa).pack(side="top")
+                tk.Label(self.top, text=altitude_m_uncal).pack(side="top")
+                tk.Label(self.top, text=vis_pows).pack(side="top")
+                tk.Label(self.top, text=nir_pows).pack(side="top")
             else:
                 # display message if point doesn't have STELLA data attached to it
-                tk.Label(self.attribute_frame, text="No data recorded for selected point!").pack
+                tk.Label(self.attribute_frame, text="No data recorded for selected point!").pack(side="top")
 
     # saves notes made by user to the annotation attribute
     def save_note(self):

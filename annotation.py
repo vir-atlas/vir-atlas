@@ -11,9 +11,10 @@ import map_gen
 global map_list
 global scale
 
+
 class Annotation(object):
     def __init__(self, x, y, note):
-        #tk.Tk.__init__(self)
+        # tk.Tk.__init__(self)
         self.x = x
         self.y = y
         for point in map_list:
@@ -85,13 +86,22 @@ class AnnotationEditor(Annotation):
         self.note.pack()
 
         # create "Save" button that initiates save_note()
-        self.save = tk.Button(self.top, text="Save", command=self.save_note)
+        self.save = tk.Button(self.top, text="Save", command=self.save_note(new_annotation))
         self.save.pack()
 
         # create "Cancel" button that destroys the window
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
         self.cancel = tk.Button(self.top, text="Cancel", command=self.cancel)
         self.cancel.pack()
+
+    # saves notes made by user to the annotation attribute
+    def save_note(self, new_annotation):
+        new_annotation.note = self.note.get("1.0", tk.END)
+        self.top.destroy()
+
+    # closes the window
+    def cancel(self):
+        self.top.destroy()
 
     # gets and displays all attributes (if available)
     def get_attribute(self, x, y):
@@ -134,13 +144,6 @@ class AnnotationEditor(Annotation):
         if flag == 0:
             tk.Label(self.top, text="No data recorded for selected point!").pack(side="top")
 
-    # saves notes made by user to the annotation attribute
-    def save_note(self):
-        Annotation.note = self.note.get()
-        self.top.destroy()
-
-    def cancel(self):
-        self.top.destroy()
 
 def set_map_list(map_points, map_scale):
     global map_list, scale

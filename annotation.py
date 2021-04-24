@@ -78,17 +78,25 @@ class AnnotationEditor(Annotation):
         self.get_attribute(new_annotation.x, new_annotation.y)
 
         # create entry box for input
-        self.note = tk.Text(self.top)
+        self.note = tk.Text(self.top, width=40, height=10)
         self.note.pack()
 
         # create "Save" button that initiates save_note()
-        # self.save = tk.Button(self.top, text="Save", command=self.save_note)
-        # self.save.place(x=50, y=200)
+        self.save = tk.Button(self.top, text="Save", command=self.save_note)
+        self.save.pack()
 
         # create "Cancel" button that destroys the window
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
-        # self.cancel = tk.Button(self.top, text="Cancel", command=self.top.destroy())
-        # self.cancel.place(x=150, y=200)
+        self.cancel = tk.Button(self.top, text="Cancel", command=self.cancel)
+        self.cancel.pack()
+
+    # saves notes made by user to the annotation attribute
+    def save_note(self):
+        Annotation.note = self.note.get()
+        self.top.destroy()
+
+    def cancel(self):
+        self.top.destroy()
 
     # gets and displays all attributes (if available)
     def get_attribute(self, x, y):
@@ -129,11 +137,6 @@ class AnnotationEditor(Annotation):
                 continue
         if flag == 0:
             tk.Label(self.top, text="No data recorded for selected point!").pack(side="top")
-
-    # saves notes made by user to the annotation attribute
-    def save_note(self):
-        Annotation.note = self.note.get()
-        self.top.destroy()
 
 
 def set_map_list(map_points, map_scale):

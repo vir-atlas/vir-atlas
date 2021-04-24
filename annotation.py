@@ -47,7 +47,7 @@ class AnnotationFrame(tk.Frame):
 
         # set up the Listbox of all annotations
         self.listbox = tk.Listbox(self, bg="white")
-         tk.Label(self, text="Annotations").pack()
+        tk.Label(self, text="Annotations").pack()
         self.listbox.pack()
 
         # set up Scrollbar for Listbox

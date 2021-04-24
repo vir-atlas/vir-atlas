@@ -11,6 +11,7 @@ import map_gen
 global map_list
 global scale
 
+
 class Annotation(object):
     def __init__(self, x, y, note):
         # tk.Tk.__init__(self)
@@ -123,7 +124,7 @@ class AnnotationEditor(Annotation):
                 tk.Label(self.top, text=vis_pows).pack(side="top")
                 tk.Label(self.top, text=nir_pows).pack(side="top")
                 flag = 1
-                break;
+                break
             else:
                 # display message if point doesn't have STELLA data attached to it
                 continue

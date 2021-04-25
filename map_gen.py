@@ -159,7 +159,7 @@ class Map:
         for p in self.poly_list:
             p.draw(mode, self.scale, canvas)
 
-        # self.draw_flight_path(canvas)
+        self.draw_flight_path(canvas)
         return canvas
 
     def save_map(self, file):
@@ -253,14 +253,8 @@ class VorPoly:
                 if ratio < 0:
                     color = '#7d7d7d'
 
-        colors = np.array([[130,200,240],
-                           [0,190,240],
-                           [100,140,230],
-                           [70,100,220],
-                           [30,140,240]])
         # print(self.vertices, color)
         if self.vertices:
-            color = col.rgb_to_hex(colors[np.random.randint(0,4)])
             canvas.create_polygon(self.vertices, fill=color)
 
 

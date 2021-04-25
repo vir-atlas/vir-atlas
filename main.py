@@ -67,6 +67,8 @@ class Root(tk.Tk):
 
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)
+        self.map_data.gen_map(new_frame.mode, self.resolution, new_frame.canvas)
+
         if self.stella_frame is not None:
             self.stella_frame.destroy()
         self.stella_frame = new_frame

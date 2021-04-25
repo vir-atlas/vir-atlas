@@ -7,8 +7,6 @@ import tkinter as tk
 from tkinter import filedialog
 import sys
 import stella_frame
-import map_gen
-
 
 # Creates a new window with helpful information
 def about():
@@ -40,23 +38,23 @@ class MenuBar(tk.Menu):
         # Dropdown menu of view options: vis, nir, temp, etc.
         view_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="View", underline=0, menu=view_menu)
-        view_menu.add_command(label="Visual Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.VisFrame))
-        view_menu.add_command(label="NIR Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.NirFrame))
-        view_menu.add_command(label="Temp Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.TempFrame))
-        view_menu.add_command(label="Surface vs Air Temp Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.SvaFrame))
-        view_menu.add_command(label="NDVI Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.NdviFrame))
-        view_menu.add_command(label="EVI Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.EviFrame))
-        view_menu.add_command(label="SAVI Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.SaviFrame))
+        view_menu.add_command(label="Visual Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.VisFrame))
+        view_menu.add_command(label="NIR Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.NirFrame))
+        view_menu.add_command(label="Temp Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.TempFrame))
+        view_menu.add_command(label="Surface vs Air Temp Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.SvaFrame))
+        view_menu.add_command(label="NDVI Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.NdviFrame))
+        view_menu.add_command(label="EVI Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.EviFrame))
+        view_menu.add_command(label="SAVI Map", underline=1, 
+                                command=lambda: master.switch_frame(stella_frame.SaviFrame))
         view_menu.add_command(label="MSAVI Map", underline=1,
-                              command=lambda: master.switch_frame(stella_frame.MsaviFrame))
-
+                                command=lambda: master.switch_frame(stella_frame.MsaviFrame))
+        
         # Dropdown menu of annotation options
         annotate_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="Annotate", underline=0, menu=annotate_menu)

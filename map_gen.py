@@ -5,192 +5,16 @@
 # last updated: 4/15/2021 by Sophia Novo-Gradac
 # @updates  added ifs for VI and SVA map
 #           canvas size reconfiged based on calculations in get_map_alt
-# TODO:     fill map?
-#           determine aesthetics
 
 import tkinter as tk
 import map_point
 import color as col
 import math
-import annotation
-
-canvas_size = 1000  # test canvas size
-resolution = 10
-
-'''triangle holds its corner coordinates, an id number, and a color'''
-
-
-class Triangle:
-    '''by default, a triangle has no color'''
-
-    def __init__(self, id, x_coords, y_coords):
-        self.id = id
-        self.x_coords = x_coords
-        self.y_coords = y_coords
-        self.color = "None"
-
-    '''must use set_color to change triangle's color'''
-
-    def set_color(self, color):
-        self.color = color
-
-    '''draw on the given canvas'''
-
-    def draw(self, canvasName):
-        canvasName.create_polygon(self.x_coords[0], self.y_coords[0],
-                                  self.x_coords[1], self.y_coords[1],
-                                  self.x_coords[2], self.y_coords[2], fill=self.color)
-
-    '''based on id number, what are the 3 neighbors.
-    if an edge triangle, chop values that are not in list'''
-
-    def neighbors(self, width, height, resolution):
-        ids = []
-
-        # evaluate neighbor's id numbers
-        if self.id % 4 == 0:  # left triangle in any given square
-            ids = [self.id - 1, self.id + 1, self.id + 2]
-
-        if self.id % 4 == 1:  # top triangle in any given square
-            ids = [self.id - 1, self.id - int(width * 4 / resolution) + 1, self.id + 1]
-
-        if self.id % 4 == 2:  # bottom triangle in any given square
-            ids = [self.id - 1, self.id + int(width * 4 / resolution) - 1, self.id + 1]
-
-        if self.id % 4 == 3:  # right triangle in any given square
-            ids = [self.id - 2, self.id - 1, self.id + 1]
-
-        # going backwards through ids, remove incorrect values 
-        for i in ids[::-1]:
-            if int(i) < 0:
-                ids.remove(i)
-            if int(i) >= int(width / resolution * height / resolution * 4):
-                ids.remove(i)
-
-        return ids
-
-    '''if the map_point is inside of the triangle, return true and set triangle's color
-    otherwise return false'''
-
-    def contains_point(self, map_point, mode):
-        x_min = self.x_coords[0]
-        y_min = self.y_coords[0]
-        x_max = self.x_coords[0]
-        y_max = self.y_coords[0]
-
-        # find both x and y range
-        for x in self.x_coords:
-            if x < x_min:
-                x_min = x
-            if x > x_max:
-                x_max = x
-        for y in self.y_coords:
-            if y < y_min:
-                y_min = y
-            if y > y_max:
-                y_max = y
-
-        # check if the map point is inside the range
-        if map_point.x > x_min and map_point.x < x_max:
-            if map_point.y > y_min and map_point.y < y_max:
-                if mode == 'vis':
-                    self.set_color(map_point.vis_rgb)
-                if mode == 'nir':
-                    self.set_color(map_point.nir_rgb)
-                if mode == 'temp':
-                    self.set_color(map_point.temp_rgb)
-                return True
-        return False
-
-
-"""fill entire canvas with triangles, but do not draw them"""
-
-
-def get_poly(height, width):
-    triangles = []
-
-    count = 0
-    for y in range(0, int(height / resolution)):
-        for x in range(0, int(width / resolution)):
-            # create 4 at time for each square, done in order of left, top, bottom, right
-            triangles.append(Triangle(count, [resolution * x + resolution / 2, resolution * x, resolution * x],
-                                      [resolution * y + resolution / 2, resolution * y, resolution * (y + 1)]))
-            triangles.append(
-                Triangle(count + 1, [resolution * x + resolution / 2, resolution * x, resolution * (x + 1)],
-                         [resolution * y + resolution / 2, resolution * y, resolution * y]))
-            triangles.append(
-                Triangle(count + 2, [resolution * x + resolution / 2, resolution * (x + 1), resolution * x],
-                         [resolution * y + resolution / 2, resolution * (y + 1), resolution * (y + 1)]))
-            triangles.append(
-                Triangle(count + 3, [resolution * x + resolution / 2, resolution * (x + 1), resolution * (x + 1)],
-                         [resolution * y + resolution / 2, resolution * y, resolution * (y + 1)]))
-
-            count += 4
-
-    return triangles
-
-
-'''resets the color of all triangles'''
-
-
-def clear_poly(poly_fill):
-    for t in poly_fill:
-        t.set_color("None")
-
-
-'''find all triangles containing a map point and fill them
-add to list of filled triangles (this is used later!)'''
-
-
-def draw_data(map_list, poly_fill, mode, resolution, width):
-    filled = []
-    for mp in map_list:
-        # O(n^2) alg. Only use if other alg is failing
-        # for t in poly_fill:
-        #     if t.contains_point(mp, mode):
-        #         filled.append(t)
-        id = int(mp.y / resolution) * int(4 * width / resolution) + int(mp.x / resolution) * 4
-
-        for i in range(4):
-            if (id >= len(poly_fill)):
-                break
-            if poly_fill[id + i].contains_point(mp, mode):
-                filled.append(poly_fill[id + i])
-    return filled
-
-
-'''fill all remaining triangles with "None" as their color
-add to filled list, this causes for loop to eventually look at all triangles
-colors are calculated based on the neighbor's color
-if multiple neighbors are found, average their color
-This accomplishes blending'''
-
-
-def fill_all(filled, poly_fill, width, height, resolution):
-    for t in filled:
-        ids = t.neighbors(width, height, resolution)
-        for i in ids:
-            if poly_fill[i].color == "None":
-                u_ids = poly_fill[i].neighbors(width, height, resolution)
-                colors = []
-                for j in u_ids:
-                    if poly_fill[j].color != "None":
-                        colors.append(poly_fill[j].color)
-                if len(colors) > 0:
-                    poly_fill[i].set_color(col.average_color(colors))
-                    filled.append(poly_fill[i])
-
-
-'''draws drone flight path with a black line'''
-
-
-def draw_flight_path(map_list, canvasName):
-    for i in range(1, len(map_list)):
-        canvasName.create_line(map_list[i - 1].x, map_list[i - 1].y, map_list[i].x, map_list[i].y)
+from scipy.spatial import Voronoi
+import numpy as np
 
 
 """tester for making drone path"""
-
 
 def create_circle(map_point, ftpix, mode, canvasName):  # center coordinates, radius
     x = map_point.x
@@ -214,7 +38,7 @@ def create_circle(map_point, ftpix, mode, canvasName):  # center coordinates, ra
     if mode == 'sva':
         color = map_point.sva_rgb
 
-    canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill=color)
+    canvasName.create_oval(x - radius, y - radius, x + radius, y + radius, fill=color, outline='')
 
 
 '''return multiplier that translates feet to pixels
@@ -251,6 +75,7 @@ def get_pairs(map_list):
 class Map:
     def __init__(self):
         self.map_list = list()
+        self.poly_list = list()
         self.width = 0
         self.height = 0
         self.delta_lat = 0
@@ -274,8 +99,8 @@ class Map:
                 elif m.gps_point.latitude < min_lat:
                     min_lat = m.gps_point.latitude
 
-            self.width = math.ceil(self.width)
-            self.height = math.ceil(self.height)
+            self.width = self.width / 0.9
+            self.height = self.height / 0.9
 
             self.delta_lat = max_lat - min_lat
             self.scale = feet_to_pix(self.delta_lat, self.height)
@@ -287,12 +112,19 @@ class Map:
         
         annotation.set_map_list(self.map_list, self.scale)
 
+        self.width = int(math.ceil(self.width))
+        self.height = int(math.ceil(self.height))
+
+        # annotation.set_map_list(self.map_list, self.scale)
+
+
     def clear_map(self):
         self.map_list.clear()
         self.width = 0
         self.height = 0
         self.delta_lat = 0
         self.scale = 0
+        self.poly_list.clear()
 
     def gen_map_alt(self, mode, canvas):
 
@@ -301,41 +133,138 @@ class Map:
         for m in self.map_list:
             create_circle(m, self.scale, mode, canvas)
 
-        draw_flight_path(self.map_list, canvas)
+        self.draw_flight_path(self.map_list, canvas)
         return canvas
 
-    def gen_map(self, resolution, mode, canvas):
+    def gen_map(self, mode, resolution, canvas):
+        if len(self.poly_list) == 0:
+            vor, points = self.get_Voronoi(resolution)
+            self.poly_list = self.get_poly_list(vor, points)
 
-        self.width = round(self.width / resolution) * resolution
-        self.height = round(self.height / resolution) * resolution
+        for p in self.poly_list:
+            p.draw(mode, self.scale, canvas)
 
-        # canvas.config(width = self.width, height = self.height)
-
-        poly_fill = get_poly(self.height, self.width)
-        filled = draw_data(self.map_list, poly_fill, mode, resolution, self.width)
-        fill_all(filled, poly_fill, self.width, self.height, resolution)
-        for t in poly_fill:
-            t.draw(canvas)
-
-        draw_flight_path(self.map_list, canvas)
+        self.draw_flight_path(canvas)
         return canvas
 
     def save_map(self, file):
         map_point.save_list(self.map_list, file)
 
-# gps_file = r'vir-atlas-master\Data Files\Feb-26th-2021-05-57PM-Flight-Airdata.csv'
-# stella_file = r'vir-atlas-master\Data Files\data.txt'
-# map_file = r'vir-atlas-master\Data Files\savetest.vmap'
-# canvas_size = 800
-# resolution = 10
 
-# window = tk.Tk()
-# map2 = Map()
-# map2.update_map(canvas_size, gps_file = gps_file, stella_file = stella_file)
-# map2.update_map(canvas_size, map_file=map_file)
-# canvas = tk.Canvas(window, width = canvas_size, height = canvas_size, bg = "grey")
-# map2.get_map_alt('temp', canvas)
+    '''draws drone flight path with a black line'''
 
-# # map.pack()
-# canvas.pack()
-# window.mainloop()
+    def draw_flight_path(self, canvasName):
+        for i in range(1, len(self.map_list)):
+            canvasName.create_line(self.map_list[i - 1].x, self.map_list[i - 1].y, self.map_list[i].x, self.map_list[i].y,
+                                   arrow=tk.LAST, dash=(6, 2), fill='black', width=2)
+
+    def get_Voronoi(self, resolution):
+        points = np.empty((0, 2), int)
+        for a in range(resolution, self.height, resolution):
+            for b in range(resolution, self.width, resolution):
+                bound = int(resolution)
+                x = b + np.random.randint(low=-bound, high=bound)
+                y = a + np.random.randint(low=-bound, high=bound)
+
+                points = np.append(points, np.array([[x, y]]), axis=0)
+
+        for m in self.map_list:
+            points = np.append(points, np.array([[m.x, m.y]]), axis=0)
+
+        vor = Voronoi(points)
+        return vor, points
+
+    def get_poly_list(self, vor, points):
+        poly_list = list()
+        vertices = list()
+
+        count = 0
+        complete = True
+        for v in vor.point_region:
+            for i in vor.regions[v]:
+                if i != -1:
+                    vertices.append(vor.vertices[i][0])
+                    vertices.append(vor.vertices[i][1])
+                elif i == -1:
+                    # print("in i == -1")
+                    # vertices.clear()
+                    complete = False
+                    # break
+            if len(vertices) != 0:
+                poly_list.append(VorPoly(vertices, points[count], complete))
+                vertices.clear()
+            complete = True
+            count += 1
+
+        for p in poly_list:
+            p.get_map_point(self.map_list)
+            p.repair(self.width, self.height)
+
+        return poly_list
+
+
+class VorPoly:
+    def __init__(self, vertices, seed, complete):
+        self.vertices = vertices.copy()
+        self.seed = seed
+        self.map_point = None
+        self.dist = 0
+        self.complete = complete
+
+    def draw(self, mode, scale, canvas):
+        if mode == 'vis':
+            color = self.map_point.vis_rgb
+        if mode == 'nir':
+            color = self.map_point.nir_rgb
+        if mode == 'temp':
+            color = self.map_point.temp_rgb
+        if mode == 'ndvi':
+            color = self.map_point.ndvi_rgb  # various vegetation index colors
+        if mode == 'evi':
+            color = self.map_point.evi_rgb
+        if mode == 'savi':
+            color = self.map_point.savi_rgb
+        if mode == 'msavi':
+            color = self.map_point.msavi_rgb
+        if mode == 'sva':
+            color = self.map_point.sva_rgb
+
+
+        if self.dist > 0:
+            ratio = self.map_point.confidence * scale / self.dist
+            if ratio < 1:
+                ratio -= 0.25
+                color = col.fade(ratio, color)
+                if ratio < 0:
+                    color = '#7d7d7d'
+
+        # print(self.vertices, color)
+        if self.vertices:
+            canvas.create_polygon(self.vertices, fill=color)
+
+
+    def get_map_point(self, map_list):
+        self.map_point = map_list[0]
+        self.dist = math.dist(self.seed, [self.map_point.x, self.map_point.y])
+
+        for m in map_list:
+            if math.dist(self.seed, [m.x, m.y]) < self.dist:
+                self.map_point = m
+                self.dist = math.dist(self.seed, [self.map_point.x, self.map_point.y])
+
+    def repair(self, width, height):
+        i = len(self.vertices) - 1
+        while i > -1:
+            if i % 2 == 0:
+                if self.vertices[i] < 0 or self.vertices[i] > width:
+                    self.vertices.pop(i)
+                    self.vertices.pop(i)
+                    i -= 1
+            else:
+                if self.vertices[i] < 0 or self.vertices[i] > height:
+                    self.vertices.pop(i - 1)
+                    self.vertices.pop(i - 1)
+                    i -= 1
+            i -= 1
+
+

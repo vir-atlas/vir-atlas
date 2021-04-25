@@ -92,7 +92,7 @@ class AnnotationFrame(tk.Frame):
         annotate_btn = tk.Button(root.stella_frame.canvas, image=pin, bg="white", command=annotation.edit_annotation_button)
         annotate_btn.image = pin
         annotate_btn.place(x=annotation.x, y=annotation.y)
-        annotate_btn.bind("<Button-1>", annotation.edit_annotation_button)
+        annotate_btn.bind("<Button-1>")
         root.stella_frame.canvas.pack()
         self.pins[str(annotation)] = annotate_btn
 
@@ -115,8 +115,6 @@ class AnnotationFrame(tk.Frame):
                 del self.pins[str(item)]
                 root.stella_frame.canvas.pack()
             temp += 1
-
-
 
     def selection(self, evt):
         event = evt.widget
@@ -201,7 +199,7 @@ class AnnotationEditor(Annotation):
                 # display message if point doesn't have STELLA data attached to it
                 continue
         if flag == 0:
-            tk.Label(self.top, text="No data recorded for selected point!").pack(side="top")
+            tk.Label(self.top, text="No data recorded for selected point!", bg="#007BA7", fg="white", font=("Courier", "9", "bold")).pack(side="top")
 
     # saves notes made by user to the annotation attribute
     def save_note(self):

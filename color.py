@@ -34,23 +34,25 @@ Calculate X,Y,Z
 returned linearized X,Y,Z (each is in range 0-1)'''
 def spec_to_xyz(data, wl):
     X, Y, Z = 0, 0, 0
+    wl_mult = [1.25, 1.1, 0.98, 0.98, 1, 1]
 
     for i in range(0,6):
-        X += data[i] * x_fit_31(wl[i]) * wl[i]
-        Y += data[i] * y_fit_31(wl[i]) * wl[i]
-        Z += data[i] * z_fit_31(wl[i]) * wl[i]
+        X += data[i] * x_fit_31(wl[i]) * wl[i] * wl_mult[i]
+        Y += data[i] * y_fit_31(wl[i]) * wl[i] * wl_mult[i]
+        Z += data[i] * z_fit_31(wl[i]) * wl[i] * wl_mult[i]
 
     sum = X + Y + Z
+    if sum == 0:
+        return 0,0,0
     return X/sum, Y/sum, Z/sum
 
 '''convert CIE 1931 XYZ values to linear RGB 
 uses sRGB M values, which is based on D50 white
 Pulled from http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html'''
 def xyz_to_rgb(XYZ):
-    M = np.array([  [3.24096994, -1.53738318, -0.49861076], 
-                    [-0.96924364, 1.8759675, 0.04155506],
-                    [0.05563008, -0.20397696, 1.05697151]])
-    
+    M = np.array([  [3.1338561, -1.6168667, -0.4906146],
+                    [-0.9787684,  1.9161415,  0.0334540],
+                    [0.0719453, -0.2289914,  1.4052427]])
     RGB = np.matmul(M, XYZ)
     return RGB
 
@@ -72,12 +74,13 @@ def OoR(RGB):
     if col_min < 0:
         for i in range(3):
             RGB[i] -= col_min
-    
-    scale = 255 / max(RGB)
-    if scale < 1:
-        for i in range(3):
-            RGB[i] *= scale
-        
+
+    if max(RGB) > 0:
+        scale = 255 / max(RGB)
+        if scale < 1:
+            for i in range(3):
+                RGB[i] *= scale
+
     return RGB
     
 '''scale from sRGB to 32 bit color
@@ -150,11 +153,11 @@ def false_color(value, min, max):
 takes value from -1 to 1'''
 def false_color_vi(value):
     # print(value)
-    d_blue = np.array([0, 0, 128])      # -1  -> 0
+    d_blue = np.array([0, 0, 64])      # -1  -> 0
     white = np.array([255, 255, 255])   # 0   -> 0.5
     tan = np.array([210, 180, 140])     # 0.1 -> 0.55
     green = np.array([0, 255, 0])       # 0.5 -> 0.75
-    d_green = np.array([0, 128, 0])     # 1   -> 1
+    d_green = np.array([0, 64, 0])     # 1   -> 1
 
     color = []
     # convert temp to a percentage scale of 0 to 100
@@ -165,11 +168,11 @@ def false_color_vi(value):
     elif p < 0.55:
         p = p - 0.5
         color = (1 - p / 0.05) * white + (p / 0.05) * tan
-    elif p < 0.75:
+    elif p < 0.70:
         p = p - 0.55
         color = (1 - p / 0.2) * tan + (p / 0.2) * green
     else:
-        p = p - 0.75
+        p = p - 0.70
         color = (1 - p / 0.25) * green + (p / 0.25) * d_green
 
     # print(color)
@@ -193,3 +196,12 @@ def false_two_color(value, min, max, color1, color2):
         color = (1 - p / 0.5) * white + (p / 0.5) * c2
     return rgb_to_hex(color)
 
+'''fades to grey. the closer a value is to min, the greyer'''
+def fade(value, color):
+    c = np.array(hex_to_rgb(color))
+    grey = np.array([125,125,125])
+    # value = 0.5
+
+    color = grey + value * (c - grey)
+    OoR(color)
+    return rgb_to_hex(color)

@@ -72,6 +72,10 @@ def read_drone_csv(drone_data):
         # we can compare it against others
         time = datetime.strptime(words[1], "%Y-%m-%d %H:%M:%S")
 
+        # skips over points that are recorded less than 1 foot off the ground
+        if float(words[4]) < 1 and len(gps_list) == 0:
+            continue
+
         # calculate milliseconds since takeoff
         if len(gps_list) == 0:
             start = int(words[0])

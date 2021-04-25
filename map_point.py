@@ -11,8 +11,6 @@ import gps_point
 import stella_point
 import color as col
 import math
-import numpy as np
-import datetime
 import pickle
 
 # visual wavelengths taken by STELLA are constant
@@ -44,8 +42,7 @@ class MapPoint:
 
         self.x = x
         self.y = y
-        self.confidence = gps_point.feet_since_takeoff * math.tan(
-            0.349066)  # radius of data area. Aperature is +- 20 degrees (0.349 rads)
+        self.confidence = gps_point.feet_since_takeoff * math.tan(0.349066)  # radius of data area. Aperature is +- 20 degrees (0.349 rads)
 
         self.annotation = ""
 
@@ -121,6 +118,8 @@ def set_xy(gps_list, stella_list, canvas_size):
     max_lat = find_max_lat(gps_list)
     max_lon = find_max_lon(gps_list)
 
+    border = canvas_size * 0.1 # 10% boundary around data
+
     map_list = []
 
     if (max_lat - min_lat) >= (max_lon - min_lon):
@@ -128,11 +127,13 @@ def set_xy(gps_list, stella_list, canvas_size):
     else:
         delta = max_lon - min_lon
 
-    scale = canvas_size / delta
+    scale = (canvas_size - 2 * border) / delta
 
-    height = (max_lat - min_lat) * scale  # canvas height
-    width = (max_lon - min_lon) * scale  # canvas width
+    height = (max_lat - min_lat) * canvas_size / delta + border # canvas height
+    width = (max_lon - min_lon) * canvas_size / delta + border # canvas width
     # one of the above will be equal to canvas_size depending on shape of data
+
+    chop_takeoff(gps_list, stella_list)
 
     s_cur = 0
     g_cur = 0
@@ -142,14 +143,8 @@ def set_xy(gps_list, stella_list, canvas_size):
         #     print("Not enough Stella Objects")
         #     break
 
-        # skips over points that are recorded less than 1 foot off the ground
-        if gps.feet_since_takeoff < 1:
-            # s_cur += 1
-            g_cur += 1
-            continue
-
-        y = (abs(max_lat - gps.latitude)) * scale
-        x = (gps.longitude - min_lon) * scale
+        y = (abs(max_lat - gps.latitude)) * scale + border
+        x = (gps.longitude - min_lon) * scale + border
 
         if s_cur < len(stella_list):
             if g_cur == 0:
@@ -190,6 +185,38 @@ def set_xy(gps_list, stella_list, canvas_size):
 
     return map_list, width, height, max_lat - min_lat
 
+def chop_takeoff(gps_list, stella_list):
+    stella_time_delta = (stella_list[-1].ms - stella_list[0].ms) / len(stella_list)
+    gps_time_delta = (gps_list[-1].milliseconds - gps_list[0].milliseconds) / len(gps_list)
+
+    ratio = stella_time_delta / gps_time_delta
+    longer_flag = 's'
+    num_extra = len(stella_list) - len(gps_list)/ratio
+    print(len(stella_list), len(gps_list), stella_time_delta, gps_time_delta, ratio, num_extra)
+
+    if ratio < 1:
+        ratio = 1 / ratio
+        longer_flag = 'g'
+        num_extra = len(gps_list) - len(stella_list)/ratio
+
+    # only chop half of the extra.
+    # assume other half are at the end and will be chopped by pairing
+    shift = num_extra / 2.1
+    if int(shift) > 0:
+        if longer_flag  == 's':
+            for i in range(int(shift), -1, -1):
+                stella_list.pop(i)
+            start = stella_list[0].ms
+            for s in stella_list:
+                s.ms -= start
+        if longer_flag  == 'g':
+            for i in range(int(shift), -1, -1):
+                gps_list.pop(i)
+            start = gps_list[0].milliseconds
+            for g in gps_list:
+                g.milliseconds -= start
+    print(len(stella_list))
+
 
 """functions below set the various colors for map_point. vis nir, and temp respectively.
     currently handles workaround where all values are 0"""
@@ -209,8 +236,13 @@ def set_vis(stella_point):
 def set_nir(stella_point):
     max_i = max(stella_point.nir_pows)
     rgb = black
+    m = min(stella_point.nir_pows)
+    un_adjust = list()
+    for n in stella_point.nir_pows:
+        un_adjust.append(n - m)
+
     if max_i > 0:
-        rgb = col.data_to_hex(stella_point.nir_pows, nir_wl)
+        rgb = col.data_to_hex(un_adjust, nir_wl)
 
     return rgb
 
@@ -330,10 +362,10 @@ def set_savi(stella_point):
     savi = ((band5 - band4) / (band5 + band4 + 0.5)) * (1.5)
 
     if savi > 1:
-        print("savi > 1: ", savi)
+        # print("savi > 1: ", savi)
         savi = 1
     if savi < -1:
-        print("savi < -1: ", savi)
+        # print("savi < -1: ", savi)
         savi = -1
 
     return col.false_color_vi(savi)
@@ -346,10 +378,10 @@ def set_msavi(stella_point):
     msavi = (2 * band5 + 1 - math.sqrt((2 * band5 + 1) ** 2 - 8 * (band5 - band4))) / 2
 
     if msavi > 1:
-        print("msavi > 1: ", msavi)
+        # print("msavi > 1: ", msavi)
         msavi = 1
     if msavi < -1:
-        print("msavi > -1: ", msavi)
+        # print("msavi > -1: ", msavi)
         msavi = -1
 
     return col.false_color_vi(msavi)

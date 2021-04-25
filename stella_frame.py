@@ -7,6 +7,7 @@ import tkinter as tk
 import annotation
 import map_gen
 
+RESOLUTION = 10
 
 class StellaFrame(tk.Frame):
     # constructor for StellaFrame
@@ -108,52 +109,52 @@ class VisFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "vis"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
 
 
 class NirFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "nir"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)
 
 
 class TempFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "temp"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)
 
 
 class SvaFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "sva"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)
 
 
 class NdviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "ndvi"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)
 
 
 class EviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
-        master.map_data.gen_map_alt('evi', self.canvas)
+        self.mode = 'evi'
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)
 
 
 class SaviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "savi"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)
 
 
 class MsaviFrame(StellaFrame):
     def __init__(self, master):
         super().__init__(master)
         self.mode = "msavi"
-        master.map_data.gen_map_alt(self.mode, self.canvas)
+        # master.map_data.gen_map(self.mode, RESOLUTION, self.canvas)

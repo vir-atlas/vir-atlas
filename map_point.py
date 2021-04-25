@@ -181,9 +181,9 @@ def set_xy(gps_list, stella_list, canvas_size):
         # color = set_color(stella)                         # create RGB color (type str)
         # print(stella.timestamp, ', ', gps.time, ', ', gps.latitude, ', ',
         # gps.longitude, color)   # and associated color
-    set_all_temps(map_list, stella_list)
+    min_t, max_t = set_all_temps(map_list, stella_list)
 
-    return map_list, width, height, max_lat - min_lat
+    return map_list, width, height, max_lat - min_lat, min_t, max_t
 
 def chop_takeoff(gps_list, stella_list):
     stella_time_delta = (stella_list[-1].ms - stella_list[0].ms) / len(stella_list)
@@ -215,7 +215,7 @@ def chop_takeoff(gps_list, stella_list):
             start = gps_list[0].milliseconds
             for g in gps_list:
                 g.milliseconds -= start
-    print(len(stella_list))
+    # print(len(stella_list))
 
 
 """functions below set the various colors for map_point. vis nir, and temp respectively.
@@ -291,6 +291,7 @@ def set_all_temps(map_list, stella_list):
     min_temp = get_min_temp(stella_list)
     for m in map_list:
         set_temp(m, min_temp, max_temp)
+    return min_temp, max_temp
 
 
 '''below are functions for calculating colors for various landsat maps
@@ -322,10 +323,10 @@ def set_ndvi(stella_point):
     ndvi = (band5 - band4) / (band5 + band4)  # range of 1 -> -1
 
     if ndvi > 1:
-        print("ndvi > 1: ", ndvi)
+        # print("ndvi > 1: ", ndvi)
         ndvi = 1
     if ndvi < -1:
-        print("ndvi < -1: ", ndvi)
+        # print("ndvi < -1: ", ndvi)
         ndvi = -1
 
     # 1 = green, 0 = white?, -1 = blue
@@ -340,13 +341,13 @@ def set_evi(stella_point):
     evi = 2.5 * ((band5 - band4) / (band5 + (6 * band4) - (7.5 * band2) + 1))
 
     if evi > 1:
-        print("evi > 1: ", evi)
+        # print("evi > 1: ", evi)
         # print(evi)
         # print(stella_point.vis_pows)
         # print(stella_point.nir_pows)
         evi = 1
     if evi < -1:
-        print("evi < -1: ", evi)
+        # print("evi < -1: ", evi)
         # print(evi)
         # print(stella_point.vis_pows)
         # print(stella_point.nir_pows)
@@ -424,8 +425,8 @@ def init_map_list(gps_file, stella_file, canvas_size):
 
     stella_list = stella_point.get_batch(stella_list, batch)
 
-    map_list, width, height, delta_lat = set_xy(gps_list, stella_list, canvas_size)
-    return map_list, width, height, delta_lat
+    map_list, width, height, delta_lat, min_t, max_t = set_xy(gps_list, stella_list, canvas_size)
+    return map_list, width, height, delta_lat, min_t, max_t
 
 
 def save_list(map_list, save_file):

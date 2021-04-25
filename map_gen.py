@@ -81,6 +81,10 @@ class Map:
         self.height = 0
         self.delta_lat = 0
         self.scale = 0
+        self.max_temp = 0
+        self.min_temp = 0
+        self.air_temp = 0
+
 
     def update_map(self, canvas_size, gps_file=0, stella_file=0, map_file=0):
         self.clear_map()
@@ -89,6 +93,9 @@ class Map:
 
             min_lat = self.map_list[0].gps_point.latitude
             max_lat = self.map_list[0].gps_point.latitude
+            self.max_temp = self.map_list[0].stella_point.surface_temp
+            self.min_temp = self.map_list[0].stella_point.surface_temp
+            self.air_temp = self.map_list[0].stella_point.air_temp
 
             for m in self.map_list:
                 if m.x > self.width:
@@ -99,6 +106,13 @@ class Map:
                     max_lat = m.gps_point.latitude
                 elif m.gps_point.latitude < min_lat:
                     min_lat = m.gps_point.latitude
+                if m.stella_point.surface_temp > self.max_temp:
+                    self.max_temp = m.stella_point.surface_temp
+                elif m.stella_point.surface_temp < self.min_temp:
+                    self.min_temp = m.stella_point.surface_temp
+                self.air_temp += self.map_list[0].stella_point.air_temp
+
+            self.air_temp = self.air_temp / len(self.map_list)
 
             self.width = self.width / 0.9
             self.height = self.height / 0.9
@@ -107,7 +121,7 @@ class Map:
             self.scale = feet_to_pix(self.delta_lat, self.height)
 
         elif gps_file != 0 and stella_file != 0:
-            self.map_list, self.width, self.height, self.delta_lat = map_point.init_map_list(gps_file, stella_file,
+            self.map_list, self.width, self.height, self.delta_lat, self.min_temp, self.max_temp = map_point.init_map_list(gps_file, stella_file,
                                                                                              canvas_size)
             self.scale = feet_to_pix(self.delta_lat, self.height)
         
@@ -145,7 +159,7 @@ class Map:
         for p in self.poly_list:
             p.draw(mode, self.scale, canvas)
 
-        self.draw_flight_path(canvas)
+        # self.draw_flight_path(canvas)
         return canvas
 
     def save_map(self, file):
@@ -169,8 +183,8 @@ class Map:
 
                 points = np.append(points, np.array([[x, y]]), axis=0)
 
-        for m in self.map_list:
-            points = np.append(points, np.array([[m.x, m.y]]), axis=0)
+        # for m in self.map_list:
+        #     points = np.append(points, np.array([[m.x, m.y]]), axis=0)
 
         vor = Voronoi(points)
         return vor, points
@@ -239,8 +253,14 @@ class VorPoly:
                 if ratio < 0:
                     color = '#7d7d7d'
 
+        colors = np.array([[130,200,240],
+                           [0,190,240],
+                           [100,140,230],
+                           [70,100,220],
+                           [30,140,240]])
         # print(self.vertices, color)
         if self.vertices:
+            color = col.rgb_to_hex(colors[np.random.randint(0,4)])
             canvas.create_polygon(self.vertices, fill=color)
 
 

@@ -4,6 +4,8 @@
 # @todo correlate event coordinates with stella coordinates
 import tkinter
 import tkinter as tk
+import PIL
+from tkinter.ttk import *
 import sys
 import map_point
 import map_gen
@@ -34,6 +36,10 @@ class Annotation(object):
 
         self.note = note
 
+    def edit_annotation_button(self):
+        annotation = AnnotationEditor(self)
+        annotation.note.insert('1.0', self.note)
+
 
 # Responsible for the annotation_frame in main.py
 class AnnotationFrame(tk.Frame):
@@ -44,9 +50,10 @@ class AnnotationFrame(tk.Frame):
         root.annotation_frame = self
         self.width = 420
         self.height = 420
+        self.recent = None
         #for annotations that are not in a map point
         self.annotations = list()
-
+        self.pins = {}
         # edit and save buttons
         self.edit_btn = tk.Button(self, text="Edit", bg="white", fg="#007BA7")
         self.delete_btn = tk.Button(self, text="Delete", bg="white", fg="#007BA7")
@@ -71,7 +78,6 @@ class AnnotationFrame(tk.Frame):
         # adding scrollbar's command parameter
         self.scrollbar.config(command=self.listbox.yview)
 
-
     def add_annotation(self, annotation):
         self.listbox.delete(0, 'end')
         root.annotation_frame.annotations.append(annotation)
@@ -82,14 +88,20 @@ class AnnotationFrame(tk.Frame):
         root.annotation_frame.listbox = self.listbox
         self.listbox.pack()
 
+        pin = PIL.ImageTk.PhotoImage(PIL.Image.open("pin.jpg"))
+        annotate_btn = tk.Button(root.stella_frame.canvas, image=pin, bg="white", command=annotation.edit_annotation_button)
+        annotate_btn.image = pin
+        annotate_btn.place(x=annotation.x, y=annotation.y)
+        annotate_btn.bind("<Button-1>", annotation.edit_annotation_button)
+        root.stella_frame.canvas.pack()
+        self.pins[str(annotation)] = annotate_btn
+
 
     def edit_annotation(self):
         for item in root.annotation_frame.annotations:
             if selected == str(item):
                 annotation = AnnotationEditor(item)
                 annotation.note.insert('1.0', item.note)
-
-
 
     def delete_annotation(self):
         temp = 0
@@ -98,7 +110,12 @@ class AnnotationFrame(tk.Frame):
                 root.annotation_frame.annotations.remove(item)
                 root.annotation_frame.listbox.delete(temp)
                 root.annotation_frame.listbox.pack()
+                btn = self.pins[str(item)]
+                btn.destroy()
+                del self.pins[str(item)]
+                root.stella_frame.canvas.pack()
             temp += 1
+
 
 
     def selection(self, evt):
@@ -108,11 +125,11 @@ class AnnotationFrame(tk.Frame):
             select = event.curselection()
             annotation = event.get(select)
             get_selection(annotation)
-        root.annotation_frame.edit_btn.configure(command=root.annotation_frame.edit_annotation, font=("Courier", "12", "bold italic"))
-        root.annotation_frame.edit_btn.pack(side="left", ipadx=10)
-        root.annotation_frame.delete_btn.configure(command=root.annotation_frame.delete_annotation, font=("Courier", "12", "bold italic"))
-        root.annotation_frame.delete_btn.pack(side='right', ipadx=10)
-
+            root.stella_frame.canvas.pack()
+            root.annotation_frame.edit_btn.configure(command=root.annotation_frame.edit_annotation, font=("Courier", "12", "bold italic"))
+            root.annotation_frame.edit_btn.pack(side="left", ipadx=10)
+            root.annotation_frame.delete_btn.configure(command=root.annotation_frame.delete_annotation, font=("Courier", "12", "bold italic"))
+            root.annotation_frame.delete_btn.pack(side='right', ipadx=10)
 
 
 # Responsible for editing/adding Annotations
@@ -194,6 +211,11 @@ class AnnotationEditor(Annotation):
             if item is self.annotation:
                 root.annotation_frame.annotations.remove(item)
                 root.annotation_frame.listbox.delete(temp)
+                btn = root.annotation_frame.pins[str(item)]
+                btn.destroy()
+                del root.annotation_frame.pins[str(item)]
+                root.stella_frame.canvas.pack()
+
         self.annotation = Annotation(self.annotation.x, self.annotation.y, self.note.get('1.0', 'end-1c'))
         root.annotation_frame.add_annotation(self.annotation)
         self.top.destroy()

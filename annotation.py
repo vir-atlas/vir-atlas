@@ -1,113 +1,170 @@
-# @authors Brynn
-# @date 4/22/21
-# @brief The most recent main GUI file.
-# @TODO Add the legend, annotations, and satellite frames to the main window
-
+# @authors Tenise and Marisa 
+# @date 04/14/2021
+# @brief Handles Annotations
+# @todo correlate event coordinates with stella coordinates
+import tkinter
 import tkinter as tk
-import menu_bar as menu
+import sys
+import map_point
 import map_gen
-import legend
-import satellite_image
-from satellite_frame import SatelliteFrame
-import annotation
+
+global map_list
+global scale
+global root
 
 
-# Class creating the base window
-class Root(tk.Tk):
-    # Main window constructor
-    def __init__(self):
-        tk.Tk.__init__(self)
+class Annotation(object):
+    def __init__(self, x, y, note):
+        # tk.Tk.__init__(self)
+        self.x = x
+        self.y = y
+        for point in map_list:
+            radius = point.confidence * scale
+            if int(point.x) == self.x and int(point.y) == self.y:
+                point.annotation = note
+            elif (point.x + radius) > self.x > (point.x - radius):
+                if (point.y + radius) > self.y > (point.y - radius):
+                    """Checks to see if user click a point within a stella point area"""
+                    """If so, annotation coordinates are set to stella coordinates"""
+                    point.annotation = note
+                    self.x = int(point.x)
+                    self.y = int(point.y)
+                    break
 
-        self.geometry('1450x900')
-        self.winfo_toplevel().title("VIR-Atlas")
-
-        # Initialize data files
-        self.stella_file = 0
-        self.gps_file = 0
-        self.map_file = 0
-        self.satellite_image = 0
-        self.satellite_coords = None
-        # List of accepted types for user uploaded satellite images. Feel free to add.
-        self.image_formats = [("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")]
-
-        self.map_data = map_gen.Map()
-        """
-        self.map_data.update_map(1000,
-                                 "Data Files/Apr-17th-2021-04-55PM-Flight-Airdata.csv",
-                                 "Data Files/data.txt")
-
-        # self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
-        """
-
-        # Add default instructional canvas upon startup
-        self.startup_message = tk.Canvas(width=840, height=840, bg="grey")
-        self.startup_message.create_text(420, 420, font="Times 15", justify="center",
-                                         text="Welcome to VIR - Atlas!\nTo get started,"
-                                              " go to\nFiles -> Open New File")
-        self.startup_message.place(y=20, x=20)
-
-        # Initialize frames
-        self.stella_frame = None
-        self.legend_frame = None
-        self.annotation_frame = None
-        self.satellite_frame = None
-
-        # Add the menu_bar to the main window
-        menu_bar = menu.MenuBar(self)
-        self.config(menu=menu_bar)
-
-    def set_stella_data(self, file):
-        self.stella_file = file
-
-    def set_gps_data(self, file):
-        self.gps_file = file
-
-    def set_map_data(self, file):
-        self.map_file = file
-
-    def switch_frame(self, frame_class):
-        new_frame = frame_class(self)
-        if self.stella_frame is not None:
-            self.stella_frame.destroy()
-        self.stella_frame = new_frame
-        self.stella_frame.place(x=20, y=20)
-
-        # Switch legend to match current map
-        new_legend = legend.Legend(self, self.stella_frame.mode)
-        if self.legend_frame is not None:
-            self.legend_frame.destroy()
-        self.legend_frame = new_legend
-        self.legend_frame.place(x=880, y=20)
-
-    def get_annotation(self):
-        if self.annotation_frame is not None:
-            self.annotation_frame.destroy()
-        annotation.set_map_list(self.map_data.map_list, self.map_data.scale)
-        self.annotation_frame = annotation.AnnotationFrame(self)
-        self.annotation_frame.config(height=420, width=420, bg='blue')
-        self.annotation_frame.place(x=1010, y=460)
-
-    # Displays the generated satellite image
-    def get_satellite(self):
-        self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
-        self.satellite_image = satellite_image.get_satellite_image(self.satellite_coords)
-
-        # new_frame = SatelliteFrame(self, self.satellite_image)
-        if self.satellite_frame is not None:
-            self.satellite_frame.destroy()
-
-        self.satellite_frame = tk.Frame(self)
-        self.satellite_frame.config(height=420, width=420, bg='blue')
-        SatelliteFrame(self.satellite_frame, self.satellite_image)
-        self.satellite_frame.place(x=1010, y=20)
+        self.note = note
 
 
-        """            
-        satellite_image = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
-                                                         title="Select an image", filetypes=self.image_formats)"""
+# Responsible for the annotation_frame in main.py
+class AnnotationFrame(tk.Frame):
+    def __init__(self, master):
+        # constructor for AnnotationFrame
+        tk.Frame.__init__(self, master)
+        self.master = master
+        self.width = 420
+        self.height = 420
+        #for annotations that are not in a map point
+        self.annotations = list()
+        # self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
+
+        # set up the Listbox of all annotations
+        self.listbox = tk.Listbox(self, width=70, height=14, bg="white")
+        tk.Label(self, text="Annotations", bg="blue", fg="white", font=("Courier", "16", "bold")).pack()
+        self.listbox.pack()
+
+        # set up Scrollbar for Listbox
+        self.scrollbar = tk.Scrollbar(self)
+        self.scrollbar.pack()
+
+        # insert available annotations into listbox
+        for point in map_list:
+            # check if there's something in the annotation attribute
+            if point.annotation != "":
+                self.listbox.insert("end", point)
+
+        # attaching listbox to scrollbar
+        self.listbox.config(yscrollcommand=self.scrollbar.set)
+
+        # adding scrollbar's command parameter
+        self.scrollbar.config(command=self.listbox.yview)
 
 
-if __name__ == "__main__":
-    root = Root()
-    annotation.get_root(root)
-    root.mainloop()
+    def add_annotation(self, annotation):
+        self.listbox.delete(0, 'end')
+        root.annotation_frame.annotations.append(annotation)
+        for point in map_list:
+            # check if there's something in the annotation attribute
+            if point.annotation != "":
+                self.listbox.insert("end", point.annotation)
+            if point.annotation == annotation.note:
+                if annotation in root.annotation_frame.annotations:
+                    root.annotation_frame.annotations.remove(annotation)
+        for annotation in root.annotation_frame.annotations:
+            self.listbox.insert('end', annotation.note)
+
+# Responsible for editing/adding Annotations
+class AnnotationEditor(Annotation):
+    # constructor for AnnotationEditor
+    def __init__(self, new_annotation):
+        # call for popup window
+        self.annotation = new_annotation
+        self.top = tk.Toplevel()
+        self.top.title("VIR Atlas Annotations Editor")
+        self.top.geometry("400x600")
+        # create attribute frame
+        tk.Label(self.top, text="Point Attributes").pack(side="top")
+        # add attributes to frame
+        self.get_attribute(new_annotation.x, new_annotation.y)
+
+        # create entry box for input
+        self.note = tk.Text(self.top, width=40, height=10)
+        self.note.pack()
+
+        # create "Save" button that initiates save_note()
+        self.save = tk.Button(self.top, text="Save", command=self.save_note)
+        self.save.pack()
+
+        # create "Cancel" button that destroys the window
+        # Do we need to make sure that this makes no changes to the Frame? I doubt it
+        self.cancel = tk.Button(self.top, text="Cancel", command=self.cancel)
+        self.cancel.pack()
+
+    # gets and displays all attributes (if available)
+    def get_attribute(self, x, y):
+        flag = 0
+        for point in map_list:
+            # check if given points are STELLA points or not
+
+            if (int(point.x) == x) and (int(point.y) == y):
+                # display correlating data
+                surface_temp = "Surface Temperature (C): " + str(point.stella_point.surface_temp)
+                air_temp = "Air Temperature (C): " + str(point.stella_point.air_temp)
+                relative_humidity = "Relative Humidity (%): " + str(point.stella_point.rel_humid)
+                air_pressure_hpa = "Air Pressure(hPa): " + str(point.stella_point.air_pressure_hpa)
+                altitude_m_uncal = "Altitude (m): " + str(point.stella_point.altitude_m_uncal)
+                vis_pows = "Visual Light Spectrum(uW/cm^2):\n 450 nm-> " + str(
+                    point.stella_point.vis_pows[0]) + "\n 500 nm-> " + str(
+                    point.stella_point.vis_pows[1]) + "\n 550 nm-> " + str(
+                    point.stella_point.vis_pows[2]) + "\n 570 nm-> " + str(
+                    point.stella_point.vis_pows[3]) + "\n 600 nm->" + str(
+                    point.stella_point.vis_pows[4]) + "\n 650 nm-> " + str(point.stella_point.vis_pows[5])
+                nir_pows = "Near Infrared Light Spectrum(uW/cm^2):\n 610 nm-> " + str(
+                    point.stella_point.nir_pows[0]) + "\n 680 nm-> " + str(
+                    point.stella_point.nir_pows[1]) + "\n 730 nm-> " + str(
+                    point.stella_point.nir_pows[2]) + "\n 760 nm-> " + str(
+                    point.stella_point.vis_pows[3]) + "\n 810 nm->" + str(
+                    point.stella_point.vis_pows[4]) + "\n 860 nm-> " + str(point.stella_point.vis_pows[5])
+                tk.Label(self.top, text=surface_temp).pack(side="top")
+                tk.Label(self.top, text=air_temp).pack(side="top")
+                tk.Label(self.top, text=relative_humidity).pack(side="top")
+                tk.Label(self.top, text=air_temp).pack(side="top")
+                tk.Label(self.top, text=air_pressure_hpa).pack(side="top")
+                tk.Label(self.top, text=altitude_m_uncal).pack(side="top")
+                tk.Label(self.top, text=vis_pows).pack(side="top")
+                tk.Label(self.top, text=nir_pows).pack(side="top")
+                flag = 1
+                break
+            else:
+                # display message if point doesn't have STELLA data attached to it
+                continue
+        if flag == 0:
+            tk.Label(self.top, text="No data recorded for selected point!").pack(side="top")
+
+    # saves notes made by user to the annotation attribute
+    def save_note(self):
+        self.annotation = Annotation(self.annotation.x, self.annotation.y, self.note.get('1.0', 'end-1c'))
+        root.annotation_frame.add_annotation(self.annotation)
+        self.top.destroy()
+
+    def cancel(self):
+        self.top.destroy()
+
+
+def set_map_list(map_points, map_scale):
+    global map_list, scale
+    map_list = map_points
+    scale = map_scale
+
+
+def get_root(main_root):
+    global root
+    root = main_root

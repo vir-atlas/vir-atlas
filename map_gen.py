@@ -12,6 +12,7 @@ import color as col
 import math
 from scipy.spatial import Voronoi
 import numpy as np
+import annotation
 
 
 """tester for making drone path"""

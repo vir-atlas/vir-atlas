@@ -88,7 +88,7 @@ class Root(tk.Tk):
 
         annotation.set_map_list(self.map_data.map_list, self.map_data.scale)
         self.annotation_frame = annotation.AnnotationFrame(self)
-        self.annotation_frame.config(height=420, width=420, bg='blue')
+        self.annotation_frame.config(height=420, width=420, bg='#007BA7')
         self.annotation_frame.place(x=1010, y=460)
 
     # Displays the generated satellite image

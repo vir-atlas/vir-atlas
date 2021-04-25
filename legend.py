@@ -12,10 +12,11 @@ import tkinter as tk
 from tkinter import Canvas, Frame, BOTH, W
 import color as col
 from math import floor
+import numpy as np
 from statistics import median
 import map_gen
 
-DEBUG = 1
+DEBUG = False
 
 
 class Legend(Frame):
@@ -41,6 +42,7 @@ class Legend(Frame):
         else:
             self.min_temp = master.map_data.min_temp
             self.max_temp = master.map_data.max_temp
+            self.air_temp = master.map_data.air_temp
 
         # set scale
         self.scale = []
@@ -92,11 +94,11 @@ class Legend(Frame):
         self.canvas.pack(fill=BOTH, expand=1)
 
     def create_temp(self):
-        if not self.scale:
+        if len(self.scale) == 0:
             return
         color = []
         for i in self.scale:
-            color.append(col.false_color(i, 0, 1))
+            color.append(col.false_color(i, self.min_temp, self.max_temp))
 
         y_start = 10   # arbitrary y start value
         y_stop = self.height - y_start
@@ -130,7 +132,7 @@ class Legend(Frame):
             self.canvas.create_line(x, y, x + 5, y)
 
     def create_vi(self):
-        if not self.scale:
+        if len(self.scale) == 0:
             return
         color = []
         for i in self.scale:
@@ -168,39 +170,35 @@ class Legend(Frame):
             self.canvas.create_line(x, y, x + 5, y)
 
     def create_sva(self):
-        if not self.scale:
+        if len(self.scale) == 0:
             return
         color = []
 
         temp_list = []  # list containing hex values for corresponding surface temps
         delta_list = []
-        air_temp = median(self.scale)  # arbitrary air temperature value, however it needs to be inside the (min, max) range of scale
+        air_temp = self.scale  # arbitrary air temperature value, however it needs to be inside the (min, max) range of scale
         # air_temp = 40
         print(air_temp)
 
-        for num, s in enumerate(self.scale):
-            temp, delta = set_temp(s, self.scale[-1], self.scale[0], air_temp)
-            temp_list.append(temp)
-            delta_list.append(delta)
-
-        min_temp = min(self.scale)
-        max_temp = max(self.scale)
-        for num, s in enumerate(self.scale):
-            color.append(col.false_two_color(air_temp, min_temp, max_temp, temp_list[-num], temp_list[num]))
-
-        y_start = 10   # arbitrary y start value
+        red = '#ff0000'
+        blue = '#0000ff'
+        for i in self.scale:
+            color.append(col.false_two_color(i, self.min_temp - self.air_temp,
+                                         self.max_temp - self.air_temp, blue, red))
+        y_start = 10  # arbitrary y start value
         y_stop = self.height - y_start
         y = y_start  # y increment value
         x = 70
 
-        rect_x1 = 10
-        rect_x2 = 60
+        rect_x1 = 10  # goes with window atm, may move to a method if both vertical and horizontal legends are produced
+        rect_x2 = 60  # same as rect_x1
         rect_y1 = 10
         rect_y2 = 0
 
         if color:
             box_size = floor((y_stop - y_start) / len(color))
-            legend_size = box_size * len(color) + y_start  # keeps the boxes and lines aligned at the bottom of the canvas
+            legend_size = box_size * len(
+                color) + y_start  # keeps the boxes and lines aligned at the bottom of the canvas
 
             self.canvas.create_line(x, y, x, legend_size)  # create vertical line for numbering
 
@@ -210,25 +208,68 @@ class Legend(Frame):
                 self.canvas.create_line(x, y, x + 5, y)
 
                 if y == 0:
-                    self.canvas.create_text(x + 10, y, anchor=W, font=("Arial", 10), text=delta_list[num])
+                    self.canvas.create_text(x + 10, y, anchor=W, font=("Arial", 10), text=self.scale[num])
                 else:
-                    self.canvas.create_text(x + 10, y + (box_size / 2), anchor=W, font=("Arial", 10), text=delta_list[num])
+                    self.canvas.create_text(x + 10, y + (box_size / 2), anchor=W, font=("Arial", 10),
+                                            text=self.scale[num])
                 y += box_size
                 rect_y1 += box_size
                 # print(y)
 
             self.canvas.create_line(x, y, x + 5, y)
+        # for num, s in enumerate(self.scale):
+        #     temp, delta = set_temp(s, self.scale[-1], self.scale[0], air_temp)
+        #     temp_list.append(temp)
+        #     delta_list.append(delta)
+        #
+        # min_temp = min(self.scale)
+        # max_temp = max(self.scale)
+        # for num, s in enumerate(self.scale):
+        #     color.append(col.false_two_color(air_temp, min_temp, max_temp, temp_list[-num], temp_list[num]))
+
+        # y_start = 10   # arbitrary y start value
+        # y_stop = self.height - y_start
+        # y = y_start  # y increment value
+        # x = 70
+        #
+        # rect_x1 = 10
+        # rect_x2 = 60
+        # rect_y1 = 10
+        # rect_y2 = 0
+        #
+        # if color:
+        #     box_size = floor((y_stop - y_start) / len(color))
+        #     legend_size = box_size * len(color) + y_start  # keeps the boxes and lines aligned at the bottom of the canvas
+        #
+        #     self.canvas.create_line(x, y, x, legend_size)  # create vertical line for numbering
+        #
+        #     for num, c in enumerate(color):
+        #         rect_y2 = rect_y1 + box_size
+        #         self.canvas.create_rectangle(rect_x1, rect_y1, rect_x2, rect_y2, outline=c, fill=c)
+        #         self.canvas.create_line(x, y, x + 5, y)
+        #
+        #         if y == 0:
+        #             self.canvas.create_text(x + 10, y, anchor=W, font=("Arial", 10), text=delta_list[num])
+        #         else:
+        #             self.canvas.create_text(x + 10, y + (box_size / 2), anchor=W, font=("Arial", 10), text=delta_list[num])
+        #         y += box_size
+        #         rect_y1 += box_size
+        #         # print(y)
+        #
+        #     self.canvas.create_line(x, y, x + 5, y)
 
     def set_scale(self):
+        delta = (self.min_temp - self.max_temp) / 40
         if self.mode == "temp":
-            self.scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0]  # 11 values
+            self.scale = np.arange(self.max_temp, self.min_temp, delta)  # 30 values
         elif self.mode == "ndvi" or self.mode == "evi" or self.mode == "savi" or self.mode == "msavi":
-            self.scale = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1]  # 21 values
+            self.scale = np.arange(1, -1, -0.05)  # 40 values
         elif self.mode == "sva":  # @todo: this wont work for maps with little difference between min and max temp values
-            max_temp = int(self.max_temp)
-            min_temp = int(self.min_temp)
-            for _ in range(max_temp, min_temp, -5):
-                self.scale.append(float(_))
+            # max_temp = int(self.max_temp)
+            # min_temp = int(self.min_temp)
+            # for _ in range(max_temp, min_temp, -5):
+            #     self.scale.append(float(_))
+            self.scale = np.arange(self.max_temp - self.air_temp, self.min_temp - self.air_temp, delta)
 
 
 # def get_colors(mode: str, scale: list):

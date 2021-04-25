@@ -31,6 +31,7 @@ class Root(tk.Tk):
         self.image_formats = [("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")]
 
         self.map_data = map_gen.Map()
+        self.resolution = 10    #default value. Might want to let user change this. The smaller, the more polygons in a map
         """
         self.map_data.update_map(1000,
                                  "Data Files/Apr-17th-2021-04-55PM-Flight-Airdata.csv",

@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+
+title VIR- Atlas Use Case Diagram
+
+rectangle Annotate {
+    (Create Annotation)
+    (Delete Annotation)
+}
+
+rectangle Maps {
+    (Swap Map View)
+    (Save Maps)
+    (Load Maps)
+    (Generate Map Data)
+}
+
+rectangle Satellite {
+    (Get Satellite Image)
+}
+
+
+:Sat-Search: --> (Get Satellite Image)
+:STELLA Device: --> (Generate Map Data)
+:Drone: --> (Generate Map Data)
+:User: --> (Load Maps)
+:User: --> (Save Maps)
+:User: --> (Create Annotation)
+:User: --> (Delete Annotation)
+:User: --> (Swap Map View)
+
+@enduml

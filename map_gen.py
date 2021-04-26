@@ -88,7 +88,7 @@ class Map:
 
     def update_map(self, canvas_size, gps_file=0, stella_file=0, map_file=0):
         self.clear_map()
-        if map_file != 0:
+        if map_file != '':
             self.map_list = map_point.read_map_list(map_file)
 
             min_lat = self.map_list[0].gps_point.latitude
@@ -120,7 +120,7 @@ class Map:
             self.delta_lat = max_lat - min_lat
             self.scale = feet_to_pix(self.delta_lat, self.height)
 
-        elif gps_file != 0 and stella_file != 0:
+        elif gps_file != '' and stella_file != '':
             self.map_list, self.width, self.height, self.delta_lat, self.min_temp, self.max_temp = map_point.init_map_list(gps_file, stella_file,
                                                                                              canvas_size)
             self.scale = feet_to_pix(self.delta_lat, self.height)
@@ -177,7 +177,7 @@ class Map:
         points = np.empty((0, 2), int)
         for a in range(resolution, self.height, resolution):
             for b in range(resolution, self.width, resolution):
-                bound = int(resolution)
+                bound = int(resolution / 1.5)
                 x = b + np.random.randint(low=-bound, high=bound)
                 y = a + np.random.randint(low=-bound, high=bound)
 

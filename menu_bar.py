@@ -56,21 +56,21 @@ class MenuBar(tk.Menu):
         view_menu.add_command(label="MSAVI Map", underline=1,
                               command=lambda: master.switch_frame(stella_frame.MsaviFrame))
 
-        # Dropdown menu of annotation options
-        annotate_menu = tk.Menu(self, tearoff=False)
-        self.add_cascade(label="Annotate", underline=0, menu=annotate_menu)
-        annotate_menu.add_command(label="New Annotation", underline=1, command=self.quit)
-        annotate_menu.add_command(label="Clear Annotations", underline=1, command=self.quit)
+        # # Dropdown menu of annotation options
+        # annotate_menu = tk.Menu(self, tearoff=False)
+        # self.add_cascade(label="Annotate", underline=0, menu=annotate_menu)
+        # annotate_menu.add_command(label="New Annotation", underline=1, command=self.quit)
+        # annotate_menu.add_command(label="Clear Annotations", underline=1, command=self.quit)
 
         # Dropdown menu of satellite frame options (uploading a new image or returning to the default)
         satellite_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="Satellite", underline=0, menu=satellite_menu)
         satellite_menu.add_command(label="Get Satellite Image", underline=1, command=lambda: master.get_satellite())
-        satellite_menu.add_command(label="Upload Aerial Image", underline=1, command=None)
+        satellite_menu.add_command(label="Upload Aerial Image", underline=1, command=lambda: self.set_sat_image())
 
         # Help Menu
         help_menu = tk.Menu(self, tearoff=False)
-        self.add_cascade(label="Help", underline=0, menu=help_menu)
+        # self.add_cascade(label="Help", underline=0, menu=help_menu)
         help_menu.add_command(label="About", underline=1, command=about)
 
     # Closes the window
@@ -86,38 +86,48 @@ class MenuBar(tk.Menu):
         self.master.set_gps_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select GPS data",
                                                             filetypes=(("CSV Files", "*.csv"),)))
-        self.master.set_map_data(0)
+        self.master.set_map_data('')
 
-        self.master.map_data.update_map(700, gps_file=self.master.gps_file,
-                                        stella_file=self.master.stella_file,
-                                        map_file=self.master.map_file)
+        if self.master.stella_file and self.master.gps_file:
+            self.master.map_data.update_map(700, gps_file=self.master.gps_file,
+                                            stella_file=self.master.stella_file,
+                                            map_file=self.master.map_file)
 
-        # Open the temperature map by default
-        self.master.switch_frame(stella_frame.TempFrame)
-        # Open the satellite image by default
-        self.master.get_satellite()
-        self.master.get_annotation()
+            # Open the temperature map by default
+            self.master.switch_frame(stella_frame.TempFrame)
+            # Open the satellite image by default
+            self.master.get_satellite()
+            self.master.get_annotation()
 
     def open_prev_file(self):
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select Previous Map data",
                                                             filetypes=(("VIR-Atlas Files", "*.vmap"),)))
-        self.master.set_gps_data(0)
-        self.master.set_stella_data(0)
+        self.master.set_gps_data(None)
+        self.master.set_stella_data(None)
 
-        self.master.map_data.update_map(700, gps_file=self.master.gps_file,
-                                        stella_file=self.master.stella_file,
-                                        map_file=self.master.map_file)
+        if self.master.map_file:
+            self.master.map_data.update_map(700, gps_file=self.master.gps_file,
+                                            stella_file=self.master.stella_file,
+                                            map_file=self.master.map_file)
 
-        # Open the temperature map by default
-        self.master.switch_frame(stella_frame.TempFrame)
-        # Open the satellite image by default
-        self.master.get_satellite()
+            # Open the temperature map by default
+            self.master.switch_frame(stella_frame.TempFrame)
+            # Open the satellite image by default
+            self.master.get_satellite()
 
     def save_file(self):
         file = filedialog.asksaveasfile(filetypes=[('VIR-Atlas map', '.vmap'), ('All files', '*')],
                                         defaultextension=".vmap", mode='wb')
         self.master.map_data.save_map(file)
+
+    def set_sat_image(self):
+        file = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
+                                        title="Select Previous Map data",
+                                        filetypes=[("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")])
+        self.master.set_sat_file(file)
+        if self.master.satellite_image != '':
+            self.master.get_satellite_upload()
 
 
 # Window for testing purposes only. Shows how to create a MenuBar object.

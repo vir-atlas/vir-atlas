@@ -320,6 +320,15 @@ def set_ndvi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
 
+    # max = 0
+    # if band4 > band5:
+    #     max = band4
+    # else:
+    #     max = band5
+
+    band4 = band4 / 10000
+    band5 = band5 / 10000
+
     ndvi = (band5 - band4) / (band5 + band4)  # range of 1 -> -1
 
     if ndvi > 1:
@@ -338,10 +347,23 @@ def set_evi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
 
+    # max = 0
+    # if band2 > band4 and band2 > band5:
+    #     max = band2
+    # elif band4 > band2 and band4 > band5:
+    #     max = band4
+    # else:
+    #     max = band5
+
+    band2 = band2 / 10000
+    band4 = band4 / 10000
+    band5 = band5 / 10000
+
+
     evi = 2.5 * ((band5 - band4) / (band5 + (6 * band4) - (7.5 * band2) + 1))
 
     if evi > 1:
-        # print("evi > 1: ", evi)
+        print("evi > 1: ", evi)
         # print(evi)
         # print(stella_point.vis_pows)
         # print(stella_point.nir_pows)
@@ -359,6 +381,15 @@ def set_evi(stella_point):
 def set_savi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
+    #
+    # max = 0
+    # if band4 > band5:
+    #     max = band4
+    # else:
+    #     max = band5
+
+    band4 = band4 / 10000
+    band5 = band5 / 10000
 
     savi = ((band5 - band4) / (band5 + band4 + 0.5)) * (1.5)
 
@@ -375,6 +406,15 @@ def set_savi(stella_point):
 def set_msavi(stella_point):
     band4 = stella_point.vis_pows[5]
     band5 = stella_point.nir_pows[5]
+    #
+    # max = 0
+    # if band4 > band5:
+    #     max = band4
+    # else:
+    #     max = band5
+
+    band4 = band4 / 10000
+    band5 = band5 / 10000
 
     msavi = (2 * band5 + 1 - math.sqrt((2 * band5 + 1) ** 2 - 8 * (band5 - band4))) / 2
 

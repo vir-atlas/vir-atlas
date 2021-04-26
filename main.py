@@ -22,10 +22,10 @@ class Root(tk.Tk):
         self.winfo_toplevel().title("VIR-Atlas")
 
         # Initialize data files
-        self.stella_file = 0
-        self.gps_file = 0
-        self.map_file = 0
-        self.satellite_image = 0
+        self.stella_file = ''
+        self.gps_file = ''
+        self.map_file = ''
+        self.satellite_image = ''
         self.satellite_coords = None
         # List of accepted types for user uploaded satellite images. Feel free to add.
         self.image_formats = [("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")]
@@ -66,6 +66,9 @@ class Root(tk.Tk):
     def set_map_data(self, file):
         self.map_file = file
 
+    def set_sat_file(self, file):
+        self.satellite_image = file
+
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)
         self.map_data.gen_map(new_frame.mode, self.resolution, new_frame.canvas)
@@ -95,13 +98,16 @@ class Root(tk.Tk):
     def get_satellite(self):
         self.satellite_coords = map_gen.get_pairs(self.map_data.map_list)
         self.satellite_image = satellite_image.get_satellite_image(self.satellite_coords)
+        print(self.satellite_image)
 
         # new_frame = SatelliteFrame(self, self.satellite_image)
         if self.satellite_frame is not None:
             self.satellite_frame.destroy()
+        # self.satellite_frame = new_frame
 
         self.satellite_frame = tk.Frame(self)
         self.satellite_frame.config(height=420, width=420, bg='blue')
+        print(self.satellite_image)
         SatelliteFrame(self.satellite_frame, self.satellite_image)
         self.satellite_frame.place(x=1010, y=20)
 
@@ -110,6 +116,17 @@ class Root(tk.Tk):
         satellite_image = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/vir-atlas',
                                                          title="Select an image", filetypes=self.image_formats)"""
 
+    def get_satellite_upload(self):
+       # new_frame = SatelliteFrame(self, self.satellite_image)
+        if self.satellite_frame is not None:
+            self.satellite_frame.destroy()
+        # self.satellite_frame = new_frame
+
+        self.satellite_frame = tk.Frame(self)
+        self.satellite_frame.config(height=420, width=420, bg='blue')
+        print(self.satellite_image)
+        SatelliteFrame(self.satellite_frame, self.satellite_image)
+        self.satellite_frame.place(x=1010, y=20)
 
 if __name__ == "__main__":
     root = Root()

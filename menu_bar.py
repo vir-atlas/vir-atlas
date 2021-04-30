@@ -9,7 +9,7 @@ import sys
 import stella_frame
 
 
-# Creates a new window with helpful information
+"""Creates a new window with helpful information"""
 def about():
     about_window = tk.Tk()
     about_window.title("About")
@@ -24,10 +24,9 @@ def about():
 
 
 class MenuBar(tk.Menu):
-    # MenuBar constructor
+    """MenuBar constructor"""
     def __init__(self, master):
         tk.Menu.__init__(self, master)
-
         # Dropdown menu of file options: open, save, exit
         file_menu = tk.Menu(self, tearoff=False)
         self.add_cascade(label="File", underline=0, menu=file_menu)
@@ -73,11 +72,11 @@ class MenuBar(tk.Menu):
         # self.add_cascade(label="Help", underline=0, menu=help_menu)
         help_menu.add_command(label="About", underline=1, command=about)
 
-    # Closes the window
+    """Closes the window"""
     def quit(self):
         sys.exit(0)
 
-    # Opens the stella and gps data files.
+    """Opens the stella and gps data files""""
     def open_files(self):
         # @TODO We need to make sure the starting directory works on all machines
         self.master.set_stella_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE',
@@ -99,6 +98,7 @@ class MenuBar(tk.Menu):
             self.master.get_satellite()
             self.master.get_annotation()
 
+    """Opens a map file""""
     def open_prev_file(self):
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select Previous Map data",
@@ -130,7 +130,7 @@ class MenuBar(tk.Menu):
             self.master.get_satellite_upload()
 
 
-# Window for testing purposes only. Shows how to create a MenuBar object.
+"""Window for testing purposes only. Shows how to create a MenuBar object."""
 class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)

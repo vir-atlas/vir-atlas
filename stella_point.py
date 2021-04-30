@@ -112,8 +112,8 @@ class StellaPoint:
             for i in range(6):
                 self.vis_pows[i] += delta
 
-"""find a way to pull out the batches so user can select which one"""
 
+"""creates a list of stella objects for the file"""
 
 def make_stella_list(file):
 

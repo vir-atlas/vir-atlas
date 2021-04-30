@@ -37,6 +37,7 @@ class Annotation(object):
         self.note = note
 
     def edit_annotation_button(self):
+        """allows annotation to be editied"""
         annotation = AnnotationEditor(self)
         annotation.note.insert('1.0', self.note)
 
@@ -79,6 +80,7 @@ class AnnotationFrame(tk.Frame):
         self.scrollbar.config(command=self.listbox.yview)
 
     def add_annotation(self, annotation):
+        """Adds a new annotation to the list saved and adds annotation to diplay on GUI"""
         self.listbox.delete(0, 'end')
         root.annotation_frame.annotations.append(annotation)
         for item in root.annotation_frame.annotations:
@@ -98,12 +100,14 @@ class AnnotationFrame(tk.Frame):
 
 
     def edit_annotation(self):
+        """allows annotation to be editied"""
         for item in root.annotation_frame.annotations:
             if selected == str(item):
                 annotation = AnnotationEditor(item)
                 annotation.note.insert('1.0', item.note)
 
     def delete_annotation(self):
+        """allows annotation to be deleted"""
         temp = 0
         for item in root.annotation_frame.annotations:
             if selected == str(item):
@@ -117,6 +121,7 @@ class AnnotationFrame(tk.Frame):
             temp += 1
 
     def selection(self, evt):
+        """Allows for selection event of annotation object"""
         event = evt.widget
         cur = event.curselection()
         if len(cur) > 0:
@@ -160,8 +165,9 @@ class AnnotationEditor(Annotation):
 
         self.top.configure(bg="#007BA7")
 
-    # gets and displays all attributes (if available)
+    
     def get_attribute(self, x, y):
+        """gets and displays all attributes (if available)"""
         flag = 0
         for point in map_list:
             # check if given points are STELLA points or not
@@ -201,8 +207,9 @@ class AnnotationEditor(Annotation):
         if flag == 0:
             tk.Label(self.top, text="No data recorded for selected point!", bg="#007BA7", fg="white", font=("Courier", "9", "bold")).pack(side="top")
 
-    # saves notes made by user to the annotation attribute
+    
     def save_note(self):
+        """saves notes made by user to the annotation attribute"""
         temp = 0
         for item in root.annotation_frame.annotations:
             temp += 1
@@ -223,16 +230,19 @@ class AnnotationEditor(Annotation):
 
 
 def set_map_list(map_points, map_scale):
+    """gets main maplist from map_gen and its scale"""
     global map_list, scale
     map_list = map_points
     scale = map_scale
 
 
 def get_root(main_root):
+    """gets root frame from main file"""
     global root
     root = main_root
 
 
 def get_selection(annotation):
+    """gets which annotation is being selected in the annotation box"""
     global selected
     selected = annotation

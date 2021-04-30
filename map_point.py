@@ -185,6 +185,9 @@ def set_xy(gps_list, stella_list, canvas_size):
 
     return map_list, width, height, max_lat - min_lat, min_t, max_t
 
+
+"""Removes excessive takeoff data"""
+
 def chop_takeoff(gps_list, stella_list):
     stella_time_delta = (stella_list[-1].ms - stella_list[0].ms) / len(stella_list)
     gps_time_delta = (gps_list[-1].milliseconds - gps_list[0].milliseconds) / len(gps_list)

@@ -10,7 +10,7 @@ import map_gen
 RESOLUTION = 10
 
 class StellaFrame(tk.Frame):
-    # constructor for StellaFrame
+    """constructor for StellaFrame"""
     def __init__(self, master):
         # call constructor for tk.Frame
         tk.Frame.__init__(self, master)
@@ -32,7 +32,7 @@ class StellaFrame(tk.Frame):
         self.canvas.pack()
         self.set_canvas()
 
-    # This needs to be called after a file is loaded!
+    """This needs to be called after a file is loaded!"""
     def load_canvases(self):
         # initialize all three canvases
         self.master.stella_frame.map_data.update_map(self.master.stella_frame.canvas_size,
@@ -40,7 +40,7 @@ class StellaFrame(tk.Frame):
                                                      stella_file=self.master.stella_file,
                                                      map_file=self.master.map_file)
 
-    # This needs to be called to add the canvas to the frame
+    """ This needs to be called to add the canvas to the frame"""
     def set_canvas(self):
 
         # bound the scrolling region (needs work?)
@@ -60,21 +60,21 @@ class StellaFrame(tk.Frame):
         # bound right clicking to Annotations
         self.canvas.bind("<Button-3>", self.create_annotation)
 
-    # create a new annotation
+    """create a new annotation"""
     def create_annotation(self, event):
         # create new Annotation object
         new_annotation = annotation.Annotation(event.x, event.y, "")
         # pass object to AnnotationEditor
         annotation.AnnotationEditor(new_annotation)
 
-    # move
+    """move"""
     def move_start(self, event):
         self.canvas.scan_mark(event.x, event.y)
 
     def move_move(self, event):
         self.canvas.scan_dragto(event.x, event.y, gain=1)
 
-    # windows zoom
+    """windows zoom"""
     def zoomer(self, event):
         if event.delta > 0:
             self.canvas.scale("all", event.x, event.y, 1.1, 1.1)
@@ -82,7 +82,7 @@ class StellaFrame(tk.Frame):
             self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    # linux zoom
+    """linux zoom"""
     def zoomer_p(self, event):
         self.canvas.scale("all", event.x, event.y, 1.1, 1.1)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -91,7 +91,7 @@ class StellaFrame(tk.Frame):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    # Functions for setting a mode (called from menu_bar)
+    """ Functions for setting a mode (called from menu_bar)"""
     def vis_mode(self):
         self.mode = 'vis'
         self.set_canvas()

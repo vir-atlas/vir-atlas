@@ -161,16 +161,13 @@ class Legend(Frame):
             return
         color = []
 
-        air_temp = self.scale  # arbitrary air temperature value, however it needs to be inside the (min, max) range of scale
-        print(air_temp)
-
         red = '#ff0000'
         blue = '#0000ff'
 
         for i in self.scale:  # try to create the color range with respect to the size of scale
             try:
-                color.append(col.false_two_color(i, self.min_temp - self.air_temp,
-                                                 self.max_temp - self.air_temp, blue, red))
+                color.append(col.false_two_color(i, self.min_temp, self.air_temp,
+                                                 self.max_temp, blue, red))
             except ValueError:
                 print("LEGEND, create_sva: Could not generate color list")
                 return
@@ -221,7 +218,7 @@ class Legend(Frame):
         elif self.mode == "ndvi" or self.mode == "evi" or self.mode == "savi" or self.mode == "msavi":
             self.scale = np.arange(1, -1.05, -0.05)  # 41 values
         elif self.mode == "sva":
-            self.scale = np.arange(self.max_temp - self.air_temp, self.min_temp - self.air_temp, delta)
+            self.scale = np.arange(self.max_temp, self.min_temp, delta)
 
 
 def main():

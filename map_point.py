@@ -94,13 +94,14 @@ class MapPoint:
         # min_temp = -40.0 #max and min the sensor can see
         self.temp_rgb = col.false_color(self.stella_point.surface_temp, min_temp, max_temp)
 
-        temp_delta = self.stella_point.surface_temp - self.stella_point.air_temp
-        min_delta = min_temp - self.stella_point.air_temp
-        max_delta = max_temp - self.stella_point.air_temp
+        # temp_delta = self.stella_point.surface_temp - self.stella_point.air_temp
+        # min_delta = min_temp - self.stella_point.air_temp
+        # max_delta = max_temp - self.stella_point.air_temp
         red = '#ff0000'  # used for "hotter than air"
         blue = '#0000ff'  # used for "colder than air"
 
-        self.sva_rgb = col.false_two_color(temp_delta, min_delta, max_delta, blue, red)
+        self.sva_rgb = col.false_two_color(self.stella_point.surface_temp, min_temp,
+                                           self.stella_point.air_temp, max_temp, blue, red)
 
     """
     below are functions for calculating colors for various landsat maps

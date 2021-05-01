@@ -109,7 +109,6 @@ class MenuBar(tk.Menu):
             self.master.get_satellite()
             self.master.get_annotation()
 
-    """Opens a map file""""
     def open_prev_file(self):
         """ Opens a .vmap file """
 

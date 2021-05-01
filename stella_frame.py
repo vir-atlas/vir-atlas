@@ -129,7 +129,7 @@ class NdviFrame(StellaFrame):
     """ Normalized Difference Vegetation Index Frame """
     def __init__(self, master):
         super().__init__(master)
-        self.mode = "ndvi
+        self.mode = "ndvi"
 
 
 class EviFrame(StellaFrame):

@@ -242,22 +242,24 @@ def false_color_vi(value):
     return rgb_to_hex(color)
 
 
-def false_two_color(value, min, max, color1, color2):
+def false_two_color(value, min, med, max, color1, color2):
     """ Take a 3 floats where value is between min and max and 2 hex colors, return value's corresponding hex color
 
-    color 1 pairs with min, color 2 pairs with max. White used for in between.
+    color 1 pairs with min, color 2 pairs with max. White pairs with med.
     """
+
     c1 = np.array(hex_to_rgb(color1))
     c2 = np.array(hex_to_rgb(color2))
     white = np.array([255, 255, 255])
 
-    p = (value - min) / (max - min)
-
-    if p < 0.5:
-        color = (1 - p / 0.5) * c1 + (p / 0.5) * white
+    # compare to min
+    if value < med:
+        p = (value - min) / (med - min)
+        color = c1 + p * (white - c1)
     else:
-        p = p - 0.5
-        color = (1 - p / 0.5) * white + (p / 0.5) * c2
+        p = (value - med) / (max - med)
+        color = white + p * (c2 - white)
+
     return rgb_to_hex(color)
 
 

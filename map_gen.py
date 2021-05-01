@@ -109,7 +109,7 @@ class Map:
             max_lat = self.map_list[0].gps_point.latitude
             self.max_temp = self.map_list[0].stella_point.surface_temp
             self.min_temp = self.map_list[0].stella_point.surface_temp
-            self.air_temp = self.map_list[0].stella_point.air_temp
+            self.air_temp = 0
 
             for m in self.map_list:
                 if m.x > self.width:
@@ -124,7 +124,7 @@ class Map:
                     self.max_temp = m.stella_point.surface_temp
                 elif m.stella_point.surface_temp < self.min_temp:
                     self.min_temp = m.stella_point.surface_temp
-                self.air_temp += self.map_list[0].stella_point.air_temp
+                self.air_temp += m.stella_point.air_temp
 
             self.air_temp = self.air_temp / len(self.map_list)
 
@@ -139,6 +139,11 @@ class Map:
                 gps_file, stella_file,
                 canvas_size)
             self.scale = feet_to_pix(self.delta_lat, self.height)
+            self.air_temp = 0
+
+            for m in self.map_list:
+                self.air_temp += m.stella_point.air_temp
+            self.air_temp = self.air_temp / len(self.map_list)
 
         annotation.set_map_list(self.map_list, self.scale)
 

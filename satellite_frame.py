@@ -1,16 +1,20 @@
-# @authors Brynn, Frank
-# @date 4/13/21
-# @brief All things for the Satellite image frame
-# @TODO Everything lol
+# !/usr/bin/env python3
+# -*-coding:utf-8 -*-
+""" Handles Satellite details, user interactions, and map mode
+
+Satellite frame has same zoom and scroll bindings as StellaFrame and update functions
+"""
 
 import tkinter as tk
-from tkinter import ttk
-from datetime import date
-from satsearch import Search
 from PIL import ImageTk, Image
+
+__authors__ = ["Franklin Keithley", "Tyler Brynn Charity"]
+__maintainer__ = "Franklin Keithley"
+__email__ = "franklin.keithley@student.nmt.edu"
 
 
 class SatelliteFrame(tk.Frame):
+    """ constructor for Satallite Frame """
     def __init__(self, root, file_path):
         tk.Frame.__init__(self, root)
 
@@ -72,7 +76,8 @@ class SatelliteFrame(tk.Frame):
         self.update_image()
 
     def update_image(self, event=None):
-        ''' Show image on the Canvas '''
+        """ Show image on the Canvas """
+
         bbox1 = self.canvas.bbox(self.container)  # get image area
         # Remove 1 pixel shift at the sides of the bbox1
         bbox1 = (bbox1[0] + 1, bbox1[1] + 1, bbox1[2] - 1, bbox1[3] - 1)

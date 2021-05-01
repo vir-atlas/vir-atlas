@@ -1,8 +1,21 @@
+# !/usr/bin/env python3
+# -*-coding:utf-8 -*-
+""" Utilizes Satsearch to get an image of data area
+
+Satsearch: https://github.com/sat-utils/sat-search
+"""
+
 from datetime import date
 from satsearch import Search
 
+__authors__ = ["Franklin Keithley"]
+__maintainer__ = "Franklin Keithley"
+__email__ = "franklin.keithley@student.nmt.edu"
+
 
 def get_satellite_image(coords):
+    """ Generate an image given min and max gps coordinate pairs """
+
     # set the date parameters for searching
     start_date = '2021-04-07T00:00:00Z'
     end_date = date.today().strftime('%Y-%m-%dT00:00:00Z')

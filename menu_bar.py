@@ -1,16 +1,25 @@
-# @authors Brynn
-# @date 4/22/21
-# @brief Houses all components and functions of the top menu
-# @TODO Allow users to upload an image to replace the default satellite image
+# !/usr/bin/env python3
+# -*-coding:utf-8 -*-
+""" Houses all components and functions of the top menu
+
+3 Dropdowns
+File: Allows users to upload new data files, upload an old data file, save, or exit the program
+View: Allows users to swap which map is being displayed (8 Options as of April 2021)
+Satellite: Get generates an image from data if dataset is large enough. Upload allows user to upload an image.
+"""
 
 import tkinter as tk
 from tkinter import filedialog
 import sys
 import stella_frame
 
+__authors__ = ["Tyler Brynn Charity"]
+__maintainer__ = "Tyler Brynn Charity"
+__email__ = "tyler.charity@student.nmt.edu"
 
-"""Creates a new window with helpful information"""
+# currently disabled
 def about():
+    """ Creates a new window with helpful information """
     about_window = tk.Tk()
     about_window.title("About")
     about_window.geometry("400x300")
@@ -72,12 +81,14 @@ class MenuBar(tk.Menu):
         # self.add_cascade(label="Help", underline=0, menu=help_menu)
         help_menu.add_command(label="About", underline=1, command=about)
 
-    """Closes the window"""
     def quit(self):
+        """ closes the window """
+
         sys.exit(0)
 
-    """Opens the stella and gps data files""""
     def open_files(self):
+        """ Opens the stella and gps data files. """
+
         # @TODO We need to make sure the starting directory works on all machines
         self.master.set_stella_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE',
                                                                title="Select STELLA data",
@@ -100,6 +111,8 @@ class MenuBar(tk.Menu):
 
     """Opens a map file""""
     def open_prev_file(self):
+        """ Opens a .vmap file """
+
         self.master.set_map_data(filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
                                                             title="Select Previous Map data",
                                                             filetypes=(("VIR-Atlas Files", "*.vmap"),)))
@@ -117,14 +130,17 @@ class MenuBar(tk.Menu):
             self.master.get_satellite()
 
     def save_file(self):
+        """ Saves data into a .vmap file """
+
         file = filedialog.asksaveasfile(filetypes=[('VIR-Atlas map', '.vmap'), ('All files', '*')],
                                         defaultextension=".vmap", mode='wb')
         self.master.map_data.save_map(file)
 
     def set_sat_image(self):
+        """ Opens an image file into the Satellite frame """
         file = filedialog.askopenfilename(initialdir='/home/boxghost/Dropbox/SE/',
-                                        title="Select Previous Map data",
-                                        filetypes=[("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")])
+                                          title="Select Previous Map data",
+                                          filetypes=[("image", ".jpeg"), ("image", ".png"), ("image", ".jpg")])
         self.master.set_sat_file(file)
         if self.master.satellite_image != '':
             self.master.get_satellite_upload()

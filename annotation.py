@@ -1,14 +1,18 @@
-# @authors Tenise and Marisa 
-# @date 04/14/2021
-# @brief Handles Annotations
-# @todo correlate event coordinates with stella coordinates
-import tkinter
+# !/usr/bin/env python3
+# -*-coding:utf-8 -*-
+""" Handles map annotations and their functionality
+
+Annotations if placed on a map point, are attached and saved to that point of data
+Frame displays data collected at that point
+List of annotations is provided in the low right of the application
+"""
+
 import tkinter as tk
 import PIL
-from tkinter.ttk import *
-import sys
-import map_point
-import map_gen
+
+__authors__ = ["Marisa Loraas", "Tenise Stansfield"]
+__maintainer__ = "Tenise Stansfield"
+__email__ = "tenise.stansfield@student.nmt.edu"
 
 global map_list
 global scale
@@ -42,8 +46,9 @@ class Annotation(object):
         annotation.note.insert('1.0', self.note)
 
 
-# Responsible for the annotation_frame in main.py
 class AnnotationFrame(tk.Frame):
+    """ Responsible for the annotation_frame in main.py """
+
     def __init__(self, master):
         # constructor for AnnotationFrame
         tk.Frame.__init__(self, master)
@@ -63,11 +68,11 @@ class AnnotationFrame(tk.Frame):
 
         # self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg="white")
         # set up the Listbox of all annotations
-        self.listbox = tk.Listbox(self, width=70, height=10, bg="white", selectmode="single", listvariable=self.annotations)
+        self.listbox = tk.Listbox(self, width=70, height=10, bg="white", selectmode="single",
+                                  listvariable=self.annotations)
         tk.Label(self, text="Annotations", bg="#007BA7", fg="white", font=("Courier", "16", "bold")).pack()
         self.listbox.pack()
         self.listbox.bind('<<ListboxSelect>>', root.annotation_frame.selection)
-
 
         # set up Scrollbar for Listbox
         self.scrollbar = tk.Scrollbar(self)
@@ -91,7 +96,8 @@ class AnnotationFrame(tk.Frame):
         self.listbox.pack()
 
         pin = PIL.ImageTk.PhotoImage(PIL.Image.open("pin.jpg"))
-        annotate_btn = tk.Button(root.stella_frame.canvas, image=pin, bg="white", command=annotation.edit_annotation_button)
+        annotate_btn = tk.Button(root.stella_frame.canvas, image=pin, bg="white",
+                                 command=annotation.edit_annotation_button)
         annotate_btn.image = pin
         annotate_btn.place(x=annotation.x, y=annotation.y)
         annotate_btn.bind("<Button-1>")
@@ -107,7 +113,6 @@ class AnnotationFrame(tk.Frame):
                 annotation.note.insert('1.0', item.note)
 
     def delete_annotation(self):
-        """allows annotation to be deleted"""
         temp = 0
         for item in root.annotation_frame.annotations:
             if selected == str(item):
@@ -129,16 +134,20 @@ class AnnotationFrame(tk.Frame):
             annotation = event.get(select)
             get_selection(annotation)
             root.stella_frame.canvas.pack()
-            root.annotation_frame.edit_btn.configure(command=root.annotation_frame.edit_annotation, font=("Courier", "12", "bold italic"))
+            root.annotation_frame.edit_btn.configure(command=root.annotation_frame.edit_annotation,
+                                                     font=("Courier", "12", "bold italic"))
             root.annotation_frame.edit_btn.pack(side="left", ipadx=10)
-            root.annotation_frame.delete_btn.configure(command=root.annotation_frame.delete_annotation, font=("Courier", "12", "bold italic"))
+            root.annotation_frame.delete_btn.configure(command=root.annotation_frame.delete_annotation,
+                                                       font=("Courier", "12", "bold italic"))
             root.annotation_frame.delete_btn.pack(side='right', ipadx=10)
 
 
-# Responsible for editing/adding Annotations
 class AnnotationEditor(Annotation):
-    # constructor for AnnotationEditor
+    """ Responsible for editing/adding Annotations """
+
     def __init__(self, new_annotation):
+        """ constructor for AnnotationEditor """
+
         # call for popup window
         self.annotation = new_annotation
         self.top = tk.Toplevel()
@@ -151,16 +160,19 @@ class AnnotationEditor(Annotation):
         self.get_attribute(new_annotation.x, new_annotation.y)
 
         # create entry box for input
-        self.note = tk.Text(self.top, width=40, height=10, font=("Courier", "10", "bold italic"), bg="white", fg="#007BA7")
+        self.note = tk.Text(self.top, width=40, height=10, font=("Courier", "10", "bold italic"), bg="white",
+                            fg="#007BA7")
         self.note.pack()
 
         # create "Save" button that initiates save_note()
-        self.save = tk.Button(self.top, text="Save", bg="white", fg="#007BA7", font=("Courier", "10", "bold italic"), command=self.save_note)
+        self.save = tk.Button(self.top, text="Save", bg="white", fg="#007BA7", font=("Courier", "10", "bold italic"),
+                              command=self.save_note)
         self.save.pack()
 
         # create "Cancel" button that destroys the window
         # Do we need to make sure that this makes no changes to the Frame? I doubt it
-        self.cancel = tk.Button(self.top, text="Cancel", bg="white", fg="#007BA7", font=("Courier", "10", "bold italic"), command=self.cancel)
+        self.cancel = tk.Button(self.top, text="Cancel", bg="white", fg="#007BA7",
+                                font=("Courier", "10", "bold italic"), command=self.cancel)
         self.cancel.pack()
 
         self.top.configure(bg="#007BA7")
@@ -205,11 +217,13 @@ class AnnotationEditor(Annotation):
                 # display message if point doesn't have STELLA data attached to it
                 continue
         if flag == 0:
-            tk.Label(self.top, text="No data recorded for selected point!", bg="#007BA7", fg="white", font=("Courier", "9", "bold")).pack(side="top")
+            tk.Label(self.top, text="No data recorded for selected point!", bg="#007BA7", fg="white",
+                     font=("Courier", "9", "bold")).pack(side="top")
 
-    
+
     def save_note(self):
-        """saves notes made by user to the annotation attribute"""
+        """ saves notes made by user to the annotation attribute """
+
         temp = 0
         for item in root.annotation_frame.annotations:
             temp += 1
@@ -224,6 +238,7 @@ class AnnotationEditor(Annotation):
         self.annotation = Annotation(self.annotation.x, self.annotation.y, self.note.get('1.0', 'end-1c'))
         root.annotation_frame.add_annotation(self.annotation)
         self.top.destroy()
+
 
     def cancel(self):
         self.top.destroy()
